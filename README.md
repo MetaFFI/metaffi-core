@@ -1,2 +1,2 @@
 # OpenFFI
-FFI Framework To Connect Lots of Languages
+Simple & Easy FFI Framework To Connect Lots of Languages
