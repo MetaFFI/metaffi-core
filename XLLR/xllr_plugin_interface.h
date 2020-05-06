@@ -20,17 +20,17 @@ struct xllr_plugin_interface
 	/**
 	 * Load module of foreign language
 	 */ 
-	virtual module_handle load_module(const char* module, uint32_t module_len, char** err, uint32_t* err_len) = 0;
+//	virtual module_handle load_module(const char* module, uint32_t module_len, char** err, uint32_t* err_len) = 0;
 
 	/**
 	 * Free module of foreign language
 	 */ 
-	virtual void free_module(module_handle module, char** err, uint32_t* err_len) = 0;
+//	virtual void free_module(module_handle module, char** err, uint32_t* err_len) = 0;
 
 	/***
 	 * Call foreign function
 	 */
-	virtual void call(
+/*	virtual void call(
 			// module to load
 			module_handle module,
 			
@@ -49,11 +49,11 @@ struct xllr_plugin_interface
 			// out - 0 if not an error, otherwise an error
 			uint8_t* is_error
 	) = 0;
-
+*/
 	/***
 	 * Call foreign function and lazy load request module (if ot loaded yet)
 	 */
-	virtual module_handle call_lazy(
+/*	virtual module_handle call_lazy(
 			// module to load
 			const char* module_name, uint32_t module_name_len,
 			
@@ -72,5 +72,6 @@ struct xllr_plugin_interface
 			// out - 0 if not an error, otherwise an error
 			uint8_t* is_error
 	) = 0;
+*/
 };
 

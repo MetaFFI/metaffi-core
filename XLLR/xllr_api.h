@@ -21,17 +21,18 @@ void release_plugin(plugin_handle runtime, char** err, uint32_t* err_len);
 /**
  * Load module of foreign language
  */ 
-void load_module(plugin_handle, const char* module, uint32_t module_len, char** err, uint32_t* err_len);
+//void load_module(plugin_handle, const char* module, uint32_t module_len, char** err, uint32_t* err_len);
 
 /**
  * Free module of foreign language
  */ 
-void free_module(module_handle module, char** err, uint32_t* err_len);
+//void free_module(module_handle module, char** err, uint32_t* err_len);
 
 
 /***
  * Call foreign function
  */
+/*
 void call(
 
     // if runtime or module are not loaded, is initialize
@@ -58,3 +59,4 @@ void call(
     // out - 0 if not an error, otherwise an error
     uint8_t* is_error
 );
+*/

@@ -12,7 +12,7 @@
 class xllr_plugin
 {
 private:
-	std::string _plugin_name;
+	std::string _plugin_filename;
 	std::unordered_map<std::string, std::unique_ptr<foreign_module>> _modules;
 	std::unique_ptr<xllr_plugin_interface_wrapper> _loaded_plugin;
 
@@ -28,7 +28,7 @@ public:
 	
 	void load_module(const std::string& module_name);
 	
-	foreign_module& operator[](const std::string& module_name);
+	//foreign_module& operator[](const std::string& module_name);
 	
 };
 //--------------------------------------------------------------------

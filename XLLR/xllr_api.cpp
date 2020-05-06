@@ -63,6 +63,7 @@ void release_plugin(const char* plugin, uint32_t plugin_len, char** err, uint32_
     handle_err(err, err_len);
 }
 //--------------------------------------------------------------------
+/*
 void load_module(const char* plugin, uint32_t plugin_len, const char* module, uint32_t module_len, char** err, uint32_t* err_len) 
 {
 	try
@@ -124,3 +125,4 @@ void call(
     handle_err(out_ret, out_ret_len);
 }
 //--------------------------------------------------------------------
+*/

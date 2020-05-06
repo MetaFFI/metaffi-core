@@ -1,14 +1,9 @@
 #include "xllr_plugin_interface_wrapper.h"
 
 //--------------------------------------------------------------------
-xllr_plugin_interface_wrapper::xllr_plugin_interface_wrapper()
+xllr_plugin_interface_wrapper::xllr_plugin_interface_wrapper(const std::string& plugin_filename)
 {
-
-}
-//--------------------------------------------------------------------
-std::unique_ptr<xllr_plugin_interface> xllr_plugin_interface_wrapper::load_plugin(const std::string& language)
-{
-	
+	//boost::dll::import<typeof(load_runtime)>(plugin_filename, "load_runtime", boost::dll::load_mode::default_mode);
 }
 //--------------------------------------------------------------------
 void xllr_plugin_interface_wrapper::load_runtime(char** err, uint32_t* err_len)
@@ -21,6 +16,7 @@ void xllr_plugin_interface_wrapper::free_runtime(char** err, uint32_t* err_len)
 
 }
 //--------------------------------------------------------------------
+/*
 module_handle xllr_plugin_interface_wrapper::load_module(const char* module, uint32_t module_len, char** err, uint32_t* err_len)
 {
 
@@ -54,4 +50,5 @@ module_handle xllr_plugin_interface_wrapper::call_lazy(
 {
 
 }
+*/
 //--------------------------------------------------------------------

@@ -46,6 +46,17 @@
 		"ratio": "cpp",
 		"shared_mutex": "cpp",
 		"functional": "cpp",
-		"iterator": "cpp"
-	}
+		"iterator": "cpp",
+		"csignal": "cpp",
+		"bitset": "cpp",
+		"complex": "cpp",
+		"list": "cpp",
+		"map": "cpp",
+		"set": "cpp",
+		"iomanip": "cpp",
+		"thread": "cpp",
+		"cinttypes": "cpp",
+		"typeindex": "cpp"
+	},
+	"C_Cpp.default.configurationProvider": "vector-of-bool.cmake-tools"
 }
