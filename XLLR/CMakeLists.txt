@@ -1,12 +1,25 @@
+find_package(Boost COMPONENTS thread REQUIRED) # Boost library
+
+include(CTest)
+enable_testing()
+
 # target_sources use absolute path
 cmake_policy(SET CMP0076 NEW)
 
-FILE(GLOB headers "${CMAKE_CURRENT_LIST_DIR}/*.h")
+# gather files
+FILE(GLOB test_sources "${CMAKE_CURRENT_LIST_DIR}/xllr_test.cpp")
+
 FILE(GLOB sources "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
+LIST(REMOVE_ITEM sources "${test_sources}")
 
+# build XLLR
 add_library(xllr SHARED)
+target_include_directories(xllr PUBLIC ${CMAKE_CURRENT_LIST_DIR} ${Boost_INCLUDE_DIRS})
+target_sources(xllr PUBLIC ${sources})
+target_link_libraries(xllr Boost::thread)
 
-target_include_directories(xllr PRIVATE ${headers})
-target_sources(xllr PRIVATE ${sources})
 
-
+# Unitests
+add_executable(xllr_test "${CMAKE_CURRENT_LIST_DIR}/xllr_test.cpp")
+target_link_libraries(xllr_test xllr)
+add_test(NAME xllr_test COMMAND xllr_test)

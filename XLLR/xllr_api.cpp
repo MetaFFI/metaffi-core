@@ -4,14 +4,12 @@
 #include <iostream>
 #include <cstring>
 
-plugin_respository g_plugins;
-
 #define handle_err(err, err_len)	\
 catch(const std::exception& e)\
 {\
 	if(err)\
 	{\
-		*err_len = std::strlen(e.what());\
+		*err_len = strlen(e.what());\
 		*err = (char*)malloc(*err_len+1);\
 		(*err)[*err_len-1] = 0;\
 \
@@ -24,11 +22,11 @@ catch(const std::exception& e)\
 }\
 catch(...)\
 {\
-	char* e = "unknown error";\
+	const char* e = "unknown error";\
 \
 	if(err)\
 	{\
-		*err_len = std::strlen(e);\
+		*err_len = strlen(e);\
 		*err = (char*)malloc(*err_len+1);\
 		(*err)[*err_len-1] = 0;\
 \
@@ -41,24 +39,31 @@ catch(...)\
 }
 
 
+plugin_respository g_plugins;
+
 //--------------------------------------------------------------------
-void load_plugin(const char* plugin, uint32_t plugin_len, char** err, uint32_t* err_len) 
+void load_runtime_plugin(const char* runtime_plugin, uint32_t runtime_plugin_len, char** err, uint32_t* err_len) 
 {
     try
     {
+		*err = nullptr;
+		*err_len = 0;
+
 		// loads plugin if not loaded
-        g_plugins.load(std::string(plugin, plugin_len));
+        g_plugins.load(std::string(runtime_plugin, runtime_plugin_len));
     }
     handle_err(err, err_len);
-    
 }
 //--------------------------------------------------------------------
-void release_plugin(const char* plugin, uint32_t plugin_len, char** err, uint32_t* err_len) 
+void release_runtime_plugin(const char* runtime_plugin, uint32_t runtime_plugin_len, char** err, uint32_t* err_len) 
 {
     try
     {
+		*err = nullptr;
+		*err_len = 0;
+
 		// loads plugin if not loaded
-        g_plugins.release(std::string(plugin, plugin_len));
+        g_plugins.release(std::string(runtime_plugin, runtime_plugin_len));
     }
     handle_err(err, err_len);
 }

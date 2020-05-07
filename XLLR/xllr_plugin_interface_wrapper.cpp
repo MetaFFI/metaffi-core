@@ -4,6 +4,7 @@
 xllr_plugin_interface_wrapper::xllr_plugin_interface_wrapper(const std::string& plugin_filename)
 {
 	//boost::dll::import<typeof(load_runtime)>(plugin_filename, "load_runtime", boost::dll::load_mode::default_mode);
+	printf("Need to load: %s\n", plugin_filename.c_str());
 }
 //--------------------------------------------------------------------
 void xllr_plugin_interface_wrapper::load_runtime(char** err, uint32_t* err_len)

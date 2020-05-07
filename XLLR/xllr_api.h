@@ -5,18 +5,15 @@
 
 #include <stdint.h> 
 
-typedef int32_t plugin_handle;
-typedef int32_t module_handle;
-
 /**
  * Load language runtime of foreign language
  */ 
-void load_plugin(const char* language, uint32_t language_len, char** err, uint32_t* err_len);
+void load_runtime_plugin(const char* runtime_plugin, uint32_t runtime_plugin_len, char** err, uint32_t* err_len);
 
 /**
  * Free language runtime of foreign language
  */ 
-void release_plugin(plugin_handle runtime, char** err, uint32_t* err_len);
+void release_runtime_plugin(const char* runtime_plugin, uint32_t runtime_plugin_len, char** err, uint32_t* err_len);
 
 /**
  * Load module of foreign language

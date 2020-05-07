@@ -56,7 +56,12 @@
 		"iomanip": "cpp",
 		"thread": "cpp",
 		"cinttypes": "cpp",
-		"typeindex": "cpp"
-	},
-	"C_Cpp.default.configurationProvider": "vector-of-bool.cmake-tools"
+		"typeindex": "cpp",
+		"numeric": "cpp",
+		"random": "cpp",
+		"regex": "cpp",
+		"future": "cpp",
+		"mutex": "cpp",
+		"variant": "cpp"
+	}
 }

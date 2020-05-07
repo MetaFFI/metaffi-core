@@ -1,10 +1,8 @@
-cmake_minimum_required(VERSION 3.10)
-project(openffi VERSION 0.1.0)
+cmake_minimum_required(VERSION 3.17)
+project(openffi VERSION 0.0.1)
 
+# Minimum C++17 - TODO: check if can be lowered
 set(CMAKE_CXX_STANDARD 17)
-
-include(CTest)
-enable_testing()
 
 # Build XLLR
 include(${CMAKE_CURRENT_SOURCE_DIR}/XLLR/CMakeLists.txt)
