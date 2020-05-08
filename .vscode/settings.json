@@ -62,6 +62,7 @@
 		"regex": "cpp",
 		"future": "cpp",
 		"mutex": "cpp",
-		"variant": "cpp"
+		"variant": "cpp",
+		"*.ipp": "cpp"
 	}
 }
