@@ -63,6 +63,9 @@
 		"future": "cpp",
 		"mutex": "cpp",
 		"variant": "cpp",
-		"*.ipp": "cpp"
+		"*.ipp": "cpp",
+		"codecvt": "cpp",
+		"filesystem": "cpp",
+		"cfenv": "cpp"
 	}
 }

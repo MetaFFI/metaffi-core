@@ -17,14 +17,14 @@ private:
 	std::unique_ptr<xllr_plugin_interface_wrapper> _loaded_plugin;
 
 public:
-	xllr_plugin(const std::string& plugin_name);
+	xllr_plugin(const std::string& plugin_name, bool is_init = true);
 	~xllr_plugin();
 
-	void load(void);
-	void release(void);
+	void init(void);
+	void fini(void);
 
 	void load_runtime(void);
-	void release_runtime(void);
+	void free_runtime(void);
 	
 	void load_module(const std::string& module_name);
 	

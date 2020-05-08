@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16.5)
+cmake_minimum_required(VERSION 3.7.0) # TODO: check what is the lowest
 project(openffi VERSION 0.0.1)
 
 # Minimum C++17 - TODO: check if can be lowered

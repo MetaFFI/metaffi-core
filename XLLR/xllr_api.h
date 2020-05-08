@@ -13,7 +13,7 @@ void load_runtime_plugin(const char* runtime_plugin, uint32_t runtime_plugin_len
 /**
  * Free language runtime of foreign language
  */ 
-void release_runtime_plugin(const char* runtime_plugin, uint32_t runtime_plugin_len, char** err, uint32_t* err_len);
+void free_runtime_plugin(const char* runtime_plugin, uint32_t runtime_plugin_len, char** err, uint32_t* err_len);
 
 /**
  * Load module of foreign language

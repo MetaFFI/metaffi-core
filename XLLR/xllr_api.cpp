@@ -17,7 +17,8 @@ catch(const std::exception& e)\
 	}\
 	else\
 	{\
-		std::cerr << e.what() << std::endl;\
+		std::cout << "CRITICAL ERROR: ";\
+		std::cout << e.what() << std::endl;\
 	}\
 }\
 catch(...)\
@@ -34,7 +35,7 @@ catch(...)\
 	}\
 	else\
 	{\
-		std::cerr << e << std::endl;\
+		std::cout << "CRITICAL ERROR: " << e << std::endl;\
 	}\
 }
 
@@ -50,12 +51,13 @@ void load_runtime_plugin(const char* runtime_plugin, uint32_t runtime_plugin_len
 		*err_len = 0;
 
 		// loads plugin if not loaded
-        g_plugins.load(std::string(runtime_plugin, runtime_plugin_len));
+        std::shared_ptr<xllr_plugin> loaded_plugin = g_plugins.load(std::string(runtime_plugin, runtime_plugin_len));
+		loaded_plugin->load_runtime();
     }
     handle_err(err, err_len);
 }
 //--------------------------------------------------------------------
-void release_runtime_plugin(const char* runtime_plugin, uint32_t runtime_plugin_len, char** err, uint32_t* err_len) 
+void free_runtime_plugin(const char* runtime_plugin, uint32_t runtime_plugin_len, char** err, uint32_t* err_len) 
 {
     try
     {

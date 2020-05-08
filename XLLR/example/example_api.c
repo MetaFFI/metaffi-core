@@ -21,7 +21,7 @@ void free_runtime(char** err, uint32_t* err_len)
 	else
 	{
 		*err = "Runtime has not been loaded - therefore it cannot be freed!\n";
-		printf("%s", *err);
+		printf("%s\n", *err);
 		*err_len = strlen(*err);
 	}
 }
