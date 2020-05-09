@@ -15,6 +15,17 @@ extern "C"
 	 */ 
 	void free_runtime(char** err, uint32_t* err_len);
 
+	/**
+	 * Load module of foreign language
+	 */ 
+	void load_module(const char* module, uint32_t module_len, char** err, uint32_t* err_len);
+
+	/**
+	 * Free module of foreign language
+	 */ 
+	void free_module(const char* module, uint32_t module_len, char** err, uint32_t* err_len);
+
+
 #ifdef __cplusplus
 extern "C"
 }

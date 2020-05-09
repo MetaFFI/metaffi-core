@@ -27,7 +27,8 @@ public:
 	void free_runtime(void);
 	
 	void load_module(const std::string& module_name);
-	
+	void free_module(const std::string& module_name);
+
 	//foreign_module& operator[](const std::string& module_name);
 	
 };

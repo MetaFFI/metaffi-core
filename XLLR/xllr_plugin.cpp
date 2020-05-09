@@ -70,9 +70,8 @@ void xllr_plugin::load_module(const std::string& module_name)
     
 }
 //--------------------------------------------------------------------
-/*
-foreign_module& xllr_plugin::operator[](const std::string& module_name) 
+void xllr_plugin::free_module(const std::string& module_name) 
 {
     
-}*/
+}
 //--------------------------------------------------------------------

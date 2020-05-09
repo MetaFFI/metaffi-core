@@ -20,12 +20,12 @@ struct xllr_plugin_interface
 	/**
 	 * Load module of foreign language
 	 */ 
-//	virtual module_handle load_module(const char* module, uint32_t module_len, char** err, uint32_t* err_len) = 0;
+	virtual void load_module(const char* module, uint32_t module_len, char** err, uint32_t* err_len) = 0;
 
 	/**
 	 * Free module of foreign language
 	 */ 
-//	virtual void free_module(module_handle module, char** err, uint32_t* err_len) = 0;
+	virtual void free_module(const char* module, uint32_t module_len, char** err, uint32_t* err_len) = 0;
 
 	/***
 	 * Call foreign function

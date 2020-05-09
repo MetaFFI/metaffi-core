@@ -24,4 +24,5 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/XLLR/example/CMakeLists.txt)
 # Unitest
 add_executable(xllr_test "${CMAKE_CURRENT_LIST_DIR}/xllr_test.cpp")
 target_link_libraries(xllr_test xllr)
-add_test(NAME xllr_test COMMAND xllr_test)
+add_test(NAME test_runtime_success COMMAND xllr_test 1)
+add_test(NAME test_runtime_fail COMMAND xllr_test 2)

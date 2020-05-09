@@ -2,6 +2,7 @@
 #include "scope_guard.hpp"
 #include <boost/filesystem.hpp>
 
+
 //--------------------------------------------------------------------
 xllr_plugin_interface_wrapper::xllr_plugin_interface_wrapper(const std::string& plugin_filename)
 {
@@ -10,13 +11,10 @@ xllr_plugin_interface_wrapper::xllr_plugin_interface_wrapper(const std::string& 
 	
 	std::cout << "Loading Functions from: " << fullpath << std::endl;
 	
-	this->pload_runtime = std::make_shared<boost::dll::detail::import_type<void(char**,uint32_t*)>::type>(
-							boost::dll::import<void(char**,uint32_t*)>(fullpath, "load_runtime", boost::dll::load_mode::default_mode)
-						);
-
-	this->pfree_runtime = std::make_shared<boost::dll::detail::import_type<void(char**,uint32_t*)>::type>(
-							boost::dll::import<void(char**,uint32_t*)>(fullpath, "free_runtime", boost::dll::load_mode::default_mode)
-						);
+	this->pload_runtime = this->load_func<void(char**,uint32_t*)>(fullpath.c_str(), "load_runtime");
+	this->pfree_runtime = this->load_func<void(char**,uint32_t*)>(fullpath.c_str(), "free_runtime");
+	this->pload_module = this->load_func<void(const char*, uint32_t, char**,uint32_t*)>(fullpath.c_str(), "load_module");
+	this->pfree_module = this->load_func<void(const char*, uint32_t, char**,uint32_t*)>(fullpath.c_str(), "free_module");
 
 }
 //--------------------------------------------------------------------
@@ -34,17 +32,21 @@ void xllr_plugin_interface_wrapper::free_runtime(char** err, uint32_t* err_len)
 	(*this->pfree_runtime)(err, err_len);
 }
 //--------------------------------------------------------------------
+void xllr_plugin_interface_wrapper::load_module(const char* module, uint32_t module_len, char** err, uint32_t* err_len)
+{
+	err = nullptr;
+	err_len = 0;
+	(*this->pload_module)(module, module_len, err, err_len);
+}
+//--------------------------------------------------------------------
+void xllr_plugin_interface_wrapper::free_module(const char* module, uint32_t module_len, char** err, uint32_t* err_len)
+{
+	err = nullptr;
+	err_len = 0;
+	(*this->pfree_module)(module, module_len, err, err_len);
+}
+//--------------------------------------------------------------------
 /*
-module_handle xllr_plugin_interface_wrapper::load_module(const char* module, uint32_t module_len, char** err, uint32_t* err_len)
-{
-
-}
-//--------------------------------------------------------------------
-void xllr_plugin_interface_wrapper::free_module(module_handle module, char** err, uint32_t* err_len)
-{
-
-}
-//--------------------------------------------------------------------
 void xllr_plugin_interface_wrapper::call(
 		module_handle module,
 		const char* func_name, uint32_t func_name_len,
