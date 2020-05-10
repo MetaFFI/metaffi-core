@@ -4,7 +4,6 @@
 #include <type_traits>
 #include <boost/dll.hpp>
 
-
 //--------------------------------------------------------------------
 class xllr_plugin_interface_wrapper : public xllr_plugin_interface
 {

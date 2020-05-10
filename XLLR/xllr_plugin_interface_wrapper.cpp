@@ -20,29 +20,29 @@ xllr_plugin_interface_wrapper::xllr_plugin_interface_wrapper(const std::string& 
 //--------------------------------------------------------------------
 void xllr_plugin_interface_wrapper::load_runtime(char** err, uint32_t* err_len)
 {
-	err = nullptr;
-	err_len = 0;
+	*err = nullptr;
+	*err_len = 0;
 	(*this->pload_runtime)(err, err_len);
 }
 //--------------------------------------------------------------------
 void xllr_plugin_interface_wrapper::free_runtime(char** err, uint32_t* err_len)
 {
-	err = nullptr;
-	err_len = 0;
+	*err = nullptr;
+	*err_len = 0;
 	(*this->pfree_runtime)(err, err_len);
 }
 //--------------------------------------------------------------------
 void xllr_plugin_interface_wrapper::load_module(const char* module, uint32_t module_len, char** err, uint32_t* err_len)
 {
-	err = nullptr;
-	err_len = 0;
+	*err = nullptr;
+	*err_len = 0;
 	(*this->pload_module)(module, module_len, err, err_len);
 }
 //--------------------------------------------------------------------
 void xllr_plugin_interface_wrapper::free_module(const char* module, uint32_t module_len, char** err, uint32_t* err_len)
 {
-	err = nullptr;
-	err_len = 0;
+	*err = nullptr;
+	*err_len = 0;
 	(*this->pfree_module)(module, module_len, err, err_len);
 }
 //--------------------------------------------------------------------

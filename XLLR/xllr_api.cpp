@@ -70,27 +70,34 @@ void free_runtime_plugin(const char* runtime_plugin, uint32_t runtime_plugin_len
     handle_err(err, err_len);
 }
 //--------------------------------------------------------------------
-/*
 void load_module(const char* plugin, uint32_t plugin_len, const char* module, uint32_t module_len, char** err, uint32_t* err_len) 
 {
 	try
     {
-		std::shared_ptr<xllr_plugin> p = g_plugins.get(std::string(plugin, plugin_len));
-		p->load(std::string(module, module_len));
+		std::string plugin_name(plugin, plugin_len);
+		std::shared_ptr<xllr_plugin> p = g_plugins.get(plugin_name);
+
+		if(!p) // if plugin not loaded - lazy load plugin
+		{
+			p = g_plugins.load(plugin_name);
+		}
+
+		p->load_module(std::string(module, module_len));
     }
     handle_err(err, err_len);
 }
 //--------------------------------------------------------------------
-void release_module(const char* plugin, uint32_t plugin_len, const char* module, uint32_t module_len, char** err, uint32_t* err_len) 
+void free_module(const char* plugin, uint32_t plugin_len, const char* module, uint32_t module_len, char** err, uint32_t* err_len) 
 {
     try
     {
 		std::shared_ptr<xllr_plugin> p = g_plugins.get(std::string(plugin, plugin_len));
-		p->release(std::string(module, module_len));
+		p->free_module(std::string(module, module_len));
     }
     handle_err(err, err_len);
 }
 //--------------------------------------------------------------------
+/*
 void call(
 	uint8_t is_initialize,
 	const char* plugin, uint32_t plugin_len,

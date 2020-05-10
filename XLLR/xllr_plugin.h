@@ -5,6 +5,8 @@
 #include <unordered_map>
 #include "foreign_module.h"
 #include "xllr_plugin_interface_wrapper.h"
+#include <boost/thread.hpp>
+#include <atomic>
 
 
 
@@ -13,8 +15,10 @@ class xllr_plugin
 {
 private:
 	std::string _plugin_filename;
-	std::unordered_map<std::string, std::unique_ptr<foreign_module>> _modules;
+	std::vector<std::string> _loaded_modules;
 	std::unique_ptr<xllr_plugin_interface_wrapper> _loaded_plugin;
+	bool _is_runtime_loaded = false;
+	mutable boost::shared_mutex _mutex;
 
 public:
 	xllr_plugin(const std::string& plugin_name, bool is_init = true);
@@ -28,8 +32,6 @@ public:
 	
 	void load_module(const std::string& module_name);
 	void free_module(const std::string& module_name);
-
-	//foreign_module& operator[](const std::string& module_name);
 	
 };
 //--------------------------------------------------------------------

@@ -18,12 +18,12 @@ void free_runtime_plugin(const char* runtime_plugin, uint32_t runtime_plugin_len
 /**
  * Load module of foreign language
  */ 
-//void load_module(plugin_handle, const char* module, uint32_t module_len, char** err, uint32_t* err_len);
+void load_module(const char* runtime_plugin, uint32_t runtime_plugin_len, const char* module, uint32_t module_len, char** err, uint32_t* err_len);
 
 /**
  * Free module of foreign language
  */ 
-//void free_module(module_handle module, char** err, uint32_t* err_len);
+void free_module(const char* runtime_plugin, uint32_t runtime_plugin_len, const char* module, uint32_t module_len, char** err, uint32_t* err_len);
 
 
 /***

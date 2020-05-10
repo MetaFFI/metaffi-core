@@ -1,5 +1,6 @@
 #include "example_api.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #define TRUE 1
@@ -8,14 +9,18 @@
 int runtime_loaded = FALSE;
 int module_loaded = FALSE;
 
+#define handle_err(desc) \
+	*err_len = strlen( desc ); \
+	*err = (char*)malloc(*err_len + 1); \
+	strcpy(*err, desc ); \
+	printf("%.*s\n", *err_len, *err);
+
 //--------------------------------------------------------------------
 void load_runtime(char** err, uint32_t* err_len)
 {
 	if(runtime_loaded == TRUE)
 	{
-		*err = "Runtime has already been loaded!\n";
-		printf("%s\n", *err);
-		*err_len = strlen(*err);
+		handle_err("Runtime has already been loaded!");
 		return;
 	}
 
@@ -27,9 +32,7 @@ void free_runtime(char** err, uint32_t* err_len)
 {
 	if(runtime_loaded == FALSE)
 	{
-		*err = "Runtime has not been loaded - therefore it cannot be freed!\n";
-		printf("%s\n", *err);
-		*err_len = strlen(*err);
+		handle_err("Runtime has not been loaded - therefore it cannot be freed!");
 		return;
 	}
 		
@@ -41,29 +44,23 @@ void load_module(const char* module, uint32_t module_len, char** err, uint32_t* 
 {
 	if(runtime_loaded == FALSE)
 	{
-		*err = "Runtime has not been loaded - module cannot be loaded!\n";
-		printf("%s\n", *err);
-		*err_len = strlen(*err);
+		handle_err("Runtime has not been loaded - module cannot be loaded!");
 		return;
 	}
 
 	if(module_loaded == TRUE)
 	{
-		*err = "Module already been loaded!\n";
-		printf("%s\n", *err);
-		*err_len = strlen(*err);
+		handle_err("Module already been loaded!");
 		return;
 	}
 
 	if(strcmp(module, "example_module") != 0)
 	{
-		*err = "Expected to load example module!\n";
-		printf("%s\n", *err);
-		*err_len = strlen(*err);
+		handle_err("Expected to load example module!");
 		return;
 	}
 
-	printf("Loading module %s in XLLR Example plugin\n", module);
+	printf("Loading module %.*s in XLLR Example plugin\n", module_len, module);
 	module_loaded = TRUE;
 }
 //--------------------------------------------------------------------
@@ -71,21 +68,17 @@ void free_module(const char* module, uint32_t module_len, char** err, uint32_t* 
 {
 	if(runtime_loaded == FALSE)
 	{
-		*err = "Runtime has not been loaded!\n";
-		printf("%s\n", *err);
-		*err_len = strlen(*err);
+		handle_err("Runtime has not been loaded!");
 		return;
 	}
 
 	if(module_loaded == FALSE)
 	{
-		*err = "Module not been loaded!\n";
-		printf("%s\n", *err);
-		*err_len = strlen(*err);
+		handle_err("Module not been loaded!");
 		return;
 	}
 
-	printf("Freeing module %s in XLLR Example plugin\n", module);
+	printf("Freeing module %.*s in XLLR Example plugin\n", module_len, module);
 	module_loaded = TRUE;
 }
 //--------------------------------------------------------------------
