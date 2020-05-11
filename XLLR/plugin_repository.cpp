@@ -1,6 +1,30 @@
 #include "plugin_repository.h"
+#include <iostream>
 
+//--------------------------------------------------------------------
+plugin_respository::~plugin_respository()
+{
+	try
+	{
+		std::vector<std::string> keys(this->_plugins.size());
+		for(auto& cur_mod : this->_plugins){
+			keys.push_back(cur_mod.first);
+		}
 
+		for(const std::string& k : keys){
+			this->release(k);
+		}
+	}
+	catch(const std::exception& e)
+	{
+		std::cout << "Failed to release plugins. Error: " << e.what() << std::endl;
+	}
+    catch(...)
+	{
+		std::cout << "Failed to release plugins. Unknown error." << std::endl;
+	}
+	
+}
 //--------------------------------------------------------------------
 std::shared_ptr<xllr_plugin> plugin_respository::get(const std::string& plugin) const
 {
@@ -41,7 +65,7 @@ void plugin_respository::release(const std::string& plugin)
 	boost::upgrade_lock<boost::shared_mutex> read_lock(this->_mutex);
 
 	auto it = this->_plugins.find(plugin);
-	if(it != this->_plugins.end()) // if found
+	if(it == this->_plugins.end()) // if found
 	{
 		return;
 	}

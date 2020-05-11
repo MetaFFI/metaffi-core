@@ -17,13 +17,13 @@ xllr_plugin::~xllr_plugin()
 	{
 		fini();
 	}
-	catch(std::exception& e)
+	catch(const std::exception& e)
 	{
-		std::cerr << "Failed to release " << this->_plugin_filename << ". Error: " << e.what() << std::endl;
+		std::cout << "Failed to release " << this->_plugin_filename << ". Error: " << e.what() << std::endl;
 	}
     catch(...)
 	{
-		std::cerr << "Failed to release " << this->_plugin_filename << std::endl;
+		std::cout << "Failed to release " << this->_plugin_filename << std::endl;
 	}
 }
 //--------------------------------------------------------------------
@@ -67,9 +67,13 @@ void xllr_plugin::load_runtime(void)
 void xllr_plugin::free_runtime(void) 
 {
 	// free all modules first
-	for(auto& cur_mod : this->_loaded_modules)
-	{
-		this->free_module(cur_mod);
+	std::vector<std::string> keys(this->_loaded_modules.size());
+	for(auto& cur_mod : this->_loaded_modules){
+		keys.push_back(cur_mod.first);
+	}
+
+	for(const std::string& k : keys){
+		this->free_module(k);
 	}
 
 	boost::upgrade_lock<boost::shared_mutex> read_lock(this->_mutex); // read lock
@@ -95,17 +99,29 @@ void xllr_plugin::free_runtime(void)
 	_is_runtime_loaded = false;
 }
 //--------------------------------------------------------------------
-void xllr_plugin::load_module(const std::string& module_name) 
+std::shared_ptr<foreign_module> xllr_plugin::get_module(const std::string& module_name) const
+{
+	boost::upgrade_lock<boost::shared_mutex> read_lock(this->_mutex); // read lock
+
+	// check if module already been loaded
+	auto it = _loaded_modules.find(module_name);
+	if(it == _loaded_modules.end()){
+		return nullptr;
+	}
+
+	return it->second;
+}
+//--------------------------------------------------------------------
+std::shared_ptr<foreign_module> xllr_plugin::load_module(const std::string& module_name) 
 {
 	this->load_runtime(); // verify that runtime has been loaded
 
 	boost::upgrade_lock<boost::shared_mutex> read_lock(this->_mutex); // read lock
 
 	// check if module already been loaded
-	if(std::binary_search(this->_loaded_modules.begin(), this->_loaded_modules.end(), module_name))
-	{
-		// found
-		return;
+	auto it = _loaded_modules.find(module_name);
+	if(it != _loaded_modules.end()){
+		return it->second;
 	}
 
 	boost::upgrade_to_unique_lock<boost::shared_mutex> exclusive_lock(read_lock); // upgrade to writer
@@ -121,10 +137,9 @@ void xllr_plugin::load_module(const std::string& module_name)
 	}
 
 	// insert sorted (because of binary search)
-	this->_loaded_modules.insert( 
-		std::upper_bound( this->_loaded_modules.begin(), this->_loaded_modules.end(), module_name ), 
-		module_name 
-	);
+	auto fmod = std::make_shared<foreign_module>(this->_loaded_plugin, module_name);
+	this->_loaded_modules[module_name] = fmod;
+	return fmod;
 }
 //--------------------------------------------------------------------
 void xllr_plugin::free_module(const std::string& module_name) 
@@ -132,14 +147,12 @@ void xllr_plugin::free_module(const std::string& module_name)
 	boost::upgrade_lock<boost::shared_mutex> read_lock(this->_mutex); // read lock
 
 	// check if module is not loaded
-	if(!std::binary_search(this->_loaded_modules.begin(), this->_loaded_modules.end(), module_name))
-	{
-		// not found
+	auto it = _loaded_modules.find(module_name);
+	if(it == _loaded_modules.end()){
 		return;
 	}
 
 	boost::upgrade_to_unique_lock<boost::shared_mutex> exclusive_lock(read_lock); // upgrade to writer
-
     char* err = nullptr;
 	uint32_t err_len = 0;
     this->_loaded_plugin->free_module(module_name.c_str(), module_name.length(), &err, &err_len);
@@ -149,9 +162,8 @@ void xllr_plugin::free_module(const std::string& module_name)
 		scope_guard sg([&](){ free(err); });
 		throw std::runtime_error(std::string(err, err_len));
 	}
-
+	
 	// remove from vector
-	auto it = std::upper_bound( this->_loaded_modules.begin(), this->_loaded_modules.end(), module_name );
 	this->_loaded_modules.erase(it);
 }
 //--------------------------------------------------------------------

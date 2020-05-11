@@ -15,8 +15,8 @@ class xllr_plugin
 {
 private:
 	std::string _plugin_filename;
-	std::vector<std::string> _loaded_modules;
-	std::unique_ptr<xllr_plugin_interface_wrapper> _loaded_plugin;
+	std::unordered_map<std::string, std::shared_ptr<foreign_module>> _loaded_modules;
+	std::shared_ptr<xllr_plugin_interface_wrapper> _loaded_plugin;
 	bool _is_runtime_loaded = false;
 	mutable boost::shared_mutex _mutex;
 
@@ -30,8 +30,9 @@ public:
 	void load_runtime(void);
 	void free_runtime(void);
 	
-	void load_module(const std::string& module_name);
+	std::shared_ptr<foreign_module> load_module(const std::string& module_name);
 	void free_module(const std::string& module_name);
+	std::shared_ptr<foreign_module> get_module(const std::string& module_name) const;
 	
 };
 //--------------------------------------------------------------------

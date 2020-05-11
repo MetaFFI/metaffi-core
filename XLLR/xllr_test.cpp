@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <string.h>
 #include "xllr_api.h"
 
 #define reset_err \
@@ -35,6 +36,7 @@
 
 std::string plugin_name("xllr.example.so");
 std::string module_name("example_module");
+std::string func_name("example_function");
 char* out_err = nullptr;
 uint32_t out_err_len = 0;
 
@@ -93,6 +95,7 @@ void test_module_free_module_via_free_runtime_success()
 	run_test_step_expect_success("Error in free_runtime_plugin()",
 				 free_runtime_plugin(plugin_name.c_str(), plugin_name.length(), &out_err, &out_err_len)
 	);
+	
 }
 //--------------------------------------------------------------------
 void test_module_lazy_runtime_success()
@@ -107,7 +110,7 @@ void test_module_lazy_runtime_success()
 	);
 }
 //--------------------------------------------------------------------
-void test_module_module_not_exist_fail()
+void test_module_not_exist_fail()
 {
 	// Test 6 - load module that doesn't exist
 	run_test_step_expect_fail("Error in load_runtime_plugin()",
@@ -115,9 +118,92 @@ void test_module_module_not_exist_fail()
 	);
 }
 //--------------------------------------------------------------------
+void test_call_success()
+{
+	std::string params("in params");
+	unsigned char* out_params = nullptr;
+	uint64_t out_params_len = 0;
+	unsigned  char* out_ret = nullptr;
+	uint64_t out_ret_len = 0;
+	uint8_t is_error = 0;
+
+	// Test 6 - load module that doesn't exist
+	call(plugin_name.c_str(), plugin_name.length(),
+		module_name.c_str(), module_name.length(),
+		func_name.c_str(), func_name.length(),
+		(unsigned char*)params.c_str(), params.length(),
+		&out_params, &out_params_len,
+		&out_ret, &out_ret_len,
+		&is_error
+	);
+
+	if(is_error)
+	{
+		std::string estr((const char*)out_ret, out_ret_len);
+		std::cout << "returned error from call(): " << estr << std::endl;
+		exit(1);
+	}
+
+	if(out_params == nullptr)
+	{
+		std::cout << "out_params is empty. expected to have a value" << std::endl;
+		exit(1);
+	}
+
+	if(out_ret == nullptr)
+	{
+		std::cout << "out_ret is empty. expected to have a value" << std::endl;
+		exit(1);
+	}
+
+	if(strlen((const char*)out_params) != out_params_len || strcmp((const char*)out_params, "out params") != 0)
+	{
+		std::cout << "out_params value OR length is not as expected: " << out_params << ". Expected: out params" << std::endl;
+		exit(1);
+	}
+
+	if(strlen((const char*)out_ret) != out_ret_len || strcmp((const char*)out_ret, "ret params") != 0)
+	{
+		std::cout << "out_ret value OR length is not as expected: " << out_params << ". Expected: ret params" << std::endl;
+		exit(1);
+	}
+
+	std::cout << "called \"call()\" successfully in XLLR Example plugin" << std::endl;
+
+	free(out_ret);
+	free(out_params);
+
+}
+//--------------------------------------------------------------------
+void test_call_fail()
+{
+	std::string params("in params");
+	unsigned char* out_params = nullptr;
+	uint64_t out_params_len = 0;
+	unsigned char* out_ret = nullptr;
+	uint64_t out_ret_len = 0;
+	uint8_t is_error = 0;
+
+	// Test 6 - load module that doesn't exist
+	call(plugin_name.c_str(), plugin_name.length(),
+		module_name.c_str(), module_name.length(),
+		"dummy", 5,
+		(unsigned char*)params.c_str(), params.length(),
+		&out_params, &out_params_len,
+		&out_ret, &out_ret_len,
+		&is_error
+	);
+
+	if(!is_error)
+	{
+		std::cout << "\"call()\" did not fail, although it was expected to." << std::endl;
+		exit(1);
+	}
+
+}
+//--------------------------------------------------------------------
 int main(int argc, char* argv[])
 {
-	/*
 	if(argc <= 1)
 	{
 		std::cout << "Expect test case number. Quitting..." << std::endl;
@@ -130,8 +216,7 @@ int main(int argc, char* argv[])
 	{
 		std::cout << "Given argument is not a test case number. Quitting..." << std::endl;
 		return 1;
-	}*/
-	int testcase = 5;
+	}
 
 	switch (testcase)
 	{
@@ -166,7 +251,17 @@ int main(int argc, char* argv[])
 
 		case 6:
 		{
-			test_module_module_not_exist_fail();
+			test_module_not_exist_fail();
+		}break;
+
+		case 7:
+		{
+			test_call_success();
+		}break;
+
+		case 8:
+		{
+			test_call_fail();
 		}break;
 
 		default:
@@ -174,16 +269,5 @@ int main(int argc, char* argv[])
 			return 1;
 	}
 	
-
-	
-
-	// Test 4 - load runtime + load module + free runtime, make sure module released successfully
-
-	// Test 5 - load runtime + load module + release module + free runtime, make sure module released successfully
-
-	// Test 6 - load runtime + load module + call function + free runtime, make sure function called
-
-	// Test 7 - call function + free runtime - make sure everything is loaded and freed at the end
-
 	return 0;
 }

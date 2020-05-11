@@ -12,7 +12,7 @@ private:
 
 public:
 	plugin_respository() = default;
-	~plugin_respository() = default;
+	~plugin_respository();
 
 	// returns xllr plugin - throws runtime_error in case not loaded
 	std::shared_ptr<xllr_plugin> get(const std::string& plugin) const;

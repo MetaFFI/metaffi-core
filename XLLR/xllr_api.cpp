@@ -4,9 +4,10 @@
 #include <iostream>
 #include <cstring>
 
-#define handle_err(err, err_len)	\
+#define handle_err(err, err_len, before_handle)	\
 catch(const std::exception& e)\
 {\
+	before_handle\
 	if(err)\
 	{\
 		*err_len = strlen(e.what());\
@@ -23,6 +24,7 @@ catch(const std::exception& e)\
 }\
 catch(...)\
 {\
+	before_handle\
 	const char* e = "unknown error";\
 \
 	if(err)\
@@ -54,7 +56,7 @@ void load_runtime_plugin(const char* runtime_plugin, uint32_t runtime_plugin_len
         std::shared_ptr<xllr_plugin> loaded_plugin = g_plugins.load(std::string(runtime_plugin, runtime_plugin_len));
 		loaded_plugin->load_runtime();
     }
-    handle_err(err, err_len);
+    handle_err(err, err_len,);
 }
 //--------------------------------------------------------------------
 void free_runtime_plugin(const char* runtime_plugin, uint32_t runtime_plugin_len, char** err, uint32_t* err_len) 
@@ -67,14 +69,14 @@ void free_runtime_plugin(const char* runtime_plugin, uint32_t runtime_plugin_len
 		// loads plugin if not loaded
         g_plugins.release(std::string(runtime_plugin, runtime_plugin_len));
     }
-    handle_err(err, err_len);
+    handle_err(err, err_len,);
 }
 //--------------------------------------------------------------------
-void load_module(const char* plugin, uint32_t plugin_len, const char* module, uint32_t module_len, char** err, uint32_t* err_len) 
+void load_module(const char* runtime_plugin, uint32_t runtime_plugin_len, const char* module, uint32_t module_len, char** err, uint32_t* err_len) 
 {
 	try
     {
-		std::string plugin_name(plugin, plugin_len);
+		std::string plugin_name(runtime_plugin, runtime_plugin_len);
 		std::shared_ptr<xllr_plugin> p = g_plugins.get(plugin_name);
 
 		if(!p) // if plugin not loaded - lazy load plugin
@@ -84,59 +86,56 @@ void load_module(const char* plugin, uint32_t plugin_len, const char* module, ui
 
 		p->load_module(std::string(module, module_len));
     }
-    handle_err(err, err_len);
+    handle_err(err, err_len,);
 }
 //--------------------------------------------------------------------
-void free_module(const char* plugin, uint32_t plugin_len, const char* module, uint32_t module_len, char** err, uint32_t* err_len) 
+void free_module(const char* runtime_plugin, uint32_t runtime_plugin_len, const char* module, uint32_t module_len, char** err, uint32_t* err_len) 
 {
     try
     {
-		std::shared_ptr<xllr_plugin> p = g_plugins.get(std::string(plugin, plugin_len));
+		std::shared_ptr<xllr_plugin> p = g_plugins.get(std::string(runtime_plugin, runtime_plugin_len));
 		p->free_module(std::string(module, module_len));
     }
-    handle_err(err, err_len);
+    handle_err(err, err_len,);
 }
 //--------------------------------------------------------------------
-/*
 void call(
-	uint8_t is_initialize,
-	const char* plugin, uint32_t plugin_len,
+	const char* runtime_plugin, uint32_t runtime_plugin_len,
 	const char* module_name, uint32_t module_name_len,
 	const char* func_name, uint32_t func_name_len,
-	unsigned char* params, uint64_t params_len,
+	unsigned char* in_params, uint64_t in_params_len,
 	unsigned char** out_params, uint64_t* out_params_len,
-	char** out_ret, uint64_t* out_ret_len,
+	unsigned char** out_ret, uint64_t* out_ret_len,
 	uint8_t* is_error
 )
 {
 	try
     {
-		if(!is_initialize)
+		// check if module is loaded, if not - lazy load it.
+		std::string plugin_name(runtime_plugin, runtime_plugin_len);
+		std::string module(module_name, module_name_len);
+		std::shared_ptr<xllr_plugin> p = g_plugins.get(plugin_name);
+		std::shared_ptr<foreign_module> m;
+
+		if(!p) // if plugin not loaded - lazy load plugin and module
 		{
-			std::shared_ptr<xllr_plugin> p = g_plugins.get(std::string(plugin, plugin_len));
-			auto m = p->get(std::string(module, module_len));
-			m->call(
-				func_name, func_name_len,
-				params, params_len,
-				out_params, out_params_len,
-				out_ret, out_ret_len,
-				is_error
-			);
+			p = g_plugins.load(plugin_name);
+			m = p->load_module(module);
 		}
-		else
+		else if(m = p->get_module(module); !m) // load foreign module
 		{
-			std::shared_ptr<xllr_plugin> p = g_plugins.load(std::string(plugin, plugin_len));
-			auto m = p->load(std::string(module, module_len));
-			m->call(
-				func_name, func_name_len,
-				params, params_len,
-				out_params, out_params_len,
-				out_ret, out_ret_len,
-				is_error
-			);
+			// check if module is load, if not, load it
+			m = p->load_module(module);
 		}
+
+		m->call(
+			func_name, func_name_len,
+			in_params, in_params_len,
+			out_params, out_params_len,
+			out_ret, out_ret_len,
+			is_error
+		);
     }
-    handle_err(out_ret, out_ret_len);
+    handle_err((char**)out_ret, out_ret_len, *is_error=1;);
 }
 //--------------------------------------------------------------------
-*/
