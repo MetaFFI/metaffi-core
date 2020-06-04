@@ -1,6 +1,8 @@
 #include <stdint.h>
 #include <string>
 
+extern "C"
+{
 /**
  * Load runtime runtime of foreign runtime
  */ 
@@ -44,3 +46,4 @@ void call(
 	uint8_t* is_error
 );
 
+}
