@@ -8,7 +8,8 @@
             ],
             "defines": [],
             "compilerPath": "/usr/bin/clang",
-            "configurationProvider": "vector-of-bool.cmake-tools"
+            "configurationProvider": "vector-of-bool.cmake-tools",
+            "cppStandard": "c++17"
         }
     ],
     "version": 4

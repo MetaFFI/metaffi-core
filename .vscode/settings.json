@@ -67,6 +67,7 @@
 		"codecvt": "cpp",
 		"filesystem": "cpp",
 		"cfenv": "cpp",
-		"strstream": "cpp"
+		"strstream": "cpp",
+		"bit": "cpp"
 	}
 }

@@ -7,28 +7,20 @@ enable_testing()
 cmake_policy(SET CMP0076 NEW)
 
 # gather files
-FILE(GLOB test_sources "${CMAKE_CURRENT_LIST_DIR}/xllr_test.cpp")
+#FILE(GLOB test_sources
+#	"${CMAKE_CURRENT_LIST_DIR}/xllr_test.cpp"
+#	"${CMAKE_CURRENT_LIST_DIR}/xllr_python_test.cpp")
 
 FILE(GLOB sources "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
-LIST(REMOVE_ITEM sources "${test_sources}")
+#LIST(REMOVE_ITEM sources "${test_sources}")
 
 # build XLLR
 add_library(xllr SHARED)
 target_include_directories(xllr PUBLIC ${CMAKE_CURRENT_LIST_DIR} ${Boost_INCLUDE_DIRS})
+
 target_sources(xllr PUBLIC ${sources})
 target_link_libraries(xllr Boost::thread Boost::filesystem dl)
 
-# build xllr.example dynamic library
+# build xllr plugins dynamic library
 include(${CMAKE_CURRENT_SOURCE_DIR}/XLLR/example/CMakeLists.txt)
-
-# Unitest
-add_executable(xllr_test "${CMAKE_CURRENT_LIST_DIR}/xllr_test.cpp")
-target_link_libraries(xllr_test xllr)
-add_test(NAME test_runtime_success COMMAND xllr_test 1)
-add_test(NAME test_runtime_fail COMMAND xllr_test 2)
-add_test(NAME test_module_success COMMAND xllr_test 3)
-add_test(NAME test_module_free_module_via_free_runtime_success COMMAND xllr_test 4)
-add_test(NAME test_module_lazy_runtime_success COMMAND xllr_test 5)
-add_test(NAME test_module_module_not_exist_fail COMMAND xllr_test 6)
-add_test(NAME test_call_success COMMAND xllr_test 7)
-add_test(NAME test_call_fail COMMAND xllr_test 8)
+include(${CMAKE_CURRENT_SOURCE_DIR}/XLLR/python/CMakeLists.txt)
