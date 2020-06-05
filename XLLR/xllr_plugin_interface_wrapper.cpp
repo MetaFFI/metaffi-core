@@ -11,18 +11,21 @@ xllr_plugin_interface_wrapper::xllr_plugin_interface_wrapper(const std::string& 
 	
 	std::cout << "Loading Functions from: " << fullpath << std::endl;
 	
+	
 	this->pload_runtime = this->load_func<void(char**,uint32_t*)>(fullpath.c_str(), "load_runtime");
+	
 	this->pfree_runtime = this->load_func<void(char**,uint32_t*)>(fullpath.c_str(), "free_runtime");
+	
 	this->pload_module = this->load_func<void(const char*, uint32_t, char**,uint32_t*)>(fullpath.c_str(), "load_module");
+	
 	this->pfree_module = this->load_func<void(const char*, uint32_t, char**,uint32_t*)>(fullpath.c_str(), "free_module");
-
+	
 	this->pcall = this->load_func<void(const char*, uint32_t,
 										const char*, uint32_t,
 										unsigned char*, uint64_t,
 										unsigned char**, uint64_t*,
 										unsigned char**, uint64_t*,
 										uint8_t*)>(fullpath.c_str(), "call");
-
 }
 //--------------------------------------------------------------------
 void xllr_plugin_interface_wrapper::load_runtime(char** err, uint32_t* err_len)

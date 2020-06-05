@@ -42,6 +42,7 @@ std::shared_ptr<xllr_plugin> plugin_respository::get(const std::string& plugin) 
 //--------------------------------------------------------------------
 std::shared_ptr<xllr_plugin> plugin_respository::load(const std::string& plugin)
 {
+
     // readers lock
 	boost::upgrade_lock<boost::shared_mutex> read_lock(this->_mutex);
 

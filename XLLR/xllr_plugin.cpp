@@ -140,6 +140,7 @@ std::shared_ptr<foreign_module> xllr_plugin::load_module(const std::string& modu
 	auto fmod = std::make_shared<foreign_module>(this->_loaded_plugin, module_name);
 	this->_loaded_modules[module_name] = fmod;
 	return fmod;
+
 }
 //--------------------------------------------------------------------
 void xllr_plugin::free_module(const std::string& module_name) 

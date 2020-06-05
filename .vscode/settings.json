@@ -69,5 +69,6 @@
 		"cfenv": "cpp",
 		"strstream": "cpp",
 		"bit": "cpp"
-	}
+	},
+	"python.pythonPath": "/usr/bin/python3.7"
 }

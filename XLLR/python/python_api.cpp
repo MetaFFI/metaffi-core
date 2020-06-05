@@ -9,15 +9,23 @@
 #define handle_err(err, err_len, desc) \
 	*err_len = strlen( desc ); \
 	*err = (char*)malloc(*err_len + 1); \
-	strcpy(*err, desc );
+	strcpy(*err, desc ); \
+	memset((*err+*err_len), 0, 1);
 
 #define handle_err_str(err, err_len, descstr) \
 	*err_len = descstr.length(); \
 	*err = (char*)malloc(*err_len + 1); \
-	descstr.copy(*err, *err_len, 0);
+	descstr.copy(*err, *err_len, 0); \
+	memset((*err+*err_len), 0, 1);
+
+#define handle_py_err(err, err_len) \
+	std::string pyerr(get_py_error()); \
+	handle_err_str(err, err_len, pyerr);
 
 #define TRUE 1
 #define FALSE 0
+
+// TODO: Refactor this file!
 
 //--------------------------------------------------------------------
 void load_runtime(char** err, uint32_t* err_len)
@@ -31,6 +39,16 @@ void load_runtime(char** err, uint32_t* err_len)
 	}
 
 	Py_InitializeEx(1); // 1 means register signal handlers
+
+
+	// TODO: switch to pure embedding
+	const char* addWorkingDirToSysPath = R"(
+import sys
+import os
+sys.path.append(os.getcwd())
+	)";
+
+	PyRun_SimpleString(addWorkingDirToSysPath);
 }
 //--------------------------------------------------------------------
 void free_runtime(char** err, uint32_t* err_len)
@@ -49,21 +67,6 @@ void free_runtime(char** err, uint32_t* err_len)
 	}
 }
 //--------------------------------------------------------------------
-/*
-void eval(const char* code, char** err, uint32_t* err_len)
-{
-	PyCompilerFlags fg;
-	fg.cf_flags = Py_InspectFlag;
-	PyObject* pyobj_res = PyRun_StringFlags(code, 0, Py_None, Py_None, &fg);
-
-	if(!pyobj_res) // exception has occurred
-	{
-		handle_err(err, err_len, "evaluating the code has failed!");
-		return;
-	}
-}
-*/
-//--------------------------------------------------------------------
 void load_module(const char* mod, uint32_t module_len, char** err, uint32_t* err_len)
 {
 	if(!Py_IsInitialized())
@@ -74,12 +77,12 @@ void load_module(const char* mod, uint32_t module_len, char** err, uint32_t* err
 
 	// copying to std::string to make sure the string is null terminated
 	std::string module_name(mod, module_len);
-
 	PyObject* pymod = PyImport_ImportModuleEx(module_name.c_str(), Py_None, Py_None, Py_None);
+
 	if(!pymod)
 	{
 		// error has occurred
-		handle_err_str(err, err_len, get_py_error());
+		handle_py_err(err, err_len);
 		return;
 	}
 
@@ -202,7 +205,7 @@ void call(
 	PyObject* res = PyObject_CallObject(pyfunc, paramsArray);
 	if(!res)
 	{
-		handle_err_str((char**)out_ret, out_ret_len, get_py_error());
+		handle_py_err((char**)out_ret, out_ret_len);
 		*is_error = TRUE;
 		return;
 	}
@@ -235,7 +238,7 @@ void call(
 	{
 		if(PyBytes_AsStringAndSize(out, (char**)out_params, (Py_ssize_t*)out_params_len) == -1)
 		{
-			handle_err_str((char**)out_ret, out_ret_len, get_py_error());
+			handle_py_err((char**)out_ret, out_ret_len);
 			*is_error = TRUE;
 			return;
 		}
@@ -244,7 +247,7 @@ void call(
 	// get return values
 	if(PyBytes_AsStringAndSize(ret, (char**)out_ret, (Py_ssize_t*)out_ret_len) == -1)
 	{
-		handle_err_str((char**)out_ret, out_ret_len, get_py_error());
+		handle_py_err((char**)out_ret, out_ret_len);
 		*is_error = TRUE;
 		return;
 	}

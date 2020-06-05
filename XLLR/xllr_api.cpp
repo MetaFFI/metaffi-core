@@ -85,6 +85,7 @@ void load_module(const char* runtime_plugin, uint32_t runtime_plugin_len, const 
 		}
 
 		p->load_module(std::string(module, module_len));
+
     }
     handle_err(err, err_len,);
 }
