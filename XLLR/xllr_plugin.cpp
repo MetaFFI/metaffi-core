@@ -43,18 +43,17 @@ void xllr_plugin::fini(void)
 void xllr_plugin::load_runtime(void) 
 {
 	boost::upgrade_lock<boost::shared_mutex> read_lock(this->_mutex); // read lock
-
 	// check if runtime has been loaded
 	if( _is_runtime_loaded ){
 		return; // runtime has been loaded
 	}
-
+	
 	boost::upgrade_to_unique_lock<boost::shared_mutex> exclusive_lock(read_lock); // upgrade to writer
 
 	char* err = nullptr;
 	uint32_t err_len = 0;
     this->_loaded_plugin->load_runtime(&err, &err_len);
-
+	
 	if(err != nullptr)
 	{
 		scope_guard sg([&](){ free(err); });

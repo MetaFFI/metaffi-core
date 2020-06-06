@@ -31,7 +31,6 @@
 void load_runtime(char** err, uint32_t* err_len)
 {
 	// load python runtime
-	
 	if(Py_IsInitialized())
 	{
 		handle_err(err, err_len, "Python has already been loaded!");
@@ -42,6 +41,7 @@ void load_runtime(char** err, uint32_t* err_len)
 
 
 	// TODO: switch to pure embedding
+	// TODO: Support getting sys path from openffi settings
 	const char* addWorkingDirToSysPath = R"(
 import sys
 import os
@@ -93,7 +93,7 @@ void free_module(const char* mod, uint32_t module_len, char** err, uint32_t* err
 {
 	if(!Py_IsInitialized())
 	{
-		handle_err(err, err_len, "Runtime has not been loaded!");
+		handle_err(err, err_len, "Cannot free module - runtime is not been loaded!");
 		return;
 	}
 
@@ -146,7 +146,7 @@ void call(
 	// check if python is initialized
 	if(!Py_IsInitialized())
 	{
-		handle_err((char**)out_ret, out_ret_len, "Runtime has not been loaded!");
+		handle_err((char**)out_ret, out_ret_len, "Cannot call, runtime has not been loaded!");
 		*is_error = TRUE;
 		return;
 	}
@@ -159,12 +159,12 @@ void call(
 	});
 
 	// copying to std::string to make sure the string is null terminated
-	std::string module_name(mod, mod);
+	std::string module_name(mod, module_name_len);
 
 	PyObject* module_obj = PyDict_GetItemString(modules, module_name.c_str());
 	if(!module_obj)
 	{
-		handle_err((char**)out_ret, out_ret_len, "Runtime has not been loaded!");
+		handle_err((char**)out_ret, out_ret_len, "Cannot call, Module has not been loaded!");
 		*is_error = TRUE;
 		return;
 	}
@@ -216,7 +216,7 @@ void call(
 	scope_guard sgrets([&]()
 	{
 		Py_DecRef(res);
-		if(ret){ Py_DecRef(ret); }
+		if(ret && res != ret){ Py_DecRef(ret); }
 		if(out){ Py_DecRef(out); }
 	});
 
@@ -236,21 +236,16 @@ void call(
 	// get out parameters
 	if(out)
 	{
-		if(PyBytes_AsStringAndSize(out, (char**)out_params, (Py_ssize_t*)out_params_len) == -1)
-		{
-			handle_py_err((char**)out_ret, out_ret_len);
-			*is_error = TRUE;
-			return;
-		}
+		*out_params_len = PyByteArray_Size(out);
+		*out_params = (unsigned char*)malloc(*out_params_len);
+		memcpy(*out_params, (unsigned char*)PyByteArray_AsString(out), *out_params_len);
 	}
 
 	// get return values
-	if(PyBytes_AsStringAndSize(ret, (char**)out_ret, (Py_ssize_t*)out_ret_len) == -1)
-	{
-		handle_py_err((char**)out_ret, out_ret_len);
-		*is_error = TRUE;
-		return;
-	}
+	// serialized proto results are in "str"
+	*out_ret_len = PyByteArray_Size(ret);
+	*out_ret = (unsigned char*)malloc(*out_ret_len);
+	memcpy(*out_ret, (unsigned char*)PyByteArray_AsString(ret), *out_ret_len);	
 
 	*is_error = FALSE;
 }

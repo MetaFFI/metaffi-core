@@ -32,15 +32,16 @@ std::string get_py_error(void)
 		return std::string(pmsg, size);
 	}
 	
-	PyObject* msg = PyObject_GetAttrString(pvalue, "msg");
+
+	PyObject* msg = PyObject_CallMethod(pvalue, "__str__", nullptr);
 	if(!msg)
 	{
-		return std::string("Expected error in \"msg\" attribute, which was not found");
+		return std::string("Failed to get error description: call to method \"__str__\" failed");
 	}
-	
+
 	scope_guard sgmsg([&]()
 	{
-		Py_DecRef(msg);
+		if(msg){Py_DecRef(msg);}
 	});
 
 	uint64_t size;

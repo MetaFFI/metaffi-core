@@ -42,10 +42,10 @@ std::string module_name("python_test_mod");
 std::string func_name("python_test_func");
 std::string module_code(R"(
 def python_test_func(input):
-	if input != 'input':
-		raise 'Not Expected Input!'
+	if input.decode() != 'input':
+		raise RuntimeError('Not Expected Input! Input: '+str(input))
 
-	return 'result'
+	return bytearray('result', encoding='utf-8')
 )");
 
 char* out_err = nullptr;
@@ -107,6 +107,22 @@ void test_module_free_module_via_free_runtime_success()
 				 load_runtime_plugin(plugin_name.c_str(), plugin_name.length(), &out_err, &out_err_len)
 	);
 
+	// write module to current dir
+	std::ofstream outfile(module_name+".py");
+	if(!outfile.is_open()) {
+		std::cout << "Couldn't open/create 'python_test_mod.py'" << std::endl;
+		exit(1);
+	}
+
+	outfile << module_code << std::endl;
+	outfile.close();
+	
+	// delete module from current dir
+	scope_guard sg([&]()
+	{
+		remove((module_name+".py").c_str());
+	});
+
 	run_test_step_expect_success("Error in load_module()",
 				 load_module(plugin_name.c_str(), plugin_name.length(), module_name.c_str(), module_name.length(), &out_err, &out_err_len)
 	);
@@ -119,6 +135,22 @@ void test_module_free_module_via_free_runtime_success()
 //--------------------------------------------------------------------
 void test_module_lazy_runtime_success()
 {
+	// write module to current dir
+	std::ofstream outfile(module_name+".py");
+	if(!outfile.is_open()) {
+		std::cout << "Couldn't open/create 'python_test_mod.py'" << std::endl;
+		exit(1);
+	}
+
+	outfile << module_code << std::endl;
+	outfile.close();
+	
+	// delete module from current dir
+	scope_guard sg([&]()
+	{
+		remove((module_name+".py").c_str());
+	});
+
 	// Test 4 - load module + free runtime - lazy loading of runtime
 	run_test_step_expect_success("Error in load_module()",
 				 load_module(plugin_name.c_str(), plugin_name.length(), module_name.c_str(), module_name.length(), &out_err, &out_err_len)
@@ -139,7 +171,23 @@ void test_module_not_exist_fail()
 //--------------------------------------------------------------------
 void test_call_success()
 {
-	std::string params("in params");
+	// write module to current dir
+	std::ofstream outfile(module_name+".py");
+	if(!outfile.is_open()) {
+		std::cout << "Couldn't open/create 'python_test_mod.py'" << std::endl;
+		exit(1);
+	}
+
+	outfile << module_code << std::endl;
+	outfile.close();
+	
+	// delete module from current dir
+	scope_guard sg([&]()
+	{
+		remove((module_name+".py").c_str());
+	});
+
+	std::string params("input");
 	unsigned char* out_params = nullptr;
 	uint64_t out_params_len = 0;
 	unsigned  char* out_ret = nullptr;
@@ -155,7 +203,7 @@ void test_call_success()
 		&out_ret, &out_ret_len,
 		&is_error
 	);
-
+/*
 	if(is_error)
 	{
 		std::string estr((const char*)out_ret, out_ret_len);
@@ -163,9 +211,9 @@ void test_call_success()
 		exit(1);
 	}
 
-	if(out_params == nullptr)
+	if(out_params != nullptr)
 	{
-		std::cout << "out_params is empty. expected to have a value" << std::endl;
+		std::cout << "out_params is NOT empty. expected to BE EMPTY" << std::endl;
 		exit(1);
 	}
 
@@ -175,28 +223,21 @@ void test_call_success()
 		exit(1);
 	}
 
-	if(strlen((const char*)out_params) != out_params_len || strcmp((const char*)out_params, "out params") != 0)
+	if(strlen((const char*)out_ret) != out_ret_len || strcmp((const char*)out_ret, "result") != 0)
 	{
-		std::cout << "out_params value OR length is not as expected: " << out_params << ". Expected: out params" << std::endl;
+		std::cout << "out_ret value OR length is not as expected: \"" << out_ret << "\" Length: "<<out_ret_len<<". Expected: result" << std::endl;
 		exit(1);
 	}
-
-	if(strlen((const char*)out_ret) != out_ret_len || strcmp((const char*)out_ret, "ret params") != 0)
-	{
-		std::cout << "out_ret value OR length is not as expected: " << out_params << ". Expected: ret params" << std::endl;
-		exit(1);
-	}
-
-	std::cout << "called \"call()\" successfully in XLLR Example plugin" << std::endl;
 
 	free(out_ret);
-	free(out_params);
 
+	free_runtime_plugin(plugin_name.c_str(), plugin_name.length(), (char**)&out_ret, (uint32_t *)&out_ret_len);
+	*/
 }
 //--------------------------------------------------------------------
 void test_call_fail()
 {
-	std::string params("in params");
+	std::string params("input");
 	unsigned char* out_params = nullptr;
 	uint64_t out_params_len = 0;
 	unsigned char* out_ret = nullptr;

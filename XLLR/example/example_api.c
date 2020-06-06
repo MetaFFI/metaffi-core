@@ -68,7 +68,7 @@ void free_module(const char* module, uint32_t module_len, char** err, uint32_t* 
 {
 	if(runtime_loaded == FALSE)
 	{
-		handle_err(err, err_len, "Runtime has not been loaded!");
+		handle_err(err, err_len, "Cannot free module - Runtime has not been loaded!");
 		return;
 	}
 
@@ -94,7 +94,7 @@ void call(
 	if(runtime_loaded == FALSE)
 	{
 		*is_error = TRUE;
-		handle_err((char**)out_ret, (uint32_t*)out_ret_len, "Runtime has not been loaded!");
+		handle_err((char**)out_ret, (uint32_t*)out_ret_len, "Cannot call - Runtime has not been loaded!");
 		return;
 	}
 

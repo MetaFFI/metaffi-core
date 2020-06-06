@@ -164,7 +164,7 @@ void test_call_success()
 
 	if(strlen((const char*)out_ret) != out_ret_len || strcmp((const char*)out_ret, "ret params") != 0)
 	{
-		std::cout << "out_ret value OR length is not as expected: " << out_params << ". Expected: ret params" << std::endl;
+		std::cout << "out_ret value OR length is not as expected: " << out_ret << ". Expected: ret params" << std::endl;
 		exit(1);
 	}
 
