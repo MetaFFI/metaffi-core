@@ -6,13 +6,7 @@ enable_testing()
 # target_sources use absolute path
 cmake_policy(SET CMP0076 NEW)
 
-# gather files
-#FILE(GLOB test_sources
-#	"${CMAKE_CURRENT_LIST_DIR}/xllr_test.cpp"
-#	"${CMAKE_CURRENT_LIST_DIR}/xllr_python_test.cpp")
-
 FILE(GLOB sources "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
-#LIST(REMOVE_ITEM sources "${test_sources}")
 
 # build XLLR
 add_library(xllr SHARED)

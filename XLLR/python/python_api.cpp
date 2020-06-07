@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include "../scope_guard.hpp"
 #include "utils.h"
+#include <boost/filesystem.hpp>
+#include <boost/predef.h>
 #include <python3.7/Python.h>
 
 #define handle_err(err, err_len, desc) \
@@ -39,16 +41,17 @@ void load_runtime(char** err, uint32_t* err_len)
 
 	Py_InitializeEx(1); // 1 means register signal handlers
 
+	std::wstring path(Py_GetPath());
 
-	// TODO: switch to pure embedding
-	// TODO: Support getting sys path from openffi settings
-	const char* addWorkingDirToSysPath = R"(
-import sys
-import os
-sys.path.append(os.getcwd())
-	)";
+#if BOOST_OS_WINDOWS
+	path += L";";
+#else
+	path += L":";
+#endif
 
-	PyRun_SimpleString(addWorkingDirToSysPath);
+	path += boost::filesystem::current_path().wstring();
+
+	PySys_SetPath(path.c_str());
 }
 //--------------------------------------------------------------------
 void free_runtime(char** err, uint32_t* err_len)
