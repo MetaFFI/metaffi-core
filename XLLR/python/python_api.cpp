@@ -5,7 +5,6 @@
 #include "../scope_guard.hpp"
 #include "utils.h"
 #include <boost/filesystem.hpp>
-#include <boost/predef.h>
 #include <python3.7/Python.h>
 
 #define handle_err(err, err_len, desc) \
@@ -41,17 +40,7 @@ void load_runtime(char** err, uint32_t* err_len)
 
 	Py_InitializeEx(1); // 1 means register signal handlers
 
-	std::wstring path(Py_GetPath());
-
-#if BOOST_OS_WINDOWS
-	path += L";";
-#else
-	path += L":";
-#endif
-
-	path += boost::filesystem::current_path().wstring();
-
-	PySys_SetPath(path.c_str());
+	add_sys_module_path(boost::filesystem::current_path().wstring());
 }
 //--------------------------------------------------------------------
 void free_runtime(char** err, uint32_t* err_len)
@@ -102,7 +91,6 @@ void free_module(const char* mod, uint32_t module_len, char** err, uint32_t* err
 
 	// copying to std::string to make sure the string is null terminated
 	std::string module_name(mod, module_len);
-
 
 	PyObject* modules = PyImport_GetModuleDict();
 	if(!modules)

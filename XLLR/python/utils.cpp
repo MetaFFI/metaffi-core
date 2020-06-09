@@ -1,7 +1,10 @@
 #include "utils.h"
 #include "../scope_guard.hpp"
 #include <python3.7/Python.h>
+#include <boost/predef.h>
 
+
+//--------------------------------------------------------------------
 std::string get_py_error(void)
 {
 	// error has occurred
@@ -19,7 +22,6 @@ std::string get_py_error(void)
 
 	if(!pvalue)
 	{
-		printf("******* NO ERROR FOUND?!\n");
 		return std::string("No Error was found!");
 	}
 
@@ -48,3 +50,19 @@ std::string get_py_error(void)
 	const char* pmsg = PyUnicode_AsUTF8AndSize(msg, (Py_ssize_t*)&size);
 	return std::string(pmsg, size);
 }
+//--------------------------------------------------------------------
+void add_sys_module_path(const std::wstring& pathToAdd)
+{
+	std::wstring path(Py_GetPath());
+
+#if BOOST_OS_WINDOWS
+	path += L";";
+#else
+	path += L":";
+#endif
+
+	path += pathToAdd;
+
+	PySys_SetPath(path.c_str());
+}
+//--------------------------------------------------------------------
