@@ -7,7 +7,7 @@
 compiler_plugin_interface_wrapper::compiler_plugin_interface_wrapper(const std::string& plugin_filename)
 {
 	boost::filesystem::path fullpath(boost::filesystem::current_path());
-	fullpath.append(plugin_filename);
+	fullpath.append(plugin_filename+".so"); // TODO: append extension based on OS
 	
 	std::cout << "Loading Functions from: " << fullpath << std::endl;
 	

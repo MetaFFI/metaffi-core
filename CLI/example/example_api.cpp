@@ -38,7 +38,7 @@ void compile_to_guest(const char* idl_path, uint32_t idl_path_length,
 		return_error("output path is empty");
 	}
 	
-	std::cout << "Compiling IDL to code to guest" << idl << " to path: " << (output.empty() ? "Current directory" : output);
+	std::cout << "Compiling \"to language\" using IDL \"" << idl << "\" to path: " << (output.empty() ? "Current directory" : output) << std::endl;
 }
 //--------------------------------------------------------------------
 void compile_from_host(const char* idl_path, uint32_t idl_path_length,
@@ -68,6 +68,6 @@ void compile_from_host(const char* idl_path, uint32_t idl_path_length,
 		return_error("output path is empty");
 	}
 	
-	std::cout << "Compiling IDL to code to guest" << idl << " to path: " << (output.empty() ? "Current directory" : output);
+	std::cout << "Compiling \"from language\" using IDL \"" << idl << "\" to path: " << (output.empty() ? "Current directory" : output) << std::endl;
 }
 //--------------------------------------------------------------------

@@ -31,8 +31,7 @@ void compiler::compile_to_guest(const std::string& lang)
 	// call compile_to_guest with IDL path and output path
 	loaded_plugin->compile_to_guest(this->_idl_path.c_str(), this->_idl_path.size(), 
 									this->_output_path.c_str(), this->_output_path.size(),
-									&err,
-									&err_len);
+									&err, &err_len);
 
 	if(err)
 	{
