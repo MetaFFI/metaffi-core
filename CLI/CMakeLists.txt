@@ -18,5 +18,5 @@ target_sources(openffi_cli PUBLIC ${sources})
 
 target_link_libraries(openffi_cli ${Boost_LIBRARIES} dl)
 
-# build xllr plugins dynamic library
-#include(${CMAKE_CURRENT_SOURCE_DIR}/XLLR/example/CMakeLists.txt)
+# build compiler plugins dynamic library
+include(${CMAKE_CURRENT_SOURCE_DIR}/CLI/example/CMakeLists.txt)
