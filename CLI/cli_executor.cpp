@@ -1,5 +1,7 @@
 #include "cli_executor.h"
 #include <iostream>
+#include <boost/filesystem.hpp>
+#include "compiler.h"
 
 namespace po = boost::program_options;
 
@@ -18,13 +20,15 @@ cli_executor::cli_executor(int argc, char** argv) :
 
 	_compile_options.add_options()
 		("idl", po::value<std::string>() , "IDL containing functions defitions (i.e. foreign functions)")
-		("from-langs,l", po::value<std::vector<std::string>>()->multitoken() , "List of languages the functions are called from (i.e. host languages)")
-		("redist", "Copyies to output directory OpenFFI redistrabutable binaries for deployment (TBD!)");
+		("to-lang,t", po::value<std::string>() , "Language the functions are implemented (i.e. guest language)")
+		("from-langs,f", po::value<std::vector<std::string>>()->multitoken() , "List of languages the functions are called from (i.e. host languages)")
+		("output,o", po::value<std::string>()->default_value(boost::filesystem::current_path().generic_string()) , "Directory to generate the files (Default: current directory)")
+		("redist", "TBD Copies to output directory OpenFFI redistrabutable binaries for deployment (TBD!)");
 
 	_install_options.add_options()
-		("deps,d", po::value<std::string>(), "Download & install OpenFFI dependencies")
-		("lang", po::value<std::string>(), "Download & install OpenFFI supported language from given URL")
-		("list", "List installed OpenFFI languages");
+		("deps,d", po::value<std::string>(), "TBD Download & install OpenFFI dependencies")
+		("lang", po::value<std::string>(), "TBD Download & install OpenFFI supported language from given URL")
+		("list", "TBD List installed OpenFFI languages");
 
 	_openffi_options.add(_compile_options);
 	_openffi_options.add(_install_options);
@@ -37,7 +41,7 @@ bool cli_executor::parse(void)
 	po::notify(vm);
 
 	// if no args or help - call help
-	if(vm.size() == 0 || 
+	if(vm.empty() ||
 		vm.count("help") ||
 		(vm.count("compile") && vm.count("install"))) // make sure only one option is selected
 	{
@@ -66,23 +70,29 @@ bool cli_executor::compile(void)
 	// compile menu
 	po::store(po::command_line_parser(this->_argc, this->_argv).options(_compile_options).allow_unregistered().run(), vm);
 	po::notify(vm);
-
-	if(vm.count("idl"))
-	{
-		std::cout << "IDL: " << vm["idl"].as<std::string>() << std::endl;
-	}
-	else if(vm.count("from-langs"))
-	{
-		std::cout << "from-langs: " << vm["from-langs"].as<std::vector<std::string>>().size() << std::endl;
-	}
-	else if(vm.count("redist"))
-	{
-		std::cout << "Copy redist" << std::endl;
-	}
-	else
+	
+	if(!vm.count("idl") || (!vm.count("from-langs") && !vm.count("to-lang")))
 	{
 		_compile_options.print(std::cout);
 		return false;
+	}
+	
+	compiler cmp(vm["idl"].as<std::string>(), vm["output"].as<std::string>());
+	
+	if(vm.count("to-lang"))
+	{
+		cmp.compile_to_guest(vm["to-lang"].as<std::string>());
+	}
+	
+	if(vm.count("from-langs"))
+	{
+		cmp.compile_from_host(vm["from-langs"].as<std::vector<std::string>>());
+	}
+	
+	if(vm.count("redist"))
+	{
+		// TODO: implement redist
+		std::cout << "Copy redist" << std::endl;
 	}
 
 	return true;
