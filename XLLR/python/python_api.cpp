@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include "../scope_guard.hpp"
+#include "../../utils/scope_guard.hpp"
 #include "utils.h"
 #include <boost/filesystem.hpp>
 #include <python3.7/Python.h>

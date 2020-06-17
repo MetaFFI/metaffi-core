@@ -4,7 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include "../xllr_api.h"
-#include "../scope_guard.hpp"
+#include "../../utils/scope_guard.hpp"
 
 #define reset_err \
 	out_err = nullptr; \

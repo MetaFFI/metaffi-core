@@ -1,4 +1,4 @@
-find_package(Boost COMPONENTS program_options REQUIRED) # Boost library
+find_package(Boost COMPONENTS program_options filesystem REQUIRED) # Boost library
 
 include(CTest)
 enable_testing()
@@ -15,6 +15,7 @@ target_include_directories(openffi_cli PUBLIC ${CMAKE_CURRENT_LIST_DIR} ${Boost_
 include_directories(${Boost_INCLUDE_DIRS} ${CMAKE_CURRENT_LIST_DIR})
 
 target_sources(openffi_cli PUBLIC ${sources})
+
 target_link_libraries(openffi_cli ${Boost_LIBRARIES} dl)
 
 # build xllr plugins dynamic library

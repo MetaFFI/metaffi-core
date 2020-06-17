@@ -1,5 +1,5 @@
 #include "xllr_plugin_interface_wrapper.h"
-#include "scope_guard.hpp"
+#include "../utils/scope_guard.hpp"
 #include <boost/filesystem.hpp>
 
 

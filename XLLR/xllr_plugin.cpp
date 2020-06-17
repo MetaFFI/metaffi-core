@@ -1,6 +1,6 @@
 #include "xllr_plugin.h"
 #include <iostream>
-#include <scope_guard.hpp>
+#include "../utils/scope_guard.hpp"
 #include <algorithm>
 
 //--------------------------------------------------------------------
