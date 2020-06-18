@@ -7,7 +7,9 @@ set_property(TARGET openffi.compiler.example PROPERTY POSITION_INDEPENDENT_CODE 
 SET_TARGET_PROPERTIES(openffi.compiler.example PROPERTIES PREFIX "")
 
 # Unitest
-#add_executable(openffi_compiler_example_test "${CMAKE_CURRENT_LIST_DIR}/compiler_example_test.cpp")
-#target_link_libraries(openffi_compiler_example_test openffi.compiler.example)
-#add_test(NAME compile_to_guest COMMAND openffi_compiler_example_test 1)
-#add_test(NAME compile_from_host COMMAND openffi_compiler_example_test 2)
+add_test(NAME compile_example COMMAND openffi -c --idl myidl -t example -f example)
+add_test(NAME compile_missing_langs COMMAND openffi -c --idl myidl)
+add_test(NAME compile_missing_idl COMMAND openffi -c -t example -f example)
+
+## set negative tests
+set_tests_properties(compile_missing_langs compile_missing_idl PROPERTIES WILL_FAIL 1)
