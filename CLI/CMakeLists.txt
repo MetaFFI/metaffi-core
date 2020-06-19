@@ -20,3 +20,4 @@ target_link_libraries(openffi_cli ${Boost_LIBRARIES} dl)
 
 # build compiler plugins dynamic library
 include(${CMAKE_CURRENT_SOURCE_DIR}/CLI/example/CMakeLists.txt)
+include(${CMAKE_CURRENT_SOURCE_DIR}/CLI/python/CMakeLists.txt)

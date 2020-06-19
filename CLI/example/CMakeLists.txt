@@ -1,5 +1,5 @@
 
-# build xllr.example
+# build openffi.compiler.example
 add_library(openffi.compiler.example SHARED ${CMAKE_CURRENT_LIST_DIR}/example_api.h ${CMAKE_CURRENT_LIST_DIR}/example_api.cpp)
 set_property(TARGET openffi.compiler.example PROPERTY POSITION_INDEPENDENT_CODE ON)
 
