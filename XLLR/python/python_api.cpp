@@ -26,8 +26,6 @@
 #define TRUE 1
 #define FALSE 0
 
-// TODO: Refactor this file!
-
 //--------------------------------------------------------------------
 void load_runtime(char** err, uint32_t* err_len)
 {

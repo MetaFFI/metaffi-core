@@ -11,38 +11,74 @@ const GuestTemplate = `
 # Guest code for {{.ProtoIDLFilename}}
 
 from {{.ProtobufFilename}} import *
-from {{.ForeignFunctionFilename}} import {{.ForeignFunctionName}} as Foreign{{.ForeignFunctionName}}
+from {{.ForeignFunctionModule}} import *
+
+{{range $findex, $f := .Functions}}
 
 # Call to foreign {{.ForeignFunctionName}}
-def {{.ForeignFunctionName}}(paramsVal: bytes) -> ReturnVal:
+def Foreign{{$f.ForeignFunctionName}}(paramsVal: bytes) -> ReturnVal:
 	
-	# TODO: try/catch?
-
-	req = {{.ProtobufRequestStruct}}()
+	req = {{$f.ProtobufRequestStruct}}()
 	req.ParseFromString(str(paramsVal))
 
-	ret = {{.ProtobufResponseStruct}}()
+	ret = {{$f.ProtobufResponseStruct}}()
 
 	# python method to call a function without knowing its parameter names?
 
-	{{range $index, $elem := .ExpandedReturn}}{{if $index}},{{end}} res.{{$elem}}{{end}} = {{.ForeignFunctionFilename}}.Foreign{{.ForeignFunctionName}}({{range $index, $elem := .ExpandedParameters}}{{if $index}},{{end}} req.{{$elem}} {{end}})
+	{{range $index, $elem := $f.ExpandedReturn}}{{if $index}},{{end}} res.{{$elem}}{{end}} = {{.ForeignFunctionModule}}.Foreign{{$f.ForeignFunctionName}}({{range $index, $elem := $f.ExpandedParameters}}{{if $index}},{{end}} req.{{$elem}}{{end}})
 
 	return bytes(ret.SerializeToString(), 'utf-8')
+
+{{end}}
 `
 
+const(
+	PROTOBUF_PYTHON_SUFFIX = "_pb2"
+	PYTHON_EXTENSION = ".py"
+)
+
 //--------------------------------------------------------------------
-type GuestTemplateGenerator struct {
-	ProtoIDLFilename string
-	ProtobufFilename string
-	ForeignFunctionFilename string
-	ForeignFunctionName string
-	ProtobufRequestStruct string
-	ProtobufResponseStruct string
-	ExpandedParameters []string
-	ExpandedReturn []string
+type GuestTemplateParameters struct {
+	ProtoIDLFilename       string
+	ProtobufFilename       string
+	ForeignFunctionModule  string
+
+	Functions []*GuestTemplateFunctionParameters
 }
 //--------------------------------------------------------------------
-func (this *GuestTemplateGenerator) Generate() (string, error){
+type GuestTemplateFunctionParameters struct {
+	ForeignFunctionName    string
+	ProtobufRequestStruct  string
+	ProtobufResponseStruct string
+	ExpandedParameters     []string
+	ExpandedReturn         []string
+}
+//--------------------------------------------------------------------
+func NewGuestTemplateParameters(protoIDLFilename string) (*GuestTemplateParameters, error){
+
+	extensionIndex := strings.LastIndex(protoIDLFilename, ".")
+	if extensionIndex == -1{
+		return nil, fmt.Errorf("Cannot find extension in proto filename: %v", protoIDLFilename)
+	}
+
+	protoFilenameWithoutExtension := protoIDLFilename[:extensionIndex]
+
+	gtp := &GuestTemplateParameters{
+		ProtoIDLFilename: protoIDLFilename,
+		ProtobufFilename: protoFilenameWithoutExtension + PROTOBUF_PYTHON_SUFFIX + PYTHON_EXTENSION,
+		ForeignFunctionModule: protoFilenameWithoutExtension + PYTHON_EXTENSION,
+	}
+
+	gtp.Functions = make([]*GuestTemplateFunctionParameters, 0)
+
+	return gtp, nil
+}
+//--------------------------------------------------------------------
+func (this *GuestTemplateParameters) AddFunction(f *GuestTemplateFunctionParameters){
+	this.Functions = append(this.Functions, f)
+}
+//--------------------------------------------------------------------
+func (this *GuestTemplateParameters) Generate() (string, error){
 
 	if this.ProtoIDLFilename == ""{
 		return "", fmt.Errorf("ProtoIDLFilename is empty")
@@ -52,29 +88,36 @@ func (this *GuestTemplateGenerator) Generate() (string, error){
 		return "", fmt.Errorf("ProtobufFilename is empty")
 	}
 
-	if this.ForeignFunctionFilename == ""{
-		return "", fmt.Errorf("ForeignFunctionFilename is empty")
+	if this.ForeignFunctionModule == ""{
+		return "", fmt.Errorf("ForeignFunctionModule is empty")
 	}
 
-	if this.ForeignFunctionName == ""{
-		return "", fmt.Errorf("ForeignFunctionName is empty")
+	if this.Functions == nil || len(this.Functions) == 0{
+		return "", fmt.Errorf("No functions defined")
 	}
 
-	if this.ProtobufRequestStruct == ""{
-		return "", fmt.Errorf("ProtobufRequestStruct is empty")
+	for _, f := range this.Functions{
+		if f.ForeignFunctionName == ""{
+			return "", fmt.Errorf("ForeignFunctionName is empty")
+		}
+
+			if f.ProtobufRequestStruct == ""{
+			return "", fmt.Errorf("ProtobufRequestStruct is empty")
+		}
+
+			if f.ProtobufResponseStruct == ""{
+			return "", fmt.Errorf("ProtobufResponseStruct is empty")
+		}
+
+			if f.ExpandedParameters == nil{
+			return "", fmt.Errorf("ExpandedParameters is nil")
+		}
+
+			if f.ExpandedParameters == nil{
+			return "", fmt.Errorf("ExpandedParameters is nil")
+		}
 	}
 
-	if this.ProtobufResponseStruct == ""{
-		return "", fmt.Errorf("ProtobufResponseStruct is empty")
-	}
-
-	if this.ExpandedParameters == nil{
-		return "", fmt.Errorf("ExpandedParameters is nil")
-	}
-
-	if this.ExpandedParameters == nil{
-		return "", fmt.Errorf("ExpandedParameters is nil")
-	}
 
 	temp, err := template.New("Guest").Parse(GuestTemplate)
 	if err != nil{
@@ -89,5 +132,23 @@ func (this *GuestTemplateGenerator) Generate() (string, error){
 	}
 
 	return strbuf.String(), nil
+}
+//--------------------------------------------------------------------
+//--------------------------------------------------------------------
+//--------------------------------------------------------------------
+func NewGuestTemplateFunctionParameters(foreignFunctionName string, protobufRequestStruct string, protobufResponseStruct string) *GuestTemplateFunctionParameters{
+	return &GuestTemplateFunctionParameters{
+		ForeignFunctionName:    foreignFunctionName,
+		ProtobufRequestStruct:  protobufRequestStruct,
+		ProtobufResponseStruct: protobufResponseStruct,
+	}
+}
+//--------------------------------------------------------------------
+func (this *GuestTemplateFunctionParameters) AddParameters(parameters ...string){
+	this.ExpandedParameters = append(this.ExpandedParameters, parameters...)
+}
+//--------------------------------------------------------------------
+func (this *GuestTemplateFunctionParameters) AddReturnParameters(parameters ...string){
+	this.ExpandedReturn = append(this.ExpandedReturn, parameters...)
 }
 //--------------------------------------------------------------------
