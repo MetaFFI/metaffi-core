@@ -25,6 +25,8 @@ type Module struct {
 //--------------------------------------------------------------------
 type FunctionData struct {
 	Name string
+	RequestName string
+	ResponseName string
 	Parameters []*ParameterData
 	Return []*ParameterData
 }
@@ -115,7 +117,7 @@ func (this *ProtoParser) getFunctions(serviceNode *jsonquery.Node) ([]*FunctionD
 		fData := &FunctionData{}
 		fData.Name = rpcNameNode.InnerText()
 
-		fData.Parameters, fData.Return, err = this.getParameters(rpcNameNode.Parent)
+		fData.RequestName, fData.ResponseName, fData.Parameters, fData.Return, err = this.getParameters(rpcNameNode.Parent)
 		if err != nil{
 			return nil, err
 		}
@@ -126,26 +128,28 @@ func (this *ProtoParser) getFunctions(serviceNode *jsonquery.Node) ([]*FunctionD
 	return funcsData, nil
 }
 //--------------------------------------------------------------------
-func (this *ProtoParser) getParameters(functionNode *jsonquery.Node) (parameters []*ParameterData, returns []*ParameterData, err error){
+func (this *ProtoParser) getParameters(functionNode *jsonquery.Node) (requestName string, responseName string, parameters []*ParameterData, returns []*ParameterData, err error){
 
 	requestMessageNode := jsonquery.Find(functionNode, "//RPCRequest/MessageType")
 	responseMessageNode := jsonquery.Find(functionNode, "//RPCResponse/MessageType")
 
 	if requestMessageNode == nil || responseMessageNode == nil || len(requestMessageNode) != 1 || len(responseMessageNode) != 1 {
-		return nil, nil, fmt.Errorf("Cannot find Request message or Response message is proto file")
+		return "", "", nil, nil, fmt.Errorf("Cannot find Request message or Response message is proto file")
 	}
 
-	parameters, err = this.getMessageAsParameters(requestMessageNode[0].InnerText())
+	requestName = requestMessageNode[0].InnerText()
+	parameters, err = this.getMessageAsParameters(requestName)
 	if err != nil{
-		return nil, nil, err
+		return "", "", nil, nil, err
 	}
 
-	returns, err = this.getMessageAsParameters(responseMessageNode[0].InnerText())
+	responseName = responseMessageNode[0].InnerText()
+	returns, err = this.getMessageAsParameters(responseName)
 	if err != nil{
-		return nil, nil, err
+		return "", "", nil, nil, err
 	}
 
-	return parameters, returns, nil
+	return requestName, responseName, parameters, returns, nil
 }
 //--------------------------------------------------------------------
 func (this *ProtoParser) getMessageAsParameters(messageName string) (parameters []*ParameterData, err error){

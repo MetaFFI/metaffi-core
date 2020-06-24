@@ -11,9 +11,12 @@ const GuestTemplate = `
 # Guest code for {{.ProtoIDLFilename}}
 
 from {{.ProtobufFilename}} import *
-from {{.ForeignFunctionModule}} import *
 
-{{range $findex, $f := .Functions}}
+{{range $mindex, $m := .Modules}}
+# Code to call foreign functions in module {{$m.Name}}
+from {{$m.Name}} import *
+
+{{range $findex, $f := $m.Functions}}
 
 # Call to foreign {{.ForeignFunctionName}}
 def Foreign{{$f.ForeignFunctionName}}(paramsVal: bytes) -> ReturnVal:
@@ -22,12 +25,11 @@ def Foreign{{$f.ForeignFunctionName}}(paramsVal: bytes) -> ReturnVal:
 	req.ParseFromString(str(paramsVal))
 
 	ret = {{$f.ProtobufResponseStruct}}()
-
-	# python method to call a function without knowing its parameter names?
-
-	{{range $index, $elem := $f.ExpandedReturn}}{{if $index}},{{end}} res.{{$elem}}{{end}} = {{.ForeignFunctionModule}}.Foreign{{$f.ForeignFunctionName}}({{range $index, $elem := $f.ExpandedParameters}}{{if $index}},{{end}} req.{{$elem}}{{end}})
+	{{range $index, $elem := $f.ExpandedReturn}}{{if $index}},{{end}}ret.{{$elem}}{{end}} = {{$m.Name}}.{{$f.ForeignFunctionName}}({{range $index, $elem := $f.ExpandedParameters}}{{if $index}},{{end}} req.{{$elem}}{{end}})
 
 	return bytes(ret.SerializeToString(), 'utf-8')
+
+{{end}}
 
 {{end}}
 `
@@ -41,8 +43,12 @@ const(
 type GuestTemplateParameters struct {
 	ProtoIDLFilename       string
 	ProtobufFilename       string
-	ForeignFunctionModule  string
 
+	Modules []*GuestTemplateModuleParameters
+}
+//--------------------------------------------------------------------
+type GuestTemplateModuleParameters struct {
+	Name string
 	Functions []*GuestTemplateFunctionParameters
 }
 //--------------------------------------------------------------------
@@ -65,17 +71,47 @@ func NewGuestTemplateParameters(protoIDLFilename string) (*GuestTemplateParamete
 
 	gtp := &GuestTemplateParameters{
 		ProtoIDLFilename: protoIDLFilename,
-		ProtobufFilename: protoFilenameWithoutExtension + PROTOBUF_PYTHON_SUFFIX + PYTHON_EXTENSION,
-		ForeignFunctionModule: protoFilenameWithoutExtension + PYTHON_EXTENSION,
+		ProtobufFilename: protoFilenameWithoutExtension + PROTOBUF_PYTHON_SUFFIX,
 	}
 
-	gtp.Functions = make([]*GuestTemplateFunctionParameters, 0)
+	gtp.Modules = make([]*GuestTemplateModuleParameters, 0)
 
 	return gtp, nil
 }
 //--------------------------------------------------------------------
-func (this *GuestTemplateParameters) AddFunction(f *GuestTemplateFunctionParameters){
-	this.Functions = append(this.Functions, f)
+func (this *GuestTemplateParameters) AddModule(m *Module){
+
+	// add modules
+	modParams := &GuestTemplateModuleParameters{
+		Name:      m.Name,
+		Functions: make([]*GuestTemplateFunctionParameters, 0),
+	}
+
+	// for each module, add the function
+
+	for _, f := range m.Functions{
+
+		funcParams := &GuestTemplateFunctionParameters{
+			ForeignFunctionName: f.Name,
+			ProtobufRequestStruct: f.RequestName,
+			ProtobufResponseStruct: f.ResponseName,
+			ExpandedParameters: make([]string, 0),
+			ExpandedReturn: make([]string, 0),
+		}
+
+		// generate parameters
+		for _, p := range f.Parameters{
+			funcParams.ExpandedParameters = append(funcParams.ExpandedParameters, p.Name)
+		}
+
+		for _, r := range f.Return{
+			funcParams.ExpandedReturn = append(funcParams.ExpandedReturn, r.Name)
+		}
+
+		modParams.Functions = append(modParams.Functions, funcParams)
+	}
+
+	this.Modules = append(this.Modules, modParams)
 }
 //--------------------------------------------------------------------
 func (this *GuestTemplateParameters) Generate() (string, error){
@@ -88,33 +124,36 @@ func (this *GuestTemplateParameters) Generate() (string, error){
 		return "", fmt.Errorf("ProtobufFilename is empty")
 	}
 
-	if this.ForeignFunctionModule == ""{
-		return "", fmt.Errorf("ForeignFunctionModule is empty")
-	}
-
-	if this.Functions == nil || len(this.Functions) == 0{
+	if this.Modules == nil || len(this.Modules) == 0{
 		return "", fmt.Errorf("No functions defined")
 	}
 
-	for _, f := range this.Functions{
-		if f.ForeignFunctionName == ""{
-			return "", fmt.Errorf("ForeignFunctionName is empty")
+	for _, m := range this.Modules {
+
+		if m.Name == ""{
+			return "", fmt.Errorf("Module name is empty")
 		}
 
-			if f.ProtobufRequestStruct == ""{
-			return "", fmt.Errorf("ProtobufRequestStruct is empty")
-		}
+		for _, f := range m.Functions {
+			if f.ForeignFunctionName == "" {
+				return "", fmt.Errorf("ForeignFunctionName is empty")
+			}
 
-			if f.ProtobufResponseStruct == ""{
-			return "", fmt.Errorf("ProtobufResponseStruct is empty")
-		}
+			if f.ProtobufRequestStruct == "" {
+				return "", fmt.Errorf("ProtobufRequestStruct is empty")
+			}
 
-			if f.ExpandedParameters == nil{
-			return "", fmt.Errorf("ExpandedParameters is nil")
-		}
+			if f.ProtobufResponseStruct == "" {
+				return "", fmt.Errorf("ProtobufResponseStruct is empty")
+			}
 
-			if f.ExpandedParameters == nil{
-			return "", fmt.Errorf("ExpandedParameters is nil")
+			if f.ExpandedParameters == nil {
+				return "", fmt.Errorf("ExpandedParameters is nil")
+			}
+
+			if f.ExpandedParameters == nil {
+				return "", fmt.Errorf("ExpandedParameters is nil")
+			}
 		}
 	}
 
