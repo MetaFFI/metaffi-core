@@ -22,14 +22,14 @@ cli_executor::cli_executor(int argc, char** argv) :
 		("idl", po::value<std::string>() , "IDL containing functions defitions (i.e. foreign functions)")
 		("to-lang,t", po::value<std::string>() , "Language the functions are implemented (i.e. guest language)")
 		("from-langs,f", po::value<std::vector<std::string>>()->multitoken() , "List of languages the functions are called from (i.e. host languages)")
-		("compile-idl", "TBD Compiles IDL to serialization code")
+		("compile-serialization", "Compiles IDL to serialization code (TBD!)")
 		("output,o", po::value<std::string>()->default_value(boost::filesystem::current_path().generic_string()) , "Directory to generate the files (Default: current directory)")
-		("redist", "TBD Copies to output directory OpenFFI redistrabutable binaries for deployment (TBD!)");
+		("redist", "Copies to output directory OpenFFI redistrabutable binaries for deployment (TBD!)");
 
 	_install_options.add_options()
-		("deps,d", po::value<std::string>(), "TBD Download & install OpenFFI dependencies")
-		("lang", po::value<std::string>(), "TBD Download & install OpenFFI supported language from given URL")
-		("list", "TBD List installed OpenFFI languages");
+		("deps,d", po::value<std::string>(), "Download & install OpenFFI dependencies (TBD!)")
+		("lang", po::value<std::string>(), "Download & install OpenFFI supported language from given URL (TBD!)")
+		("list", "List installed OpenFFI languages (TBD!)");
 
 	_openffi_options.add(_compile_options);
 	_openffi_options.add(_install_options);
@@ -72,8 +72,16 @@ bool cli_executor::compile(void)
 	po::store(po::command_line_parser(this->_argc, this->_argv).options(_compile_options).allow_unregistered().run(), vm);
 	po::notify(vm);
 	
-	if(!vm.count("idl") || (!vm.count("from-langs") && !vm.count("to-lang")))
+	if(!vm.count("idl"))
 	{
+		std::cout << "Missing IDL" << std::endl;
+		_compile_options.print(std::cout);
+		return false;
+	}
+	
+	if(!vm.count("from-langs") && !vm.count("to-lang"))
+	{
+		std::cout << "Expects at least from-langs or to-lang argument" << std::endl;
 		_compile_options.print(std::cout);
 		return false;
 	}

@@ -9,7 +9,7 @@ compiler_plugin_interface_wrapper::compiler_plugin_interface_wrapper(const std::
 	boost::filesystem::path fullpath(boost::filesystem::current_path());
 	fullpath.append(plugin_filename+".so"); // TODO: append extension based on OS
 	
-	std::cout << "Loading Functions from: " << fullpath << std::endl;
+	//std::cout << "Loading Functions from: " << fullpath << std::endl;
 	
 	this->pcompile_to_guest = this->load_func<void(const char*, uint32_t, const char*, uint32_t, char**, uint32_t*)>(fullpath.c_str(), "compile_to_guest");
 	this->pcompile_from_host = this->load_func<void(const char*, uint32_t, const char*, uint32_t, char**, uint32_t*)>(fullpath.c_str(), "compile_from_host");

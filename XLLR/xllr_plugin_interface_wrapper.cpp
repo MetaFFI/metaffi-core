@@ -9,7 +9,7 @@ xllr_plugin_interface_wrapper::xllr_plugin_interface_wrapper(const std::string& 
 	boost::filesystem::path fullpath(boost::filesystem::current_path());
 	fullpath.append(plugin_filename); // TODO: append extension based on OS
 	
-	std::cout << "Loading Functions from: " << fullpath << std::endl;
+	//std::cout << "Loading Functions from: " << fullpath << std::endl;
 	
 	
 	this->pload_runtime = this->load_func<void(char**,uint32_t*)>(fullpath.c_str(), "load_runtime");

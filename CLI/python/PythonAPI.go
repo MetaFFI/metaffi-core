@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 import "C"
@@ -57,7 +58,10 @@ func compile_to_guest(idl_path *C.char, idl_path_length C.uint,
 		return
 	}
 
-	newfilepath := outPath + string(os.PathSeparator) + idlfile + "_fuse.py"
+	idlfileWithoutExtension := strings.Replace(idlfile, filepath.Ext(idlfile), "", -1)
+	newfilepath := outPath + string(os.PathSeparator) + idlfileWithoutExtension + "_fuse.py"
+	fmt.Printf("Writing guest code to %v\n", newfilepath)
+
 	err = ioutil.WriteFile(newfilepath, []byte(pyGuestCode), 0660)
 	if err != nil{
 		msg := fmt.Sprintf("Failed to write %v. Error: %v", newfilepath, err)
