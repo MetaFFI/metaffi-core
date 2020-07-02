@@ -159,7 +159,7 @@ message Return2 {
 		t.Fatalf("F2 Return r22 parsed incorrectly. Got: %v", *mods[0].Functions[1].Return[1])
 	}
 
-	testGuestTemplate(mods, t)
+	testHostTemplate(mods, t)
 }
 //--------------------------------------------------------------------
 func testGuestTemplate(mods []*Module, t *testing.T){
@@ -174,6 +174,25 @@ func testGuestTemplate(mods []*Module, t *testing.T){
 	}
 
 	guestCode, err := gtp.Generate()
+	if err != nil{
+		t.Fatalf("Failed to generate guest code: %v", err)
+	}
+
+	fmt.Println(guestCode)
+}
+//--------------------------------------------------------------------
+func testHostTemplate(mods []*Module, t *testing.T){
+
+	htp, err := NewHostTemplateParameters("test.proto")
+	if err != nil{
+		t.Fatal(err)
+	}
+
+	for _, m := range mods{
+		htp.AddModule(m)
+	}
+
+	guestCode, err := htp.Generate()
 	if err != nil{
 		t.Fatalf("Failed to generate guest code: %v", err)
 	}

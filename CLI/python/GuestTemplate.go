@@ -34,11 +34,6 @@ def Foreign{{$f.ForeignFunctionName}}(paramsVal: bytes) -> ReturnVal:
 {{end}}
 `
 
-const(
-	PROTOBUF_PYTHON_SUFFIX = "_pb2"
-	PYTHON_EXTENSION = ".py"
-)
-
 //--------------------------------------------------------------------
 type GuestTemplateParameters struct {
 	ProtoIDLFilename       string
