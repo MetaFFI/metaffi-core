@@ -11,6 +11,10 @@ FILE(GLOB sources "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
 # build XLLR
 add_library(xllr SHARED)
 target_include_directories(xllr PUBLIC ${CMAKE_CURRENT_LIST_DIR} ${Boost_INCLUDE_DIRS})
+set_property(TARGET xllr PROPERTY POSITION_INDEPENDENT_CODE ON)
+
+# remove the "lib" prefix in linux to get the expected filename "xllr.python.[ext]"
+SET_TARGET_PROPERTIES(xllr PROPERTIES PREFIX "")
 
 target_sources(xllr PUBLIC ${sources})
 target_link_libraries(xllr Boost::thread Boost::filesystem dl)

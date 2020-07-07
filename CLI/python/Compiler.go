@@ -41,3 +41,25 @@ func (this *Compiler) CompileGuest() (string, error){
 	return compilerParams.Generate()
 }
 //--------------------------------------------------------------------
+// @protobufFileName - The name of the protobuf python generated
+func (this *Compiler) CompileHost() (string, error){
+
+	compilerParams, err := NewHostTemplateParameters(this.parser.GetProtoFileName())
+	if err != nil{
+		return "", err
+	}
+
+	modules, err := this.parser.GetModules()
+	if err != nil{
+		return "", err
+	}
+
+
+	for _, m := range modules{
+		compilerParams.AddModule(m)
+	}
+
+	// generate host code
+	return compilerParams.Generate()
+}
+//--------------------------------------------------------------------

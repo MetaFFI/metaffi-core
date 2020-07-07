@@ -26,18 +26,25 @@
 #define TRUE 1
 #define FALSE 0
 
+#define pyscope()\
+	PyGILState_STATE gstate = PyGILState_Ensure(); \
+	scope_guard sggstate([&]() \
+	{ \
+		PyGILState_Release(gstate); \
+	});
+	
+
 //--------------------------------------------------------------------
 void load_runtime(char** err, uint32_t* err_len)
 {
 	// load python runtime
-	if(Py_IsInitialized())
+	if(!Py_IsInitialized())
 	{
-		handle_err(err, err_len, "Python has already been loaded!");
-		return;
+		Py_InitializeEx(1); // 1 means register signal handlers
 	}
-
-	Py_InitializeEx(1); // 1 means register signal handlers
-
+	
+	pyscope();
+	
 	add_sys_module_path(boost::filesystem::current_path().wstring());
 }
 //--------------------------------------------------------------------
@@ -48,6 +55,8 @@ void free_runtime(char** err, uint32_t* err_len)
 		handle_err(err, err_len, "Runtime has not been loaded - therefore it cannot be freed!");
 		return;
 	}
+	
+	pyscope();
 		
 	int res = Py_FinalizeEx();
 	if(res == -1)
@@ -64,6 +73,8 @@ void load_module(const char* mod, uint32_t module_len, char** err, uint32_t* err
 		handle_err(err, err_len, "Runtime has not been loaded - module cannot be loaded!");
 		return;
 	}
+	
+	pyscope();
 
 	// copying to std::string to make sure the string is null terminated
 	std::string module_name(mod, module_len);
@@ -86,7 +97,9 @@ void free_module(const char* mod, uint32_t module_len, char** err, uint32_t* err
 		handle_err(err, err_len, "Cannot free module - runtime is not been loaded!");
 		return;
 	}
-
+	
+	pyscope();
+	
 	// copying to std::string to make sure the string is null terminated
 	std::string module_name(mod, module_len);
 
@@ -139,7 +152,9 @@ void call(
 		*is_error = TRUE;
 		return;
 	}
-
+	
+	pyscope();
+	
 	// check if module is loaded initialized
 	PyObject* modules = PyImport_GetModuleDict();
 	scope_guard sgmodules([&]()
