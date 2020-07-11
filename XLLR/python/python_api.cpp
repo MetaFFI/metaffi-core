@@ -52,11 +52,8 @@ void free_runtime(char** err, uint32_t* err_len)
 {
 	if(!Py_IsInitialized())
 	{
-		handle_err(err, err_len, "Runtime has not been loaded - therefore it cannot be freed!");
 		return;
 	}
-	
-	pyscope();
 		
 	int res = Py_FinalizeEx();
 	if(res == -1)
@@ -94,7 +91,6 @@ void free_module(const char* mod, uint32_t module_len, char** err, uint32_t* err
 {
 	if(!Py_IsInitialized())
 	{
-		handle_err(err, err_len, "Cannot free module - runtime is not been loaded!");
 		return;
 	}
 	
@@ -166,9 +162,9 @@ void call(
 	std::string module_name(mod, module_name_len);
 
 	PyObject* module_obj = PyDict_GetItemString(modules, module_name.c_str());
-	if(!module_obj)
+	if(!module_obj || strcmp(module_obj->ob_type->tp_name, "module") != 0)
 	{
-		handle_err((char**)out_ret, out_ret_len, "Cannot call, Module has not been loaded!");
+		handle_err((char**)out_ret, out_ret_len, "Cannot call, Module cannot be loaded!");
 		*is_error = TRUE;
 		return;
 	}
@@ -209,36 +205,61 @@ void call(
 	PyObject* res = PyObject_CallObject(pyfunc, paramsArray);
 	if(!res)
 	{
-		handle_py_err((char**)out_ret, out_ret_len);
+		handle_err((char**)out_ret, out_ret_len, "OpenFFI Python guest code returned with an exception! The generated code must return error as str. (something is wrong...");
 		*is_error = TRUE;
 		return;
 	}
 
 	PyObject* ret = nullptr;
 	PyObject* out = nullptr;
+	PyObject* errmsg = nullptr;
 
 	scope_guard sgrets([&]()
 	{
 		Py_DecRef(res);
 		if(ret && res != ret){ Py_DecRef(ret); }
-		if(out){ Py_DecRef(out); }
+		if(out && out != Py_None){ Py_DecRef(out); }
+		if(errmsg && errmsg != Py_None){ Py_DecRef(errmsg); }
 	});
 
 	// if the return values is a turple:
 	// first parameter is the result - serialized
 	// second parameter is the out parameters - serialized OR empty
-	if(PyTuple_Check(res)) 
+	if(!PyTuple_Check(res))
+	{
+		handle_err((char**)out_ret, out_ret_len, "OpenFFI Python guest code did not return a tuple. Expects a tuple! (something is wrong...");
+		*is_error = TRUE;
+		return;
+	}
+	
+	if(PyTuple_Size(res) == 2) // (serialized return value, error string)
 	{
 		ret = PyTuple_GetItem(res, 0);
-		out = PyTuple_GetItem(res, 1);
+		errmsg = PyTuple_GetItem(res, 1);
 	}
-	else // no out parameters
+	else if(PyTuple_Size(res) == 3) // (serialized return value, serialized parameters value (out params support), error string)
 	{
-		ret = res;
+		ret = PyTuple_GetItem(res, 0);
+		errmsg = PyTuple_GetItem(res, 1);
+		out = PyTuple_GetItem(res, 2);
 	}
-
+	else
+	{
+		handle_err((char**)out_ret, out_ret_len, "OpenFFI Python guest code expected a tuple of size 2 or 3 (something is wrong...");
+		*is_error = TRUE;
+		return;
+	}
+	
+	if(errmsg != nullptr && errmsg != Py_None) // error has occurred
+	{
+		const char* perrmsg = PyUnicode_AsUTF8(errmsg);
+		handle_err((char**)out_ret, out_ret_len, perrmsg);
+		*is_error = TRUE;
+		return;
+	}
+	
 	// get out parameters
-	if(out)
+	if(out && out != Py_None)
 	{
 		*out_params_len = PyByteArray_Size(out);
 		*out_params = (unsigned char*)malloc(*out_params_len);

@@ -62,7 +62,7 @@ def {{$f.ForeignFunctionName}}({{range $index, $elem := $f.ExpandedParameters}}{
 	# call function
 	runtime_plugin = append_dynamic_lib_extension("""xllr.python""").encode("utf-8")
 	module_name = """{{$pfn}}_openffi_guest""".encode("utf-8")
-	func_name = """Foreign{{$f.ForeignFunctionName}}.py""".encode("utf-8")
+	func_name = """Foreign{{$f.ForeignFunctionName}}""".encode("utf-8")
 
 	ret = POINTER(c_byte)()
 	out_ret = POINTER(POINTER(c_byte))(c_int32(addressof(ret)))
@@ -86,7 +86,8 @@ def {{$f.ForeignFunctionName}}({{range $index, $elem := $f.ExpandedParameters}}{
 									None, None, \
 									out_ret, out_ret_len, \
 									out_is_error)
-
+	
+	
 	# deserialize result
 	res_len = out_ret_len.contents.value
 	res_ptr = out_ret.contents
@@ -99,9 +100,13 @@ def {{$f.ForeignFunctionName}}({{range $index, $elem := $f.ExpandedParameters}}{
 		protoData += int(res_ptr[i]).to_bytes(1, 'big')
 		i = i+1
 
+	# TODO: free out_ret!!!!
+
 	# check for error
 	if out_is_error.contents != 0:
 		raise Exception(str(protoData))
+
+	print('after call 3')
 
 	ret = {{$f.ProtobufResponseStruct}}()
 	ret.ParseFromString(protoData)
