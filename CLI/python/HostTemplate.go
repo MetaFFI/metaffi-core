@@ -106,8 +106,6 @@ def {{$f.ForeignFunctionName}}({{range $index, $elem := $f.ExpandedParameters}}{
 	if out_is_error.contents != 0:
 		raise Exception(str(protoData))
 
-	print('after call 3')
-
 	ret = {{$f.ProtobufResponseStruct}}()
 	ret.ParseFromString(protoData)
 
