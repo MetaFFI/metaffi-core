@@ -84,7 +84,6 @@ void load_module(const char* mod, uint32_t module_len, char** err, uint32_t* err
 		return;
 	}
 
-	Py_DecRef(pymod);
 }
 //--------------------------------------------------------------------
 void free_module(const char* mod, uint32_t module_len, char** err, uint32_t* err_len)
@@ -106,11 +105,6 @@ void free_module(const char* mod, uint32_t module_len, char** err, uint32_t* err
 		return;
 	}
 
-	scope_guard sgmods([&]()
-	{
-		Py_DecRef(modules);
-	});
-
 	// free module
 	PyObject* module_obj = PyDict_GetItemString(modules, module_name.c_str());
 	if(!module_obj)
@@ -118,11 +112,6 @@ void free_module(const char* mod, uint32_t module_len, char** err, uint32_t* err
 		handle_err(err, err_len, "Module not been loaded!");
 		return;
 	}
-
-	scope_guard sgmod([&]()
-	{
-		Py_DecRef(module_obj);
-	});
 
 	if(PyDict_DelItemString(modules, module_name.c_str()) == -1)
 	{
@@ -153,10 +142,6 @@ void call(
 	
 	// check if module is loaded initialized
 	PyObject* modules = PyImport_GetModuleDict();
-	scope_guard sgmodules([&]()
-	{
-		Py_DecRef(modules);
-	});
 
 	// copying to std::string to make sure the string is null terminated
 	std::string module_name(mod, module_name_len);
@@ -168,11 +153,6 @@ void call(
 		*is_error = TRUE;
 		return;
 	}
-
-	scope_guard sgmodule([&]()
-	{
-		Py_DecRef(module_obj);
-	});
 
 	// load function
 	std::string funcname(func_name, func_name_len);
@@ -193,12 +173,27 @@ void call(
 	}
 
 	// set parameters
+	printf("alloc size: %ld\n", in_params_len);
 	PyObject* pyParams = PyByteArray_FromStringAndSize((const char*)in_params, in_params_len);
+	
+	if(!pyParams)
+	{
+		handle_err((char**)out_ret, out_ret_len, "Failed to create parameters byte array");
+		*is_error = TRUE;
+		return;
+	}
+	
 	PyObject* paramsArray = PyTuple_New(1);
+	if(!paramsArray)
+	{
+		handle_err((char**)out_ret, out_ret_len, "Failed to create new tuple");
+		*is_error = TRUE;
+		return;
+	}
+	
 	scope_guard sgParams([&]()
 	{
 		Py_DecRef(paramsArray);
-		Py_DecRef(pyParams);
 	});
 
 	PyTuple_SetItem(paramsArray, 0, pyParams);

@@ -53,8 +53,6 @@ def {{$f.ForeignFunctionName}}({{range $index, $elem := $f.ExpandedParameters}}{
 		req.{{$elem.Name}} = {{$elem.Name}}
 
 	{{end}}
-	
-	in_params = req.SerializeToString()
 
 	# load XLLR
 	load_xllr()
@@ -64,6 +62,11 @@ def {{$f.ForeignFunctionName}}({{range $index, $elem := $f.ExpandedParameters}}{
 	module_name = """{{$pfn}}_openffi_guest""".encode("utf-8")
 	func_name = """Foreign{{$f.ForeignFunctionName}}""".encode("utf-8")
 
+	# in parameters
+	in_params = req.SerializeToString()
+	in_params_len = len(in_params)
+
+	# ret
 	ret = POINTER(c_byte)()
 	out_ret = POINTER(POINTER(c_byte))(c_int32(addressof(ret)))
 	ret_len = c_int32()
@@ -82,7 +85,7 @@ def {{$f.ForeignFunctionName}}({{range $index, $elem := $f.ExpandedParameters}}{
 	xllrHandle.call(runtime_plugin, len(runtime_plugin), \
 									module_name, len(module_name), \
 									func_name, len(func_name), \
-									in_params, len(in_params), \
+									in_params, in_params_len, \
 									None, None, \
 									out_ret, out_ret_len, \
 									out_is_error)
@@ -104,7 +107,7 @@ def {{$f.ForeignFunctionName}}({{range $index, $elem := $f.ExpandedParameters}}{
 
 	# check for error
 	if out_is_error.contents != 0:
-		raise Exception(str(protoData))
+		raise Exception('\n'+str(protoData).replace("\\n", "\n"))
 
 	ret = {{$f.ProtobufResponseStruct}}()
 	ret.ParseFromString(protoData)
