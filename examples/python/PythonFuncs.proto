@@ -27,7 +27,7 @@ message concat_strings_return {
 
 
 //--------------------------------------------------------------------
-service calculate_score { // module containing foreign functions
+service ComplexTypes { // module containing foreign functions
     rpc calculate_score (calculate_score_params) returns (calculate_score_return);
 }
 //--------------------------------------------------------------------
