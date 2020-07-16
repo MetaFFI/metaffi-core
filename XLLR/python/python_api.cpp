@@ -270,10 +270,10 @@ void call(
 	// get return values
 	// serialized proto results are in "str"
 	*out_ret_len = PyBytes_Size(ret);
-	if(*out_ret_len == 0)
+	if(*out_ret_len == 0) // void param
 	{
-		handle_err((char**)out_ret, out_ret_len, "OpenFFI Python guest code return bytes type with no data (something is wrong...)");
-		*is_error = TRUE;
+		*out_ret = nullptr;
+		*is_error = FALSE;
 		return;
 	}
 	
