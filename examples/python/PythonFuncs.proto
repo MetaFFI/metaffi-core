@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+//--------------------------------------------------------------------
+service PythonicUtils { // module containing foreign functions
+	rpc hello_world (Void) returns (Void);
+    rpc div (div_params) returns (div_return);
+    rpc concat_strings (concat_strings_params) returns (concat_strings_return);
+}
+//--------------------------------------------------------------------
+message Void {}
+//--------------------------------------------------------------------
+message div_params {
+	int32 x = 1;
+	int32 y = 2;
+}
+message div_return {
+	int32 z = 1;
+}
+//--------------------------------------------------------------------
+message concat_strings_params {
+	repeated string arr_of_strings = 1;
+}
+message concat_strings_return {
+	string result = 1;
+}
+//--------------------------------------------------------------------
+
+
+//--------------------------------------------------------------------
+service calculate_score { // module containing foreign functions
+    rpc calculate_score (calculate_score_params) returns (calculate_score_return);
+}
+//--------------------------------------------------------------------
+message calculate_score_params{
+	game_data gdata = 1;
+}
+message calculate_score_return{
+	game_score gscore = 1;
+}
+//--------------------------------------------------------------------
+message game_data{
+	string player = 1;
+	int32 pawn_wins = 2;
+	int32 boss_wins = 3;
+}
+//--------------------------------------------------------------------
+message game_score{
+	string player = 1;
+	int32 score = 2;
+}
+//--------------------------------------------------------------------
