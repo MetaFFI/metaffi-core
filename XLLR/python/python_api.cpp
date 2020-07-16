@@ -173,7 +173,6 @@ void call(
 	}
 
 	// set parameters
-	printf("alloc size: %ld\n", in_params_len);
 	PyObject* pyParams = PyByteArray_FromStringAndSize((const char*)in_params, in_params_len);
 	
 	if(!pyParams)
@@ -193,7 +192,7 @@ void call(
 	
 	scope_guard sgParams([&]()
 	{
-		Py_DecRef(paramsArray);
+		//Py_DecRef(paramsArray);
 	});
 
 	PyTuple_SetItem(paramsArray, 0, pyParams);
@@ -211,10 +210,10 @@ void call(
 
 	scope_guard sgrets([&]()
 	{
-		Py_DecRef(res);
-		if(ret && res != ret){ Py_DecRef(ret); }
-		if(out && out != Py_None){ Py_DecRef(out); }
-		if(errmsg && errmsg != Py_None){ Py_DecRef(errmsg); }
+		//Py_DecRef(res);
+		//if(ret && res != ret){ Py_DecRef(ret); }
+		//if(out && out != Py_None){ Py_DecRef(out); }
+		//if(errmsg && errmsg != Py_None){ Py_DecRef(errmsg); }
 	});
 
 	// if the return values is a turple:
@@ -240,7 +239,7 @@ void call(
 	}
 	else
 	{
-		handle_err((char**)out_ret, out_ret_len, "OpenFFI Python guest code expected a tuple of size 2 or 3 (something is wrong...");
+		handle_err((char**)out_ret, out_ret_len, "OpenFFI Python guest code expected a tuple of size 2 or 3 (something is wrong...)");
 		*is_error = TRUE;
 		return;
 	}
@@ -256,16 +255,33 @@ void call(
 	// get out parameters
 	if(out && out != Py_None)
 	{
-		*out_params_len = PyByteArray_Size(out);
+		*out_params_len = PyBytes_Size(out);
 		*out_params = (unsigned char*)malloc(*out_params_len);
-		memcpy(*out_params, (unsigned char*)PyByteArray_AsString(out), *out_params_len);
+		memcpy(*out_params, (unsigned char*)PyBytes_AsString(out), *out_params_len);
 	}
 
+	if(!PyBytes_Check(ret))
+	{
+		handle_err((char**)out_ret, out_ret_len, "OpenFFI Python guest code must did not return bytes type as expected (something is wrong...)");
+		*is_error = TRUE;
+		return;
+	}
+	
 	// get return values
 	// serialized proto results are in "str"
-	*out_ret_len = PyByteArray_Size(ret);
+	*out_ret_len = PyBytes_Size(ret);
+	if(*out_ret_len == 0)
+	{
+		handle_err((char**)out_ret, out_ret_len, "OpenFFI Python guest code return bytes type with no data (something is wrong...)");
+		*is_error = TRUE;
+		return;
+	}
+	
+	const char* pretarray = PyBytes_AsString(ret);
+	
 	*out_ret = (unsigned char*)malloc(*out_ret_len);
-	memcpy(*out_ret, (unsigned char*)PyByteArray_AsString(ret), *out_ret_len);	
+	
+	memcpy(*out_ret, (unsigned char*)pretarray, *out_ret_len);
 
 	*is_error = FALSE;
 }

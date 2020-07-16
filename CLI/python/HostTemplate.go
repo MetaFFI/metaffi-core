@@ -66,6 +66,8 @@ def {{$f.ForeignFunctionName}}({{range $index, $elem := $f.ExpandedParameters}}{
 	in_params = req.SerializeToString()
 	in_params_len = len(in_params)
 
+	# TODO!!!!: change pointer value from c_int32 to c_void_p or pointer
+
 	# ret
 	ret = POINTER(c_byte)()
 	out_ret = POINTER(POINTER(c_byte))(c_int32(addressof(ret)))
@@ -80,6 +82,7 @@ def {{$f.ForeignFunctionName}}({{range $index, $elem := $f.ExpandedParameters}}{
 
 	is_error = c_int8()
 	out_is_error = POINTER(c_int32)(c_int32(addressof(is_error)))
+	out_is_error.contents.value = 0
 
 	global xllrHandle
 	xllrHandle.call(runtime_plugin, len(runtime_plugin), \
@@ -106,7 +109,7 @@ def {{$f.ForeignFunctionName}}({{range $index, $elem := $f.ExpandedParameters}}{
 	# TODO: free out_ret!!!!
 
 	# check for error
-	if out_is_error.contents != 0:
+	if out_is_error.contents.value != 0:
 		raise Exception('\n'+str(protoData).replace("\\n", "\n"))
 
 	ret = {{$f.ProtobufResponseStruct}}()

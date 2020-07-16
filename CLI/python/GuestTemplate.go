@@ -17,20 +17,20 @@ from typing import Tuple
 
 {{range $mindex, $m := .Modules}}
 # Code to call foreign functions in module {{$m.Name}}
-from {{$m.Name}} import *
+import {{$m.Name}}
 
 {{range $findex, $f := $m.Functions}}
 
 # Call to foreign {{.ForeignFunctionName}}
-def Foreign{{$f.ForeignFunctionName}}(paramsVal: bytes) -> Tuple[{{$f.ProtobufResponseStruct}},str]:
+def Foreign{{$f.ForeignFunctionName}}(paramsVal: bytes) -> Tuple[bytes,str]:
 	try:
 		req = {{$f.ProtobufRequestStruct}}()
-		req.ParseFromString(str(paramsVal))
+		req.ParseFromString(paramsVal	)
 	
 		ret = {{$f.ProtobufResponseStruct}}()
 		{{range $index, $elem := $f.ExpandedReturn}}{{if $index}},{{end}}ret.{{$elem}}{{end}} = {{$m.Name}}.{{$f.ForeignFunctionName}}({{range $index, $elem := $f.ExpandedParameters}}{{if $index}},{{end}} req.{{$elem}}{{end}})
 	
-		return bytes(ret.SerializeToString(), 'utf-8'), None
+		return ret.SerializeToString(), None
 
 	except Exception as e:
 		errdata = traceback.format_exception(*sys.exc_info())
