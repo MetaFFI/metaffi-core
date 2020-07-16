@@ -28,7 +28,7 @@ def Foreign{{$f.ForeignFunctionName}}(paramsVal: bytes) -> Tuple[bytes,str]:
 		req.ParseFromString(paramsVal	)
 	
 		ret = {{$f.ProtobufResponseStruct}}()
-		{{range $index, $elem := $f.ExpandedReturn}}{{if $index}},{{end}}ret.{{$elem}}{{end}} = {{$m.Name}}.{{$f.ForeignFunctionName}}({{range $index, $elem := $f.ExpandedParameters}}{{if $index}},{{end}} req.{{$elem}}{{end}})
+		{{range $index, $elem := $f.ExpandedReturn}}{{if $index}},{{end}}ret.{{$elem}}{{end}}{{if $f.ExpandedReturn }} = {{end}}{{$m.Name}}.{{$f.ForeignFunctionName}}({{range $index, $elem := $f.ExpandedParameters}}{{if $index}},{{end}} req.{{$elem}}{{end}})
 	
 		return ret.SerializeToString(), None
 
