@@ -67,8 +67,8 @@ def {{$f.ForeignFunctionName}}({{range $index, $elem := $f.ExpandedParameters}}{
 	in_params_len = len(in_params)
 
 	# ret
-	ret = POINTER(c_byte)()
-	out_ret = POINTER(POINTER(c_byte))(c_void_p(addressof(ret)))
+	ret = POINTER(c_ubyte)()
+	out_ret = POINTER(POINTER(c_ubyte))(c_void_p(addressof(ret)))
 	ret_len = c_int32()
 	out_ret_len = POINTER(c_int32)(c_void_p(addressof(ret_len)))
 
@@ -103,8 +103,6 @@ def {{$f.ForeignFunctionName}}({{range $index, $elem := $f.ExpandedParameters}}{
 	while i < res_len:
 		protoData += int(res_ptr[i]).to_bytes(1, 'big')
 		i = i+1
-
-	# TODO: free out_ret!!!!
 
 	# check for error
 	if out_is_error.contents.value != 0:
