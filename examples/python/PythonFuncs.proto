@@ -14,7 +14,7 @@ message div_params {
 	int32 y = 2;
 }
 message div_return {
-	int32 z = 1;
+	float z = 1;
 }
 //--------------------------------------------------------------------
 message concat_strings_params {
@@ -29,6 +29,7 @@ message concat_strings_return {
 //--------------------------------------------------------------------
 service ComplexTypes { // module containing foreign functions
     rpc calculate_score (calculate_score_params) returns (calculate_score_return);
+    rpc gen_scores (Void) returns (gen_scores_return);
 }
 //--------------------------------------------------------------------
 message calculate_score_params{
@@ -47,5 +48,10 @@ message game_data{
 message game_score{
 	string player = 1;
 	int32 score = 2;
+}
+//--------------------------------------------------------------------
+message gen_scores_return{
+	repeated game_score scores = 1;
+	int32 total_score = 2;
 }
 //--------------------------------------------------------------------
