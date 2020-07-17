@@ -8,6 +8,9 @@
 build/
 cmake-build*
 
+# ------------ Python -------------
+*__pycache__*
+
 # -------------- C++ --------------
 
 # Prerequisites
