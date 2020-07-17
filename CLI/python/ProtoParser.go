@@ -39,6 +39,7 @@ type ParameterData struct{
 //--------------------------------------------------------------------
 func NewProtoParser(proto string, protoFilename string) (*ProtoParser, error){
 
+    proto += "\n"
 	pparser, err := protoparser.Parse(strings.NewReader(proto),
 									protoparser.WithFilename(protoFilename),
 									protoparser.WithBodyIncludingComments(true))
