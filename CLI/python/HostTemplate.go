@@ -49,6 +49,8 @@ def {{$f.ForeignFunctionName}}({{range $index, $elem := $f.ExpandedParameters}}{
 
 	if getattr(req.{{$elem.Name}}, 'extend', None) != None: # if repeated value, use append
 		req.{{$elem.Name}}.extend({{$elem.Name}})
+	elif getattr(req.{{$elem.Name}}, 'CopyFrom', None) != None: # if proto message
+		req.{{$elem.Name}}.CopyFrom({{$elem.Name}})
 	else:
 		req.{{$elem.Name}} = {{$elem.Name}}
 

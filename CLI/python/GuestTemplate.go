@@ -25,11 +25,25 @@ import {{$m.Name}}
 def Foreign{{$f.ForeignFunctionName}}(paramsVal: bytes) -> Tuple[bytes,str]:
 	try:
 		req = {{$f.ProtobufRequestStruct}}()
-		req.ParseFromString(paramsVal	)
-	
+		req.ParseFromString(paramsVal)
+		
+		{{range $index, $elem := $f.ExpandedReturn}}{{if $index}},{{end}}{{$elem}}{{end}}{{if $f.ExpandedReturn}} = {{end}}{{$m.Name}}.{{$f.ForeignFunctionName}}({{range $index, $elem := $f.ExpandedParameters}}{{if $index}},{{end}} req.{{$elem}}{{end}})
+
+		{{if $f.ExpandedReturn}} 
+
 		ret = {{$f.ProtobufResponseStruct}}()
-		{{range $index, $elem := $f.ExpandedReturn}}{{if $index}},{{end}}ret.{{$elem}}{{end}}{{if $f.ExpandedReturn }} = {{end}}{{$m.Name}}.{{$f.ForeignFunctionName}}({{range $index, $elem := $f.ExpandedParameters}}{{if $index}},{{end}} req.{{$elem}}{{end}})
-	
+
+		{{range $index, $elem := $f.ExpandedReturn}}
+		if getattr(ret.{{$elem}}, 'extend', None) != None: # if repeated value, use append
+			ret.{{$elem}}.extend({{$elem}})
+		elif getattr(ret.{{$elem}}, 'CopyFrom', None) != None: # if proto message
+			ret.{{$elem}}.CopyFrom({{$elem}})
+		else:
+			ret.{{$elem}} = {{$elem}}
+		{{end}}
+
+		{{end}}
+
 		return ret.SerializeToString(), None
 
 	except Exception as e:
