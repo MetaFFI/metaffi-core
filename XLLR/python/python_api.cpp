@@ -171,10 +171,9 @@ void call(
 		*is_error = TRUE;
 		return;
 	}
-
-	// set parameters
-	PyObject* pyParams = PyByteArray_FromStringAndSize((const char*)in_params, in_params_len);
 	
+	// set parameters
+	PyObject* pyParams = PyBytes_FromStringAndSize((const char*)in_params, in_params_len);
 	if(!pyParams)
 	{
 		handle_err((char**)out_ret, out_ret_len, "Failed to create parameters byte array");
@@ -194,7 +193,7 @@ void call(
 	{
 		//Py_DecRef(paramsArray);
 	});
-
+	
 	PyTuple_SetItem(paramsArray, 0, pyParams);
 	PyObject* res = PyObject_CallObject(pyfunc, paramsArray);
 	if(!res)

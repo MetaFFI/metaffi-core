@@ -64,13 +64,13 @@ def {{$f.ForeignFunctionName}}({{range $index, $elem := $f.ExpandedParameters}}{
 
 	# in parameters
 	in_params = req.SerializeToString()
-	in_params_len = len(in_params)
+	in_params_len = c_uint64(len(in_params))
 
 	# ret
 	ret = POINTER(c_ubyte)()
 	out_ret = POINTER(POINTER(c_ubyte))(c_void_p(addressof(ret)))
-	ret_len = c_int32()
-	out_ret_len = POINTER(c_int32)(c_void_p(addressof(ret_len)))
+	ret_len = c_uint64()
+	out_ret_len = POINTER(c_uint64)(c_void_p(addressof(ret_len)))
 
 # Currently disabling "ref params" support for python. To support that, one of parameters must be a list
 #	oparams = POINTER(c_byte)()
@@ -93,16 +93,8 @@ def {{$f.ForeignFunctionName}}({{range $index, $elem := $f.ExpandedParameters}}{
 	
 	
 	# deserialize result
-	res_len = out_ret_len.contents.value
-	res_ptr = out_ret.contents
 
-	protoData = bytes()
-
-	# TODO: Find a better way to copy!!!!!
-	i = 0
-	while i < res_len:
-		protoData += int(res_ptr[i]).to_bytes(1, 'big')
-		i = i+1
+	protoData = string_at(out_ret.contents, out_ret_len.contents.value)
 
 	# check for error
 	if out_is_error.contents.value != 0:
