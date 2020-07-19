@@ -1,6 +1,6 @@
 #include "utils.h"
 #include "../../utils/scope_guard.hpp"
-#include <python3.7/Python.h>
+#include <Python.h>
 #include <boost/predef.h>
 
 

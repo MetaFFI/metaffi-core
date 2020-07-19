@@ -5,7 +5,7 @@
 #include "../../utils/scope_guard.hpp"
 #include "utils.h"
 #include <boost/filesystem.hpp>
-#include <python3.7/Python.h>
+#include <Python.h>
 
 #define handle_err(err, err_len, desc) \
 	*err_len = strlen( desc ); \

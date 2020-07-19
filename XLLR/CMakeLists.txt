@@ -1,4 +1,5 @@
 find_package(Boost COMPONENTS thread filesystem REQUIRED) # Boost library
+find_package(Python3 COMPONENTS Development) # Python library
 
 include(CTest)
 enable_testing()
