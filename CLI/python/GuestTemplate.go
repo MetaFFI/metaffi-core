@@ -29,8 +29,6 @@ def Foreign{{$f.ForeignFunctionName}}(paramsVal: bytes) -> Tuple[bytes,str]:
 		
 		{{range $index, $elem := $f.ExpandedReturn}}{{if $index}},{{end}}{{$elem}}{{end}}{{if $f.ExpandedReturn}} = {{end}}{{$m.Name}}.{{$f.ForeignFunctionName}}({{range $index, $elem := $f.ExpandedParameters}}{{if $index}},{{end}} req.{{$elem}}{{end}})
 
-		{{if $f.ExpandedReturn}} 
-
 		ret = {{$f.ProtobufResponseStruct}}()
 
 		{{range $index, $elem := $f.ExpandedReturn}}
@@ -40,8 +38,6 @@ def Foreign{{$f.ForeignFunctionName}}(paramsVal: bytes) -> Tuple[bytes,str]:
 			ret.{{$elem}}.CopyFrom({{$elem}})
 		else:
 			ret.{{$elem}} = {{$elem}}
-		{{end}}
-
 		{{end}}
 
 		return ret.SerializeToString(), None

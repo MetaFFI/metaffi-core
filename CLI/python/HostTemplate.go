@@ -60,7 +60,7 @@ def {{$f.ForeignFunctionName}}({{range $index, $elem := $f.ExpandedParameters}}{
 	load_xllr()
 	
 	# call function
-	runtime_plugin = append_dynamic_lib_extension("""xllr.python""").encode("utf-8")
+	runtime_plugin = """xllr.python""".encode("utf-8")
 	module_name = """{{$pfn}}_openffi_guest""".encode("utf-8")
 	func_name = """Foreign{{$f.ForeignFunctionName}}""".encode("utf-8")
 
@@ -100,7 +100,7 @@ def {{$f.ForeignFunctionName}}({{range $index, $elem := $f.ExpandedParameters}}{
 
 	# check for error
 	if out_is_error.contents.value != 0:
-		raise Exception('\n'+str(protoData).replace("\\n", "\n"))
+		raise RuntimeError('\n'+str(protoData).replace("\\n", "\n"))
 
 	ret = {{$f.ProtobufResponseStruct}}()
 	ret.ParseFromString(protoData)

@@ -4,15 +4,27 @@
 
 
 //--------------------------------------------------------------------
-compiler_plugin_interface_wrapper::compiler_plugin_interface_wrapper(const std::string& plugin_filename)
+compiler_plugin_interface_wrapper::compiler_plugin_interface_wrapper(const std::string& plugin_filename_without_extension)
 {
-	boost::filesystem::path fullpath(boost::filesystem::current_path());
-	fullpath.append(plugin_filename+".so"); // TODO: append extension based on OS
+	std::string plugin_filename = plugin_filename_without_extension+boost::dll::shared_library::suffix().generic_string();
 	
-	//std::cout << "Loading Functions from: " << fullpath << std::endl;
+	boost::dll::shared_library plugin_dll;
 	
-	this->pcompile_to_guest = this->load_func<void(const char*, uint32_t, const char*, uint32_t, char**, uint32_t*)>(fullpath.c_str(), "compile_to_guest");
-	this->pcompile_from_host = this->load_func<void(const char*, uint32_t, const char*, uint32_t, char**, uint32_t*)>(fullpath.c_str(), "compile_from_host");
+	// if plugin exists in the same path of the program, load it from there (mainly used for easier development)
+	// otherwise, search system folders
+	if(boost::filesystem::exists( boost::dll::program_location().append(plugin_filename) ))
+	{
+		//std::cout << "Loading Functions from: " << p.generic_string() << std::endl;
+		plugin_dll.load( boost::dll::program_location().append(plugin_filename) );
+	}
+	else
+	{
+		//std::cout << "Loading Functions from: " << p.generic_string() << std::endl;
+		plugin_dll.load(plugin_filename, boost::dll::load_mode::search_system_folders);
+	}
+	
+	this->pcompile_to_guest = this->load_func<void(const char*, uint32_t, const char*, uint32_t, char**, uint32_t*)>(plugin_dll, "compile_to_guest");
+	this->pcompile_from_host = this->load_func<void(const char*, uint32_t, const char*, uint32_t, char**, uint32_t*)>(plugin_dll, "compile_from_host");
 }
 //--------------------------------------------------------------------
 void compiler_plugin_interface_wrapper::compile_to_guest(const char* idl_path, uint32_t idl_path_length,
