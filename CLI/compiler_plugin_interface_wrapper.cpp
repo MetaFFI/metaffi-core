@@ -14,12 +14,12 @@ compiler_plugin_interface_wrapper::compiler_plugin_interface_wrapper(const std::
 	// otherwise, search system folders
 	if(boost::filesystem::exists( boost::dll::program_location().append(plugin_filename) ))
 	{
-		//std::cout << "Loading Functions from: " << p.generic_string() << std::endl;
+		//std::cout << "Loading Functions from: " << plugin_filename << std::endl;
 		plugin_dll.load( boost::dll::program_location().append(plugin_filename) );
 	}
 	else
 	{
-		//std::cout << "Loading Functions from: " << p.generic_string() << std::endl;
+		//std::cout << "Loading Functions from: " << plugin_filename << std::endl;
 		plugin_dll.load(plugin_filename, boost::dll::load_mode::search_system_folders);
 	}
 	
