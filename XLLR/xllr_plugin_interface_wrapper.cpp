@@ -10,18 +10,16 @@ xllr_plugin_interface_wrapper::xllr_plugin_interface_wrapper(const std::string& 
 	
 	boost::dll::shared_library plugin_dll;
 	
-	//std::cout << "Loading Functions from: " << fullpath << std::endl;
-	
 	// if plugin exists in the same path of the program, load it from there (mainly used for easier development)
 	// otherwise, search system folders
-	if(boost::filesystem::exists( boost::dll::program_location().append(plugin_filename) ))
+	if(boost::filesystem::exists( boost::filesystem::current_path().append(plugin_filename) ))
 	{
-		//std::cout << "Loading Functions from: " << p.generic_string() << std::endl;
-		plugin_dll.load( boost::dll::program_location().append(plugin_filename) );
+		//std::cout << "Loading Functions from: " << boost::filesystem::current_path().append(plugin_filename) << std::endl;
+		plugin_dll.load( boost::filesystem::current_path().append(plugin_filename) );
 	}
 	else
 	{
-		//std::cout << "Loading Functions from: " << p.generic_string() << std::endl;
+		//std::cout << "Loading Functions from: " << plugin_filename << std::endl;
 		plugin_dll.load(plugin_filename, boost::dll::load_mode::search_system_folders);
 	}
 	

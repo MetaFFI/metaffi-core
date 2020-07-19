@@ -12,10 +12,10 @@ compiler_plugin_interface_wrapper::compiler_plugin_interface_wrapper(const std::
 	
 	// if plugin exists in the same path of the program, load it from there (mainly used for easier development)
 	// otherwise, search system folders
-	if(boost::filesystem::exists( boost::dll::program_location().append(plugin_filename) ))
+	if(boost::filesystem::exists( boost::filesystem::current_path().append(plugin_filename) ))
 	{
-		//std::cout << "Loading Functions from: " << plugin_filename << std::endl;
-		plugin_dll.load( boost::dll::program_location().append(plugin_filename) );
+		//std::cout << "Loading Functions from: " << boost::filesystem::current_path().append(plugin_filename) << std::endl;
+		plugin_dll.load( boost::filesystem::current_path().append(plugin_filename) );
 	}
 	else
 	{

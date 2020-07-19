@@ -37,7 +37,7 @@
 
 //--------------------------------------------------------------------
 
-std::string plugin_name("xllr.python.so");
+std::string plugin_name("xllr.python");
 std::string module_name("python_test_mod");
 std::string func_name("python_test_func");
 std::string module_code(R"(

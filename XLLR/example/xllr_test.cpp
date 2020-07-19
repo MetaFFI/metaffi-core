@@ -34,7 +34,7 @@
 
 //--------------------------------------------------------------------
 
-std::string plugin_name("xllr.example.so");
+std::string plugin_name("xllr.example");
 std::string module_name("example_module");
 std::string func_name("example_function");
 char* out_err = nullptr;
