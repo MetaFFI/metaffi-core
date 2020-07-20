@@ -18,7 +18,7 @@ void compiler::compile_to_guest(const std::string& lang)
 
 	// load plugin
 	std::unique_ptr<compiler_plugin_interface_wrapper> loaded_plugin = std::make_unique<compiler_plugin_interface_wrapper>(plugin_filename);
-
+	
 	char* err = nullptr;
 	uint32_t err_len = 0;
 

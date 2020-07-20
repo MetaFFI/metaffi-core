@@ -1,30 +1,15 @@
 #include "compiler_plugin_interface_wrapper.h"
 #include "../utils/scope_guard.hpp"
 #include <boost/filesystem.hpp>
-
+#include "plugin_modules_repository.h"
 
 //--------------------------------------------------------------------
 compiler_plugin_interface_wrapper::compiler_plugin_interface_wrapper(const std::string& plugin_filename_without_extension)
 {
-	std::string plugin_filename = plugin_filename_without_extension+boost::dll::shared_library::suffix().generic_string();
+	std::shared_ptr<boost::dll::shared_library> mod = plugin_modules_repository::get_instance()[plugin_filename_without_extension];
 	
-	boost::dll::shared_library plugin_dll;
-	
-	// if plugin exists in the same path of the program, load it from there (mainly used for easier development)
-	// otherwise, search system folders
-	if(boost::filesystem::exists( boost::filesystem::current_path().append(plugin_filename) ))
-	{
-		//std::cout << "Loading Functions from: " << boost::filesystem::current_path().append(plugin_filename) << std::endl;
-		plugin_dll.load( boost::filesystem::current_path().append(plugin_filename) );
-	}
-	else
-	{
-		//std::cout << "Loading Functions from: " << plugin_filename << std::endl;
-		plugin_dll.load(plugin_filename, boost::dll::load_mode::search_system_folders);
-	}
-	
-	this->pcompile_to_guest = this->load_func<void(const char*, uint32_t, const char*, uint32_t, char**, uint32_t*)>(plugin_dll, "compile_to_guest");
-	this->pcompile_from_host = this->load_func<void(const char*, uint32_t, const char*, uint32_t, char**, uint32_t*)>(plugin_dll, "compile_from_host");
+	this->pcompile_to_guest = this->load_func<void(const char*, uint32_t, const char*, uint32_t, char**, uint32_t*)>(*mod, "compile_to_guest");
+	this->pcompile_from_host = this->load_func<void(const char*, uint32_t, const char*, uint32_t, char**, uint32_t*)>(*mod, "compile_from_host");
 }
 //--------------------------------------------------------------------
 void compiler_plugin_interface_wrapper::compile_to_guest(const char* idl_path, uint32_t idl_path_length,
