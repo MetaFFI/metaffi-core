@@ -30,7 +30,7 @@ def append_dynamic_lib_extension(fname):
 	if osname == 'Windows':
 		return fname + '.dll'
 	elif osname == 'Darwin':
-		return fname + 'dylib'
+		return fname + '.dylib'
 	else:
 		return fname + '.so' # for everything that is not windows or mac, return .so
 
