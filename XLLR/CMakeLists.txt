@@ -6,8 +6,10 @@ enable_testing()
 
 # target_sources use absolute path
 cmake_policy(SET CMP0076 NEW)
+set(Boost_USE_STATIC_LIBS ON)
 
 FILE(GLOB sources "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 # build XLLR
 add_library(xllr SHARED)
@@ -17,9 +19,10 @@ set_property(TARGET xllr PROPERTY POSITION_INDEPENDENT_CODE ON)
 # remove the "lib" prefix in linux to get the expected filename "xllr.python.[ext]"
 SET_TARGET_PROPERTIES(xllr PROPERTIES PREFIX "")
 target_sources(xllr PUBLIC ${sources})
-target_link_libraries(xllr Boost::thread Boost::filesystem)
 
-if(!WIN32)
+target_link_directories(xllr PUBLIC ${Boost_LIBRARY_DIRS})
+
+if(NOT ${WIN32})
 	target_link_libraries(xllr dl)
 endif()
 
