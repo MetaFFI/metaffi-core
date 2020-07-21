@@ -16,9 +16,12 @@ set_property(TARGET xllr PROPERTY POSITION_INDEPENDENT_CODE ON)
 
 # remove the "lib" prefix in linux to get the expected filename "xllr.python.[ext]"
 SET_TARGET_PROPERTIES(xllr PROPERTIES PREFIX "")
-
 target_sources(xllr PUBLIC ${sources})
-target_link_libraries(xllr Boost::thread Boost::filesystem dl)
+target_link_libraries(xllr Boost::thread Boost::filesystem)
+
+if(!WIN32)
+	target_link_libraries(xllr dl)
+endif()
 
 # build xllr plugins dynamic library
 include(${CMAKE_CURRENT_SOURCE_DIR}/XLLR/example/CMakeLists.txt)
