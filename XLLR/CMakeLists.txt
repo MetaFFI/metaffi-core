@@ -21,8 +21,8 @@ SET_TARGET_PROPERTIES(xllr PROPERTIES PREFIX "")
 target_sources(xllr PUBLIC ${sources})
 
 target_link_directories(xllr PUBLIC ${Boost_LIBRARY_DIRS})
-
-if(NOT ${WIN32})
+target_link_libraries(xllr Boost::thread Boost::filesystem)
+if(NOT WIN32)
 	target_link_libraries(xllr dl)
 endif()
 

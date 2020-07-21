@@ -19,8 +19,9 @@ include_directories(${Boost_INCLUDE_DIRS} ${CMAKE_CURRENT_LIST_DIR})
 target_sources(openffi_cli PUBLIC ${sources})
 
 target_link_directories(openffi_cli PUBLIC ${Boost_LIBRARY_DIRS})
+target_link_libraries(openffi_cli Boost::program_options Boost::filesystem)
 
-if(NOT ${WIN32})
+if(NOT WIN32)
 	target_link_libraries(openffi_cli dl)
 endif()
 

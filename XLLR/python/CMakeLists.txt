@@ -15,7 +15,7 @@ set_property(TARGET xllr.python PROPERTY POSITION_INDEPENDENT_CODE ON)
 SET_TARGET_PROPERTIES(xllr.python PROPERTIES PREFIX "")
 
 target_link_directories(xllr.python PUBLIC ${Boost_LIBRARY_DIRS})
-target_link_libraries(xllr.python Python3::Python)
+target_link_libraries(xllr.python Python3::Python Boost::filesystem)
 
 # Unitest Python
 add_executable(xllr_python_test "${CMAKE_CURRENT_LIST_DIR}/xllr_python_test.cpp")
