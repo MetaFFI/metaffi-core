@@ -28,3 +28,4 @@ endif()
 # build xllr plugins dynamic library
 include(${CMAKE_CURRENT_SOURCE_DIR}/XLLR/example/CMakeLists.txt)
 include(${CMAKE_CURRENT_SOURCE_DIR}/XLLR/python/CMakeLists.txt)
+include(${CMAKE_CURRENT_SOURCE_DIR}/XLLR/go/CMakeLists.txt)
