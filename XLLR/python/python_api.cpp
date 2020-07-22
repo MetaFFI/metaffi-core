@@ -1,7 +1,7 @@
 #include "python_api.h"
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstring>
+#include <cstdio>
 #include "../../utils/scope_guard.hpp"
 #include "utils.h"
 #include <boost/filesystem.hpp>
