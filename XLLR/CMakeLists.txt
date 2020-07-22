@@ -20,10 +20,9 @@ set_property(TARGET xllr PROPERTY POSITION_INDEPENDENT_CODE ON)
 SET_TARGET_PROPERTIES(xllr PROPERTIES PREFIX "")
 target_sources(xllr PUBLIC ${sources})
 
-target_link_directories(xllr PUBLIC ${Boost_LIBRARY_DIRS})
-target_link_libraries(xllr Boost::thread Boost::filesystem)
+target_link_libraries(xllr ${Boost_THREAD_LIBRARIES} ${Boost_FILESYSTEM_LIBRARIES})
 if(NOT WIN32)
-	target_link_libraries(xllr dl)
+	target_link_libraries(xllr pthread dl)
 endif()
 
 # build xllr plugins dynamic library
