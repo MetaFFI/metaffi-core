@@ -1,3 +1,4 @@
+set(Boost_USE_STATIC_LIBS ON)
 find_package(Boost COMPONENTS program_options filesystem REQUIRED) # Boost library
 
 include(CTest)
@@ -5,7 +6,6 @@ enable_testing()
 
 # target_sources use absolute path
 cmake_policy(SET CMP0076 NEW)
-set(Boost_USE_STATIC_LIBS ON)
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 FILE(GLOB sources "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
@@ -18,7 +18,7 @@ include_directories(${Boost_INCLUDE_DIRS} ${CMAKE_CURRENT_LIST_DIR})
 
 target_sources(openffi_cli PUBLIC ${sources})
 
-target_link_libraries(openffi_cli ${Boost_PROGRAM_OPTIONS_LIBRARIES} ${Boost_FILESYSTEM_LIBRARIES})
+target_link_libraries(openffi_cli Boost::program_options Boost::filesystem)
 
 if(NOT WIN32)
 	target_link_libraries(openffi_cli dl)

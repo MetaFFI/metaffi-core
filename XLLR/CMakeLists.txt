@@ -1,3 +1,4 @@
+set(Boost_USE_STATIC_LIBS ON)
 find_package(Boost COMPONENTS thread filesystem REQUIRED) # Boost library
 find_package(Python3 COMPONENTS Development) # Python library
 
@@ -6,7 +7,6 @@ enable_testing()
 
 # target_sources use absolute path
 cmake_policy(SET CMP0076 NEW)
-set(Boost_USE_STATIC_LIBS ON)
 
 FILE(GLOB sources "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
@@ -20,7 +20,7 @@ set_property(TARGET xllr PROPERTY POSITION_INDEPENDENT_CODE ON)
 SET_TARGET_PROPERTIES(xllr PROPERTIES PREFIX "")
 target_sources(xllr PUBLIC ${sources})
 
-target_link_libraries(xllr ${Boost_THREAD_LIBRARIES} ${Boost_FILESYSTEM_LIBRARIES})
+target_link_libraries(xllr Boost::thread Boost::filesystem)
 if(NOT WIN32)
 	target_link_libraries(xllr pthread dl)
 endif()
