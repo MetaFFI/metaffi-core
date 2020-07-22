@@ -1,6 +1,7 @@
 #include "xllr_plugin_interface_wrapper.h"
 #include "../utils/scope_guard.hpp"
 #include <boost/filesystem.hpp>
+#include "../utils/function_loader.hpp"
 
 
 //--------------------------------------------------------------------
@@ -23,20 +24,20 @@ xllr_plugin_interface_wrapper::xllr_plugin_interface_wrapper(const std::string& 
 		plugin_dll.load(plugin_filename, boost::dll::load_mode::search_system_folders);
 	}
 	
-	this->pload_runtime = this->load_func<void(char**,uint32_t*)>(plugin_dll, "load_runtime");
+	this->pload_runtime = load_func<void(char**,uint32_t*)>(plugin_dll, "load_runtime");
 	
-	this->pfree_runtime = this->load_func<void(char**,uint32_t*)>(plugin_dll, "free_runtime");
+	this->pfree_runtime = load_func<void(char**,uint32_t*)>(plugin_dll, "free_runtime");
 	
-	this->pload_module = this->load_func<void(const char*, uint32_t, char**,uint32_t*)>(plugin_dll, "load_module");
+	this->pload_module = load_func<void(const char*, uint32_t, char**,uint32_t*)>(plugin_dll, "load_module");
 	
-	this->pfree_module = this->load_func<void(const char*, uint32_t, char**,uint32_t*)>(plugin_dll, "free_module");
+	this->pfree_module = load_func<void(const char*, uint32_t, char**,uint32_t*)>(plugin_dll, "free_module");
 	
-	this->pcall = this->load_func<void(const char*, uint32_t,
-										const char*, uint32_t,
-										unsigned char*, uint64_t,
-										unsigned char**, uint64_t*,
-										unsigned char**, uint64_t*,
-										uint8_t*)>(plugin_dll, "call");
+	this->pcall = load_func<void(const char*, uint32_t,
+								const char*, uint32_t,
+								unsigned char*, uint64_t,
+								unsigned char**, uint64_t*,
+								unsigned char**, uint64_t*,
+								uint8_t*)>(plugin_dll, "call");
 }
 //--------------------------------------------------------------------
 void xllr_plugin_interface_wrapper::load_runtime(char** err, uint32_t* err_len)
