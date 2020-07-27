@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"testing"
+	. "github.com/GreenFuze/OpenFFI/CLI/utils/go"
 )
 
 

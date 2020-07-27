@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 	"text/template"
-	. "github.com/GreenFuze/OpenFFI/CLI"
+	. "github.com/GreenFuze/OpenFFI/CLI/utils/go"
 )
 
 const GuestTemplate = `

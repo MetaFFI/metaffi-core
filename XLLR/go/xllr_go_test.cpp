@@ -94,8 +94,8 @@ void build_module()
 	outfile.close();
 	
 	std::stringstream ss;
-	ss << "go build -buildmode=c-shared -gcflags=-shared -o " << module_name << boost::dll::shared_library::suffix() << " " << module_name << ".go";
-	
+	ss << "go build -buildmode=c-shared -gcflags=-shared -o " << module_name << boost::dll::shared_library::suffix().generic_string() << " " << module_name << ".go";
+	printf("%s\n", ss.str().c_str());
 	// build module
 	system(ss.str().c_str());
 	
