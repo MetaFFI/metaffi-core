@@ -1,4 +1,4 @@
-module github.com/GreenFuze/OpenFFI/CLI/
+module github.com/GreenFuze/OpenFFI/CLI
 
 go 1.12
 
