@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 	"text/template"
+	. "github.com/GreenFuze/OpenFFI/CLI"
 )
 
 const HostTemplate = `
