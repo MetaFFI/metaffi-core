@@ -1,4 +1,4 @@
-package main
+package openffi_cli
 
 import (
 	"encoding/json"
