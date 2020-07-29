@@ -50,6 +50,7 @@ cmake-build*
 *.dll
 *.so
 *.dylib
+go.sum
 
 # Test binary, built with `go test -c`
 *.test
