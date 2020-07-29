@@ -63,7 +63,7 @@ func compile_idl(idlPath string, outPath string, direction compileDirection) err
 
 	idlfileWithoutExtension := strings.Replace(idlfile, filepath.Ext(idlfile), "", -1)
 	newfilepath := outPath + string(os.PathSeparator) + idlfileWithoutExtension + outputPostfix
-	fmt.Printf("Writing guest code to %v\n", newfilepath)
+	fmt.Printf("Writing code to %v\n", newfilepath)
 
 	err = ioutil.WriteFile(newfilepath, []byte(code), 0660)
 	if err != nil{
