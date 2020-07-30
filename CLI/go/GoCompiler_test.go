@@ -2,7 +2,9 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"testing"
+	. "github.com/GreenFuze/OpenFFI/CLI/utils/go"
 )
 
 
@@ -159,6 +161,7 @@ message Return2 {
 		t.Fatalf("F2 Return r22 parsed incorrectly. Got: %v", *mods[0].Functions[1].Return[1])
 	}
 
+	testGuestTemplate(mods, t)
 	testHostTemplate(mods, t)
 }
 //--------------------------------------------------------------------
@@ -179,6 +182,10 @@ func testGuestTemplate(mods []*Module, t *testing.T){
 	}
 
 	fmt.Println(guestCode)
+
+	if err = ioutil.WriteFile("guest.go.output", []byte(guestCode), 0600); err != nil{
+		t.Fatalf("Failed to write guest code: %v", err)
+	}
 }
 //--------------------------------------------------------------------
 func testHostTemplate(mods []*Module, t *testing.T){
@@ -192,11 +199,15 @@ func testHostTemplate(mods []*Module, t *testing.T){
 		htp.AddModule(m)
 	}
 
-	guestCode, err := htp.Generate()
+	hostCode, err := htp.Generate()
 	if err != nil{
 		t.Fatalf("Failed to generate guest code: %v", err)
 	}
 
-	fmt.Println(guestCode)
+	fmt.Println(hostCode)
+
+	if err = ioutil.WriteFile("host.go.output", []byte(hostCode), 0600); err != nil{
+		t.Fatalf("Failed to write host code: %v", err)
+	}
 }
 //--------------------------------------------------------------------

@@ -98,8 +98,8 @@ func loadXLLR() error{
 
 	defer C.free(name)
 
-	var out_err C.char*
-	C.xllr_handle := C.load_library(name, unsafe.pointer(out_err))
+	var out_err *C.char
+	if C.xllr_handle = C.load_library(name, unsafe.pointer(out_err))
 	C.xllr_handle == nil{ // error has occurred
 		return fmt.Errorf("Failed to load XLLR: %v", C.GoString(out_err))
 	}
@@ -114,7 +114,7 @@ func loadXLLR() error{
 {{range $findex, $f := $m.Functions}}
 
 // Call to foreign {{.ForeignFunctionName}}
-func {{$f.ForeignFunctionName}}({{range $index, $elem := $f.ExpandedParameters}}{{if $index}},{{end}} {{$elem.Name}}:{{$elem.Type}}{{end}}) ({{range $index, $elem := $f.ExpandedReturn}}{{if $index}},{{end}}{{$elem.Name}} {{$elem.Type}}{{end}}, err error){
+func {{$f.ForeignFunctionName}}({{range $index, $elem := $f.ExpandedParameters}}{{if $index}},{{end}} {{$elem.Name}} {{$elem.Type}}{{end}}) ({{range $index, $elem := $f.ExpandedReturn}}{{if $index}},{{end}}{{$elem.Name}} {{$elem.Type}}{{end}}, err error){
 
 	// serialize parameters
 	req := {{$f.ProtobufRequestStruct}}{}
@@ -147,19 +147,19 @@ func {{$f.ForeignFunctionName}}({{range $index, $elem := $f.ExpandedParameters}}
 
 	in_params_len = c_uint64(len(in_params))
 
-	var out_ret C.char*
+	var out_ret *C.char
 	*out_ret = nil
 
-	var out_ret_len C.ulonglong*
+	var out_ret_len *C.ulonglong
 	*out_ret_len = 0 
 
-	var out_params C.char*
+	var out_params *C.char
 	*out_params = nil
 
-	var out_params_len C.ulonglong*
+	var out_params_len *C.ulonglong
 	*out_params_len = 0
 
-	var out_is_error C.char*
+	var out_is_error *C.char
 	*out_is_error = 0
 
 	C.call(runtime_plugin, len(runtime_plugin),
@@ -179,7 +179,7 @@ func {{$f.ForeignFunctionName}}({{range $index, $elem := $f.ExpandedParameters}}
 	// deserialize result	
 	ret := {{$f.ProtobufResponseStruct}}{}
 	out_ret_buf := C.GoStringN(out_ret, *out_ret_len)
-	err := proto.Unmarshal([]byte(out_ret_buf), ret)
+	err = proto.Unmarshal([]byte(out_ret_buf), &ret)
 	if err != nil{
 		err = fmt.Errorf("Failed to unmarshal return values into protobuf. Error: %v", err)
 		return
@@ -242,12 +242,12 @@ func NewHostTemplateParameters(protoIDLFilename string) (*HostTemplateParameters
 //--------------------------------------------------------------------
 func NewHostTemplateFunctionParameterData(p *ParameterData) *HostTemplateFunctionParameterData{
 	htfp := &HostTemplateFunctionParameterData{
-		Name: p.Name,
+		Name: strings.Title(p.Name),
 	}
 
-	htfp.Type = ProtoTypeToPythonType(p.Type)
+	htfp.Type = ProtoTypeToGoType(p.Type)
 	if p.IsArray{
-		htfp.Type = fmt.Sprintf("List[%v]", htfp.Type)
+		htfp.Type = fmt.Sprintf("[]%v", htfp.Type)
 	}
 
 	return htfp

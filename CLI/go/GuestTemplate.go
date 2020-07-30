@@ -20,7 +20,7 @@ import "github.com/golang/protobuf/proto"
 // import all modules
 import(
 {{range $mindex, $m := .Modules}}
-	m{{mindex}} "{{$m.Name}}"
+	m{{$mindex}} "{{$m.Name}}"
 {{end}}
 )
 
@@ -59,22 +59,22 @@ func Foreign{{$f.ForeignFunctionName}}(in_params *C.char, in_params_len C.ulongl
 	// deserialize parameters
 	inParams := C.GoStringN(in_params, C.int(in_params_len))
 	req := {{$f.ProtobufRequestStruct}}{}
-	err := proto.Unmarshal(inParams, req)
+	err := proto.Unmarshal([]byte(inParams), &req)
 	if err != nil{
-		errToOutError(out_ret, out_ret_len, is_error, "Failed to unmarshal parameters" err)
+		errToOutError(out_ret, out_ret_len, is_error, "Failed to unmarshal parameters", err)
 		return
 	}
 	
 	// call original function
-	{{range $index, $elem := $f.ExpandedReturn}}{{if $index}},{{end}}{{$elem}}{{end}}{{if $f.ExpandedReturn}} := {{end}}m{{mindex}}.{{$f.ForeignFunctionName}}({{range $index, $elem := $f.ExpandedParameters}}{{if $index}},{{end}} req.{{$elem}}{{end}})
+	{{range $index, $elem := $f.ExpandedReturn}}{{if $index}},{{end}}{{$elem}}{{end}}{{if $f.ExpandedReturn}} := {{end}}m{{$mindex}}.{{$f.ForeignFunctionName}}({{range $index, $elem := $f.ExpandedParameters}}{{if $index}},{{end}} req.{{$elem}}{{end}})
 	
-	ret = {{$f.ProtobufResponseStruct}}{}
+	ret := {{$f.ProtobufResponseStruct}}{}
 
 	// === fill out_ret
 	// if one of the returned parameters is of interface type Error, check if error, and if so, return error
 	{{range $index, $elem := $f.ExpandedReturn}}
-	if err, isError := {{$elem}}.(error); isError && err != nil{
-		errToOutError(out_ret, out_ret_len, is_error, "Error returned" err)
+	if err, isError := interface{}({{$elem}}).(error); isError{
+		errToOutError(out_ret, out_ret_len, is_error, "Error returned", err)
 		return
 	} else {
 		ret.{{$elem}} = {{$elem}}
@@ -84,7 +84,7 @@ func Foreign{{$f.ForeignFunctionName}}(in_params *C.char, in_params_len C.ulongl
 	// serialize results
 	serializedRet, err := proto.Marshal(ret)
 	if err != nil{
-		errToOutError(out_ret, out_ret_len, is_error, "Failed to marshal return values into protobuf" err)
+		errToOutError(out_ret, out_ret_len, is_error, "Failed to marshal return values into protobuf", err)
 		return
 	}
 
@@ -94,10 +94,9 @@ func Foreign{{$f.ForeignFunctionName}}(in_params *C.char, in_params_len C.ulongl
 	*out_ret_len = C.ulonglong(len(serializedRetStr))
 
 	// === fill out_params
-	// TODO: serialize parameters
 	serializedParams, err := proto.Marshal(req)
 	if err != nil{
-		errToOutError(out_ret, out_ret_len, is_error, "Failed to marshal parameter values into protobuf" err)
+		errToOutError(out_ret, out_ret_len, is_error, "Failed to marshal parameter values into protobuf", err)
 		return
 	}
 	
@@ -109,6 +108,9 @@ func Foreign{{$f.ForeignFunctionName}}(in_params *C.char, in_params_len C.ulongl
 }
 
 {{end}}
+
+{{end}}
+
 `
 
 //--------------------------------------------------------------------
@@ -173,11 +175,11 @@ func (this *GuestTemplateParameters) AddModule(m *Module){
 
 		// generate parameters
 		for _, p := range f.Parameters{
-			funcParams.ExpandedParameters = append(funcParams.ExpandedParameters, p.Name)
+			funcParams.ExpandedParameters = append(funcParams.ExpandedParameters, strings.Title(p.Name))
 		}
 
 		for _, r := range f.Return{
-			funcParams.ExpandedReturn = append(funcParams.ExpandedReturn, r.Name)
+			funcParams.ExpandedReturn = append(funcParams.ExpandedReturn, strings.Title(r.Name))
 		}
 
 		modParams.Functions = append(modParams.Functions, funcParams)
