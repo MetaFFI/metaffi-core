@@ -58,9 +58,14 @@ func NewTemplateFunctionParameterData(p *ParameterData) *TemplateFunctionParamet
 		Name: strings.Title(p.Name),
 	}
 
-	htfp.Type, _ = ProtoTypeToGoType(p.Type)
+	var isComplex bool
+	htfp.Type, isComplex = ProtoTypeToGoType(p.Type)
 	if p.IsArray{
 		htfp.Type = fmt.Sprintf("[]%v", htfp.Type)
+	}
+
+	if isComplex{
+		htfp.Type = fmt.Sprintf("&%v", htfp.Type)
 	}
 
 	return htfp
