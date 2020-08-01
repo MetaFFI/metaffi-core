@@ -33,7 +33,7 @@ type TemplateFunctionParameterData struct {
 	Type string
 }
 //--------------------------------------------------------------------
-func NewHostTemplateParameters(protoIDLFilename string, outputFileSuffix string) (*TemplateParameters, error){
+func NewTemplateParameters(protoIDLFilename string, outputFileSuffix string) (*TemplateParameters, error){
 
 	extensionIndex := strings.LastIndex(protoIDLFilename, ".")
 	if extensionIndex == -1{
@@ -53,7 +53,7 @@ func NewHostTemplateParameters(protoIDLFilename string, outputFileSuffix string)
 	return gtp, nil
 }
 //--------------------------------------------------------------------
-func NewHostTemplateFunctionParameterData(p *ParameterData) *TemplateFunctionParameterData{
+func NewTemplateFunctionParameterData(p *ParameterData) *TemplateFunctionParameterData{
 	htfp := &TemplateFunctionParameterData{
 		Name: strings.Title(p.Name),
 	}
@@ -88,11 +88,11 @@ func (this *TemplateParameters) AddModule(m *Module){
 
 		// generate parameters
 		for _, p := range f.Parameters{
-			funcParams.ExpandedParameters = append(funcParams.ExpandedParameters, NewHostTemplateFunctionParameterData(p))
+			funcParams.ExpandedParameters = append(funcParams.ExpandedParameters, NewTemplateFunctionParameterData(p))
 		}
 
 		for _, r := range f.Return{
-			funcParams.ExpandedReturn = append(funcParams.ExpandedReturn, NewHostTemplateFunctionParameterData(r))
+			funcParams.ExpandedReturn = append(funcParams.ExpandedReturn, NewTemplateFunctionParameterData(r))
 		}
 
 		modParams.Functions = append(modParams.Functions, funcParams)
