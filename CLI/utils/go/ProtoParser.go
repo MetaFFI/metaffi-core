@@ -31,10 +31,17 @@ type FunctionData struct {
 	Return []*ParameterData
 }
 //--------------------------------------------------------------------
+type PassMethod string
+const(
+	PASS_BY_VAL = PassMethod("byval")
+	PASS_BY_PTR = PassMethod("byptr")
+)
+//--------------------------------------------------------------------
 type ParameterData struct{
 	Name string
 	Type string
 	IsArray bool
+	PassParam *PassMethod // nil is default (primitive types: by value ; complex types: by pointer)
 }
 //--------------------------------------------------------------------
 func NewProtoParser(proto string, protoFilename string) (*ProtoParser, error){
@@ -76,6 +83,28 @@ func (this *ProtoParser) GetProtoFileName() string{
 	return this.pparser.Meta.Filename
 }
 //--------------------------------------------------------------------
+func (this *ProtoParser) getModuleName(modNode *jsonquery.Node) string{
+	name := modNode.InnerText()
+
+	// check if there is an inline comment after the left curly braces with the "openffi_module:" prefix
+	comments := jsonquery.Find(modNode.Parent, "//InlineCommentBehindLeftCurly")
+
+	for _, comment := range comments {
+		raw := jsonquery.Find(comment, "Raw")
+		if len(raw) == 0{
+			continue
+		}
+
+		if strings.Contains(raw[0].InnerText(), "openffi_module:"){ // alternative module name
+			name = raw[0].InnerText()
+			name = name[strings.Index(name, "\"")+1:strings.LastIndex(name, "\"")]
+			break
+		}
+	}
+
+	return name
+}
+//--------------------------------------------------------------------
 func (this *ProtoParser) GetModules() ([]*Module, error){
 
 	servicesNodes := jsonquery.Find(this.jsonProtoQueryRoot, "//ServiceName")
@@ -88,7 +117,7 @@ func (this *ProtoParser) GetModules() ([]*Module, error){
 
 	for _, serviceNode := range servicesNodes {
 
-		module := &Module{ Name: serviceNode.InnerText() }
+		module := &Module{ Name: this.getModuleName(serviceNode) }
 		functions, err := this.getFunctions(serviceNode.Parent)
 		if err != nil{
 			return nil, err
@@ -179,6 +208,26 @@ func (this *ProtoParser) getMessageAsParameters(messageName string) (parameters 
 		curParam.Name = paramNode.InnerText()
 		curParam.Type = paramNode.Parent.SelectElement("Type").InnerText()
 		curParam.IsArray = strings.ToLower(paramNode.Parent.SelectElement("IsRepeated").InnerText()) == "true"
+
+		if inlineComment := paramNode.Parent.SelectElement("InlineComment"); inlineComment != nil{
+			if raw := inlineComment.SelectElement("Raw"); raw != nil{
+				if strings.Contains(raw.InnerText(), "openffi_param:"){ // openffi_param is set !!!
+					passParam := raw.InnerText()
+					passParam = passParam[strings.Index(passParam, "\"")+1:strings.LastIndex(passParam, "\"")]
+
+					switch strings.ToLower(passParam) {
+						case "byval":
+							pp := PASS_BY_VAL
+							curParam.PassParam = &pp
+						case "byptr":
+							pp := PASS_BY_PTR
+							curParam.PassParam = &pp
+						default:
+							return nil, fmt.Errorf("Unknown openffi_param value. Expecting byval or byptr. Received: %v", passParam)
+					}
+				}
+			}
+		}
 
 		parameters = append(parameters, curParam)
 	}
