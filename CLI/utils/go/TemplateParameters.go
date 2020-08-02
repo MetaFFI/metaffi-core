@@ -31,6 +31,21 @@ type TemplateFunctionParameters struct {
 type TemplateFunctionParameterData struct {
 	Name string
 	Type string
+	IsComplex bool
+}
+func (this *TemplateFunctionParameterData) DereferenceIfNeeded() string{
+	if this.IsComplex{
+		return "*"+this.Name
+	} else {
+		return this.Name
+	}
+}
+func (this *TemplateFunctionParameterData) PointerIfNeeded() string{
+	if this.IsComplex{
+		return "&"+this.Name
+	} else {
+		return this.Name
+	}
 }
 //--------------------------------------------------------------------
 func NewTemplateParameters(protoIDLFilename string, outputFileSuffix string) (*TemplateParameters, error){
@@ -58,14 +73,9 @@ func NewTemplateFunctionParameterData(p *ParameterData) *TemplateFunctionParamet
 		Name: strings.Title(p.Name),
 	}
 
-	var isComplex bool
-	htfp.Type, isComplex = ProtoTypeToGoType(p.Type)
+	htfp.Type, htfp.IsComplex = ProtoTypeToGoType(p.Type)
 	if p.IsArray{
 		htfp.Type = fmt.Sprintf("[]%v", htfp.Type)
-	}
-
-	if isComplex{
-		htfp.Type = fmt.Sprintf("&%v", htfp.Type)
 	}
 
 	return htfp
