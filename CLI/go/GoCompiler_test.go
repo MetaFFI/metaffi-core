@@ -167,30 +167,7 @@ message Return2 {
 //--------------------------------------------------------------------
 func testGuestTemplate(mods []*Module, t *testing.T){
 
-	gtp, err := NewGuestTemplateParameters("test.proto")
-	if err != nil{
-		t.Fatal(err)
-	}
-
-	for _, m := range mods{
-		gtp.AddModule(m)
-	}
-
-	guestCode, err := gtp.Generate()
-	if err != nil{
-		t.Fatalf("Failed to generate guest code: %v", err)
-	}
-
-	fmt.Println(guestCode)
-
-	if err = ioutil.WriteFile("guest.go.output", []byte(guestCode), 0600); err != nil{
-		t.Fatalf("Failed to write guest code: %v", err)
-	}
-}
-//--------------------------------------------------------------------
-func testHostTemplate(mods []*Module, t *testing.T){
-
-	htp, err := NewHostTemplateParameters("test.proto")
+	htp, err := NewTemplateParameters("test.proto", ".go")
 	if err != nil{
 		t.Fatal(err)
 	}
@@ -199,7 +176,31 @@ func testHostTemplate(mods []*Module, t *testing.T){
 		htp.AddModule(m)
 	}
 
-	hostCode, err := htp.Generate()
+	hostCode, err := htp.Generate("guest", GuestTemplate)
+	if err != nil{
+		t.Fatalf("Failed to generate guest code: %v", err)
+	}
+
+	fmt.Println(hostCode)
+
+	if err = ioutil.WriteFile("guest.go.output", []byte(hostCode), 0600); err != nil{
+		t.Fatalf("Failed to write guest code: %v", err)
+	}
+
+}
+//--------------------------------------------------------------------
+func testHostTemplate(mods []*Module, t *testing.T){
+
+	htp, err := NewTemplateParameters("test.proto", ".go")
+	if err != nil{
+		t.Fatal(err)
+	}
+
+	for _, m := range mods{
+		htp.AddModule(m)
+	}
+
+	hostCode, err := htp.Generate("host", HostTemplate)
 	if err != nil{
 		t.Fatalf("Failed to generate guest code: %v", err)
 	}

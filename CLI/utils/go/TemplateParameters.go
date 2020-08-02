@@ -2,8 +2,8 @@ package openffi_cli
 
 import (
 	"fmt"
-	"text/template"
 	"strings"
+	"text/template"
 )
 
 //--------------------------------------------------------------------
