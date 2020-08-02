@@ -32,6 +32,7 @@ type TemplateFunctionParameterData struct {
 	Name string
 	Type string
 	IsComplex bool
+	ParamPass *PassMethod
 }
 func (this *TemplateFunctionParameterData) DereferenceIfNeeded() string{
 	if this.IsComplex{
@@ -77,6 +78,8 @@ func NewTemplateFunctionParameterData(p *ParameterData) *TemplateFunctionParamet
 	if p.IsArray{
 		htfp.Type = fmt.Sprintf("[]%v", htfp.Type)
 	}
+
+	htfp.ParamPass = p.PassParam
 
 	return htfp
 }

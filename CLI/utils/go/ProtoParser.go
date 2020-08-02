@@ -9,6 +9,12 @@ import (
 	"strings"
 )
 
+type PassMethod string
+const(
+	PASS_BY_VAL = PassMethod("byval")
+	PASS_BY_PTR = PassMethod("byptr")
+)
+
 //--------------------------------------------------------------------
 type ProtoParser struct{
 	pparser            *parser.Proto
@@ -30,12 +36,6 @@ type FunctionData struct {
 	Parameters []*ParameterData
 	Return []*ParameterData
 }
-//--------------------------------------------------------------------
-type PassMethod string
-const(
-	PASS_BY_VAL = PassMethod("byval")
-	PASS_BY_PTR = PassMethod("byptr")
-)
 //--------------------------------------------------------------------
 type ParameterData struct{
 	Name string
