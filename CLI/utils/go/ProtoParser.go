@@ -22,6 +22,8 @@ type ProtoParser struct{
 	jsonProto          string
 	jsonProtoQueryRoot *jsonquery.Node
 	protoMap           map[string]interface{}
+
+	TargetLanguage	   string
 }
 //--------------------------------------------------------------------
 type Module struct {
@@ -47,7 +49,8 @@ type ParameterData struct{
 func NewProtoParser(proto string, protoFilename string) (*ProtoParser, error){
 
     proto += "\n"
-	pparser, err := protoparser.Parse(strings.NewReader(proto),
+
+    pparser, err := protoparser.Parse(strings.NewReader(proto),
 									protoparser.WithFilename(protoFilename),
 									protoparser.WithBodyIncludingComments(true))
 
@@ -71,12 +74,35 @@ func NewProtoParser(proto string, protoFilename string) (*ProtoParser, error){
 		return nil, fmt.Errorf("Failed to parse JSON Proto to JsonQuery: %v", err)
 	}
 
-	return &ProtoParser{pparser: pparser,
+	pp := &ProtoParser{pparser: pparser,
 		proto:              proto,
 		jsonProto:          string(jsonProto),
 		jsonProtoQueryRoot: root,
-		protoMap:           protoMap}, nil
+		protoMap:           protoMap}
 
+	pp.TargetLanguage = pp.getTargetLanguage()
+
+	if pp.TargetLanguage == ""{
+		return nil, fmt.Errorf("openffi_target_lang is not set in IDL")
+	}
+
+	return pp, nil
+}
+//--------------------------------------------------------------------
+func (this *ProtoParser) getTargetLanguage() string{
+
+	// get target language
+	var targetLang string
+	comments := jsonquery.Find(this.jsonProtoQueryRoot, "//ProtoBody/*/Comments/*/Raw")
+	for _, comment := range comments{
+		if strings.Contains(comment.InnerText(), "openffi_target_lang:"){
+			targetLang = comment.InnerText()
+			targetLang = targetLang[strings.Index(targetLang, "\"")+1 : strings.LastIndex(targetLang, "\"")]
+			break
+		}
+	}
+
+	return targetLang
 }
 //--------------------------------------------------------------------
 func (this *ProtoParser) GetProtoFileName() string{

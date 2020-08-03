@@ -11,6 +11,7 @@ type TemplateParameters struct {
 	ProtoIDLFilename       		string
 	ProtoIDLFilenameNoExtension string
 	ProtobufFilename       		string
+	TargetLanguage				string
 
 	Modules []*TemplateModuleParameters
 }
@@ -49,7 +50,7 @@ func (this *TemplateFunctionParameterData) PointerIfNeeded(prefix string) string
 	}
 }
 //--------------------------------------------------------------------
-func NewTemplateParameters(protoIDLFilename string, outputFileSuffix string) (*TemplateParameters, error){
+func NewTemplateParameters(protoIDLFilename string, outputFileSuffix string, targetLanguage string) (*TemplateParameters, error){
 
 	extensionIndex := strings.LastIndex(protoIDLFilename, ".")
 	if extensionIndex == -1{
@@ -62,6 +63,7 @@ func NewTemplateParameters(protoIDLFilename string, outputFileSuffix string) (*T
 		ProtoIDLFilename: protoIDLFilename,
 		ProtoIDLFilenameNoExtension: protoFilenameWithoutExtension,
 		ProtobufFilename: protoFilenameWithoutExtension + outputFileSuffix,
+		TargetLanguage: targetLanguage,
 	}
 
 	gtp.Modules = make([]*TemplateModuleParameters, 0)

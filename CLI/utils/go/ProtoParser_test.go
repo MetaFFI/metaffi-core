@@ -7,6 +7,7 @@ func TestProtoParser(t *testing.T) {
 	proto := `
 syntax = "proto3";
 
+// openffi_target_lang: "go"
 
 //--------------------------------------------------------------------
 service Service1 { // openffi_module: ""
