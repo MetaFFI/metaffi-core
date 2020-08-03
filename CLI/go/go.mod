@@ -3,7 +3,7 @@ module github.com/GreenFuze/OpenFFI/CLI/go
 go 1.12
 
 require (
-	github.com/GreenFuze/OpenFFI/CLI/utils/go v0.0.0-20200802070239-aaec5abcfec0
+	github.com/GreenFuze/OpenFFI/CLI/utils/go v0.0.0-20200803042812-d21c651cfe7a
 	github.com/Masterminds/goutils v1.1.0 // indirect
 	github.com/Masterminds/semver v1.5.0 // indirect
 	github.com/Masterminds/sprig v2.22.0+incompatible

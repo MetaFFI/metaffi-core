@@ -13,9 +13,11 @@ import "github.com/golang/protobuf/proto"
 // import all modules
 import(
 {{range $mindex, $m := .Modules}}
-	m{{$mindex}} "{{$m.Name}}"
+	. "{{$m.Name}}"
 {{end}}
 )
+
+func main(){} // main function must be declared to create dynamic library
 
 func errToOutError(out_err **C.char, out_err_len *C.ulonglong, is_error *C.char, customText string, err error){
 	*is_error = 1
@@ -59,7 +61,7 @@ func Foreign{{$f.ForeignFunctionName}}(in_params *C.char, in_params_len C.ulongl
 	}
 	
 	// call original function
-	{{range $index, $elem := $f.ExpandedReturn}}{{if $index}},{{end}}{{$elem.Name}}{{end}}{{if $f.ExpandedReturn}} := {{end}}m{{$mindex}}.{{$f.ForeignFunctionName}}({{range $index, $elem := $f.ExpandedParameters}}{{if $index}},{{end}} req.{{$elem.DereferenceIfNeeded}}{{end}})
+	{{range $index, $elem := $f.ExpandedReturn}}{{if $index}},{{end}}{{$elem.Name}}{{end}}{{if $f.ExpandedReturn}} := {{end}}{{$f.ForeignFunctionName}}({{range $index, $elem := $f.ExpandedParameters}}{{if $index}},{{end}}{{$elem.DereferenceIfNeeded "req."}}{{end}})
 	
 	ret := {{$f.ProtobufResponseStruct}}{}
 
@@ -70,7 +72,7 @@ func Foreign{{$f.ForeignFunctionName}}(in_params *C.char, in_params_len C.ulongl
 		errToOutError(out_ret, out_ret_len, is_error, "Error returned", err)
 		return
 	} else {
-		ret.{{$elem.Name}} = {{$elem.PointerIfNeeded}}
+		ret.{{$elem.Name}} = {{$elem.PointerIfNeeded ""}}
 	}	
 	{{end}}
 
@@ -82,8 +84,9 @@ func Foreign{{$f.ForeignFunctionName}}(in_params *C.char, in_params_len C.ulongl
 	}
 
 	// write serialized results to out_ret
-	*out_ret = C.CString(serializedRet)
-	*out_ret_len = C.ulonglong(len(serializedRet))
+	serializedRetStr := string(serializedRet)
+	*out_ret = C.CString(serializedRetStr)
+	*out_ret_len = C.ulonglong(len(serializedRetStr))
 
 	// === fill out_params
 	serializedParams, err := proto.Marshal(&req)
@@ -93,8 +96,9 @@ func Foreign{{$f.ForeignFunctionName}}(in_params *C.char, in_params_len C.ulongl
 	}
 	
 	// write serialized parameters to out_params
-	*out_ret = C.CString(serializedParams)
-	*out_ret_len = C.ulonglong(len(serializedParams))
+	serializedParamsStr := string(serializedParams)
+	*out_ret = C.CString(serializedParamsStr)
+	*out_ret_len = C.ulonglong(len(serializedParamsStr))
 	
 }
 

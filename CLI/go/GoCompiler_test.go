@@ -7,22 +7,22 @@ import (
 	. "github.com/GreenFuze/OpenFFI/CLI/utils/go"
 )
 
-
 //--------------------------------------------------------------------
 func TestProtoParserToJSON(t *testing.T){
 
 	proto := `
 syntax = "proto3";
 
+
 //--------------------------------------------------------------------
-service Service1 { // module containing foreign functions
+service Service1 { // openffi_module: ""
     rpc F1 (Params1) returns (Return1); 
 	rpc F2 (Params2) returns (Return2);
 }
 //--------------------------------------------------------------------
 // param1 comment
 message Params1 {
-    repeated string p1 = 1; // param1 inline-comment
+    repeated string p1 = 1; // openffi_param: "byval"
 }
 //--------------------------------------------------------------------
 message Return1 {
@@ -31,7 +31,7 @@ message Return1 {
 //--------------------------------------------------------------------
 message Params2 {
     string p21 = 1;
-	Params1 p22 = 2;
+	Params1 p22 = 2; 
 }
 //--------------------------------------------------------------------
 message Return2 {
@@ -56,8 +56,8 @@ message Return2 {
 	}
 
 	// Test Service1
-	if mods[0].Name != "Service1"{
-		t.Fatalf("Expected service name to be Service1. Found: %v", mods[0].Name)
+	if mods[0].Name != ""{
+		t.Fatalf("Expected service name to be empty. Found: %v", mods[0].Name)
 	}
 
 	if len(mods[0].Functions) != 2{
@@ -89,6 +89,7 @@ message Return2 {
 		Name:          "p1",
 		Type:          "string",
 		IsArray:       true,
+		PassParam:	   mods[0].Functions[0].Parameters[0].PassParam, // to ignore this param in the comparison
 	}
 	if *mods[0].Functions[0].Parameters[0] != expectedParameterF1{
 		t.Fatalf("F1 parameters parsed incorrectly. Got: %v", *mods[0].Functions[0].Parameters[0])
@@ -98,9 +99,10 @@ message Return2 {
 		Name:          "r1",
 		Type:          "string",
 		IsArray:       false,
+		PassParam:	   mods[0].Functions[0].Return[0].PassParam, // to ignore this param in the comparison
 	}
 	if *mods[0].Functions[0].Return[0] != expectedReturnF1{
-		t.Fatalf("F1 Return parsed incorrectly. Got: %v", *mods[0].Functions[0].Return[0])
+		t.Fatalf("R1 Return parsed incorrectly. Got: %v", *mods[0].Functions[0].Return[0])
 	}
 
 
@@ -129,6 +131,7 @@ message Return2 {
 		Name:          "p21",
 		Type:          "string",
 		IsArray:       false,
+		PassParam:	   mods[0].Functions[1].Parameters[0].PassParam, // to ignore this param in the comparison
 	}
 	if *mods[0].Functions[1].Parameters[0] != expectedParameterFP21{
 		t.Fatalf("F2 parameter p21 parsed incorrectly. Got: %v", *mods[0].Functions[1].Parameters[0])
@@ -138,6 +141,7 @@ message Return2 {
 		Name:          "p22",
 		Type:          "Params1",
 		IsArray:       false,
+		PassParam:	   mods[0].Functions[1].Parameters[1].PassParam, // to ignore this param in the comparison
 	}
 	if *mods[0].Functions[1].Parameters[1] != expectedParameterFP22{
 		t.Fatalf("F2 parameters p22 parsed incorrectly. Got: %v", *mods[0].Functions[1].Parameters[1])
@@ -147,6 +151,7 @@ message Return2 {
 		Name:          "r21",
 		Type:          "string",
 		IsArray:       false,
+		PassParam:	   mods[0].Functions[1].Return[0].PassParam, // to ignore this param in the comparison
 	}
 	if *mods[0].Functions[1].Return[0] != expectedReturnFR21{
 		t.Fatalf("F2 Return r21 parsed incorrectly. Got: %v", *mods[0].Functions[1].Return[0])
@@ -156,6 +161,7 @@ message Return2 {
 		Name:          "r22",
 		Type:          "Return1",
 		IsArray:       false,
+		PassParam:	   mods[0].Functions[1].Return[1].PassParam, // to ignore this param in the comparison
 	}
 	if *mods[0].Functions[1].Return[1] != expectedReturnFR22{
 		t.Fatalf("F2 Return r22 parsed incorrectly. Got: %v", *mods[0].Functions[1].Return[1])
