@@ -34,18 +34,18 @@ type TemplateFunctionParameterData struct {
 	IsComplex bool
 	ParamPass *PassMethod
 }
-func (this *TemplateFunctionParameterData) DereferenceIfNeeded() string{
+func (this *TemplateFunctionParameterData) DereferenceIfNeeded(prefix string) string{
 	if this.IsComplex{
-		return "*"+this.Name
+		return "*"+prefix+this.Name
 	} else {
-		return this.Name
+		return prefix+this.Name
 	}
 }
-func (this *TemplateFunctionParameterData) PointerIfNeeded() string{
+func (this *TemplateFunctionParameterData) PointerIfNeeded(prefix string) string{
 	if this.IsComplex{
-		return "&"+this.Name
+		return "&"+prefix+this.Name
 	} else {
-		return this.Name
+		return prefix+this.Name
 	}
 }
 //--------------------------------------------------------------------
