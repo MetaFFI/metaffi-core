@@ -135,10 +135,6 @@ func (this *TemplateParameters) Generate(templateName string, templateText strin
 
 	for _, m := range this.Modules {
 
-		if m.Name == ""{
-			return "", fmt.Errorf("Module name is empty")
-		}
-
 		for _, f := range m.Functions {
 			if f.ForeignFunctionName == "" {
 				return "", fmt.Errorf("ForeignFunctionName is empty")
