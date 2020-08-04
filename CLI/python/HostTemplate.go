@@ -61,7 +61,7 @@ def {{$f.ForeignFunctionName}}({{range $index, $elem := $f.ExpandedParameters}}{
 	load_xllr()
 	
 	# call function
-	runtime_plugin = """xllr.python""".encode("utf-8")
+	runtime_plugin = """xllr.{{TargetLanguage}}""".encode("utf-8")
 	module_name = """{{$pfn}}_openffi_guest""".encode("utf-8")
 	func_name = """Foreign{{$f.ForeignFunctionName}}""".encode("utf-8")
 

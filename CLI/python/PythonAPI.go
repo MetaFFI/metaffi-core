@@ -33,11 +33,6 @@ func compile_idl(idlPath string, outPath string, direction compileDirection) err
 		return fmt.Errorf("Failed to create compiler for proto file %v. Error: %v", idlPath, err)
     }
 
-	code, err := compiler.CompileGuest()
-	if err != nil{
-		return fmt.Errorf("Failed to generate code. Error: %v", err)
-	}
-
 	// write to output path
 	if _, err = os.Stat(outPath); os.IsNotExist(err) {
 		err = os.Mkdir(outPath, os.ModeDir)
@@ -48,13 +43,22 @@ func compile_idl(idlPath string, outPath string, direction compileDirection) err
 	}
 
 	var outputPostfix string
+	var code string
 	switch direction {
 		case FROM_HOST:
 			outputPostfix = "_openffi_host.py"
+			code, err = compiler.CompileHost()
+            if err != nil{
+                return fmt.Errorf("Failed to generate code. Error: %v", err)
+            }
 			break
 
 		case TO_GUEST:
 			outputPostfix = "_openffi_guest.py"
+			code, err = compiler.CompileGuest()
+            if err != nil{
+                return fmt.Errorf("Failed to generate code. Error: %v", err)
+            }
 			break
 
 		default:

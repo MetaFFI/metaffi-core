@@ -97,8 +97,8 @@ func Foreign{{$f.ForeignFunctionName}}(in_params *C.char, in_params_len C.ulongl
 	
 	// write serialized parameters to out_params
 	serializedParamsStr := string(serializedParams)
-	*out_ret = C.CString(serializedParamsStr)
-	*out_ret_len = C.ulonglong(len(serializedParamsStr))
+	*out_params = C.CString(serializedParamsStr)
+	*out_params_len = C.ulonglong(len(serializedParamsStr))
 	
 }
 

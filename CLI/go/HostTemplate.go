@@ -10,12 +10,22 @@ package main
 import "fmt"
 import "unsafe"
 import "github.com/golang/protobuf/proto"
+import "runtime"
 
+// #cgo LDFLAGS: -L. -ldl
 /*
+#include <stdlib.h>
+#include <stdint.h>
 void* xllr_handle = NULL;
-void* call = NULL;
+void (*pcall)(const char*, uint32_t,
+			 const char*, uint32_t,
+			 const char*, uint32_t,
+			 unsigned char*, uint64_t,
+			 unsigned char**, uint64_t*,
+			 unsigned char**, uint64_t*,
+			 uint8_t*) = NULL;
 
-#ifdef _WIN32
+#ifdef _WIN32 //// --- START WINDOWS ---
 #include <Windows.h>
 void* load_library(const char* name, char** out_err)
 {
@@ -42,7 +52,20 @@ const char* free_library(void* lib) // return error string. null if no error.
 
 	return NULL;
 }
-#else
+
+void* load_symbol(void* handle, const char* name, char** out_err)
+{
+	void* res = GetProcAddress(handle, name);
+	if(!res)
+	{
+		*out_err = GetLastError();
+		return NULL;
+	}
+
+	return res;
+}
+
+#else // ------ START POSIX ----
 #include <dlfcn.h>
 void* load_library(const char* name, char** out_err)
 {
@@ -59,28 +82,60 @@ const char* free_library(void* lib)
 {
 	if(dlclose(lib))
 	{
-		*out_err = dlerror();
+		return dlerror();
 	}
 
 	return NULL;
 }
 
-#endif
+void* load_symbol(void* handle, const char* name, char** out_err)
+{
+	void* res = dlsym(handle, name);
+	if(!res)
+	{
+		*out_err = dlerror();
+		return NULL;
+	}
+
+	return res;
+}
+
+#endif // ------- END POSIX -----
+
+void call(
+		const char* runtime_plugin, uint32_t runtime_plugin_len,
+		const char* module_name, uint32_t module_name_len,
+		const char* func_name, uint32_t func_name_len,
+		unsigned char* in_params, uint64_t in_params_len,
+		unsigned char** out_params, uint64_t* out_params_len,
+		unsigned char** out_ret, uint64_t* out_ret_len,
+		uint8_t* is_error
+)
+{
+	pcall(runtime_plugin, runtime_plugin_len,
+			module_name, module_name_len,
+			func_name, func_name_len,
+			in_params, in_params_len,
+			out_params, out_params_len,
+			out_ret, out_ret_len,
+			is_error);
+}
+
 */
 import "C"
 
 func freeXLLR() error{
-	errstr := free_library(C.xllr_handle)
+	errstr := C.free_library(C.xllr_handle)
 
 	if errstr != nil{
-		return fmt.Sprintf("Failed to free XLLR: %v", C.GoString(errstr))
+		return fmt.Errorf("Failed to free XLLR: %v", C.GoString(errstr))
 	}
 
 	return nil
 }
 
 func loadXLLR() error{
-	var name string
+	var name *C.char
 	if runtime.GOOS == "darwin" {
 		name = C.CString("xllr.dylib")
 	}else if runtime.GOOS == "windows"{
@@ -89,10 +144,10 @@ func loadXLLR() error{
 		name = C.CString("xllr.so")
 	}
 
-	defer C.free(name)
+	defer C.free(unsafe.Pointer(name))
 
 	var out_err *C.char
-	if C.xllr_handle = C.load_library(name, unsafe.pointer(out_err))
+	if C.xllr_handle = C.load_library(name, &out_err)
 	C.xllr_handle == nil{ // error has occurred
 		return fmt.Errorf("Failed to load XLLR: %v", C.GoString(out_err))
 	}
@@ -112,73 +167,75 @@ func {{$f.ForeignFunctionName}}({{range $index, $elem := $f.ExpandedParameters}}
 	// serialize parameters
 	req := {{$f.ProtobufRequestStruct}}{}
 	{{range $index, $elem := $f.ExpandedParameters}}
-	req.{{$elem.Name}} = {{$elem.Name}}
+	req.{{$elem.Name}} = {{$elem.PointerIfNeeded ""}}
 	{{end}}
 
 	// load XLLR
-	loadXLLR()
+	err = loadXLLR()
+	if err != nil{
+		err = fmt.Errorf("Failed to marshal return values into protobuf. Error: %v", err)
+		return
+	}
 	
 	// call function
-	runtime_plugin := "xllr.go"
+	runtime_plugin := "xllr.{{TargetLanguage}}"
 	pruntime_plugin := C.CString(runtime_plugin)
-	defer C.free(pruntime_plugin)
+	defer C.free(unsafe.Pointer(pruntime_plugin))
 
 	module_name := "{{$pfn}}_openffi_guest"
 	pmodule_name := C.CString(module_name)
-	defer C.free(pmodule_name)
+	defer C.free(unsafe.Pointer(pmodule_name))
 
 	func_name := "Foreign{{$f.ForeignFunctionName}}"
 	pfunc_name := C.CString(func_name)
-	defer C.free(pfunc_name)
+	defer C.free(unsafe.Pointer(pfunc_name))
 
 	// in parameters
-	in_params, err := proto.Marshal(req)
+	in_params, err := proto.Marshal(&req)
 	if err != nil{
 		err = fmt.Errorf("Failed to marshal return values into protobuf. Error: %v", err)
 		return
 	}
 
-	in_params_len = c_uint64(len(in_params))
+	var pin_params *C.uchar
+	pin_params = (*C.uchar)(unsafe.Pointer(&in_params[0]))
+	in_params_len := C.ulong(len(in_params))
 
-	var out_ret *C.char
-	*out_ret = nil
+	var out_ret *C.uchar
+	var out_ret_len C.ulong
+	out_ret_len = C.ulong(0)
 
-	var out_ret_len *C.ulonglong
-	*out_ret_len = 0 
+	var out_params *C.uchar
+	var out_params_len C.ulong
+	out_params_len = C.ulong(0)
 
-	var out_params *C.char
-	*out_params = nil
+	var out_is_error C.uchar
+	out_is_error = C.uchar(0)
 
-	var out_params_len *C.ulonglong
-	*out_params_len = 0
-
-	var out_is_error *C.char
-	*out_is_error = 0
-
-	C.call(runtime_plugin, len(runtime_plugin),
-			pmodule_name, len(module_name),
-			pfunc_name, len(func_name),
+	C.call(pruntime_plugin, C.uint(len(runtime_plugin)),
+			pmodule_name, C.uint(len(module_name)),
+			pfunc_name, C.uint(len(func_name)),
 			pin_params, in_params_len,
-			&out_params, out_params_len,
-			&out_ret, out_ret_len,
+			&out_params, &out_params_len,
+			&out_ret, &out_ret_len,
 			&out_is_error)
 
 	// check errors
-	if *out_is_error != 0{
-		err = fmt.Errorf("Function failed. Error: %v", C.GoStringN(out_ret, *out_ret_len))
+	if out_is_error != 0{
+		err = fmt.Errorf("Function failed. Error: %v", string(C.GoBytes(unsafe.Pointer(out_ret), C.int(out_ret_len))))
 		return
 	}
 
 	// deserialize result	
 	ret := {{$f.ProtobufResponseStruct}}{}
-	out_ret_buf := C.GoStringN(out_ret, *out_ret_len)
-	err = proto.Unmarshal([]byte(out_ret_buf), &ret)
+	out_ret_buf := C.GoBytes(unsafe.Pointer(out_ret), C.int(out_ret_len))
+	err = proto.Unmarshal(out_ret_buf, &ret)
 	if err != nil{
 		err = fmt.Errorf("Failed to unmarshal return values into protobuf. Error: %v", err)
 		return
 	}
 
-	return {{range $index, $elem := $f.ExpandedReturn}}{{if $index}},{{end}}ret.{{$elem.Name}}{{end}}, nil
+	return {{range $index, $elem := $f.ExpandedReturn}}{{if $index}},{{end}}{{$elem.DereferenceIfNeeded "ret."}}{{end}}, nil
 
 }
 {{end}}
