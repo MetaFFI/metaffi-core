@@ -134,7 +134,13 @@ func freeXLLR() error{
 	return nil
 }
 
+// TODO: make sure it is called only once!
 func loadXLLR() error{
+
+	if C.xllr_handle != nil && C.pcall != nil{
+        return nil
+    }
+
 	var name *C.char
 	if runtime.GOOS == "darwin" {
 		name = C.CString("xllr.dylib")
@@ -146,11 +152,18 @@ func loadXLLR() error{
 
 	defer C.free(unsafe.Pointer(name))
 
+	// load all other exported functions from XLLR
 	var out_err *C.char
 	if C.xllr_handle = C.load_library(name, &out_err)
 	C.xllr_handle == nil{ // error has occurred
 		return fmt.Errorf("Failed to load XLLR: %v", C.GoString(out_err))
 	}
+
+	callstr := C.CString("call")
+    defer C.free(callstr)
+    if C.pcall = C.load_symbol(C.xllr_handle, C.CString("call"), &out_err); C.pcall == nil{
+        return fmt.Errorf("Failed to load call function: %v", C.GoString(out_err))
+    }
 
 	return nil
 }
