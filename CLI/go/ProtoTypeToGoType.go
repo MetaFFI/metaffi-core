@@ -1,4 +1,4 @@
-package openffi_cli
+package main
 
 //--------------------------------------------------------------------
 func ProtoTypeToGoType(prototype string) (res string, isComplexType bool){

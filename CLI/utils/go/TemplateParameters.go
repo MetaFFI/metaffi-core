@@ -12,6 +12,7 @@ type TemplateParameters struct {
 	ProtoIDLFilenameNoExtension string
 	ProtobufFilename       		string
 	TargetLanguage				string
+	protoTypeToTargetType 		func(string)(string, bool)
 
 	Modules []*TemplateModuleParameters
 }
@@ -50,7 +51,7 @@ func (this *TemplateFunctionParameterData) PointerIfNeeded(prefix string) string
 	}
 }
 //--------------------------------------------------------------------
-func NewTemplateParameters(protoIDLFilename string, outputFileSuffix string, targetLanguage string) (*TemplateParameters, error){
+func NewTemplateParameters(protoIDLFilename string, protobufFilenameSuffix string, targetLanguage string, protoTypeToTargetType func(string)(string, bool)) (*TemplateParameters, error){
 
 	extensionIndex := strings.LastIndex(protoIDLFilename, ".")
 	if extensionIndex == -1{
@@ -62,8 +63,9 @@ func NewTemplateParameters(protoIDLFilename string, outputFileSuffix string, tar
 	gtp := &TemplateParameters{
 		ProtoIDLFilename: protoIDLFilename,
 		ProtoIDLFilenameNoExtension: protoFilenameWithoutExtension,
-		ProtobufFilename: protoFilenameWithoutExtension + outputFileSuffix,
+		ProtobufFilename: protoFilenameWithoutExtension + protobufFilenameSuffix,
 		TargetLanguage: targetLanguage,
+		protoTypeToTargetType: protoTypeToTargetType,
 	}
 
 	gtp.Modules = make([]*TemplateModuleParameters, 0)
@@ -71,12 +73,12 @@ func NewTemplateParameters(protoIDLFilename string, outputFileSuffix string, tar
 	return gtp, nil
 }
 //--------------------------------------------------------------------
-func NewTemplateFunctionParameterData(p *ParameterData) *TemplateFunctionParameterData{
+func NewTemplateFunctionParameterData(p *ParameterData, protoTypeToTargetType func(string)(string, bool)) *TemplateFunctionParameterData{
 	htfp := &TemplateFunctionParameterData{
 		Name: strings.Title(p.Name),
 	}
 
-	htfp.Type, htfp.IsComplex = ProtoTypeToGoType(p.Type)
+	htfp.Type, htfp.IsComplex = protoTypeToTargetType(p.Type)
 	if p.IsArray{
 		htfp.Type = fmt.Sprintf("[]%v", htfp.Type)
 	}
@@ -108,11 +110,11 @@ func (this *TemplateParameters) AddModule(m *Module){
 
 		// generate parameters
 		for _, p := range f.Parameters{
-			funcParams.ExpandedParameters = append(funcParams.ExpandedParameters, NewTemplateFunctionParameterData(p))
+			funcParams.ExpandedParameters = append(funcParams.ExpandedParameters, NewTemplateFunctionParameterData(p, this.protoTypeToTargetType))
 		}
 
 		for _, r := range f.Return{
-			funcParams.ExpandedReturn = append(funcParams.ExpandedReturn, NewTemplateFunctionParameterData(r))
+			funcParams.ExpandedReturn = append(funcParams.ExpandedReturn, NewTemplateFunctionParameterData(r, this.protoTypeToTargetType))
 		}
 
 		modParams.Functions = append(modParams.Functions, funcParams)
