@@ -1,14 +1,14 @@
-import PythonFuncs_openffi_host
+import PythonFuncsOpenFFIHost
 
 # call foreign functions via OpenFFI
 
 # Prints hello world.
-print('Calling PythonFuncs_openffi_host.hello_world()')
-PythonFuncs_openffi_host.hello_world()  # -- calling hello_world
+print('Calling PythonFuncsOpenFFIHost.hello_world()')
+PythonFuncsOpenFFIHost.hello_world()  # -- calling hello_world
 
 # 10/2
-print('Calling PythonFuncs_openffi_host.div(10, 2)')
-res = PythonFuncs_openffi_host.div(10, 2)  # -- calling div
+print('Calling PythonFuncsOpenFFIHost.div(10, 2)')
+res = PythonFuncsOpenFFIHost.div(10, 2)  # -- calling div
 if res != 5.0:
 	print('10/2 expects 5.0. Returned: {}'.format(res))
 	exit(1)
@@ -16,23 +16,23 @@ print('div(10,2)={}'.format(res))
 
 # 10.5/2 - should fail. parameters are expected to be integers.
 try:
-	print('Calling PythonFuncs_openffi_host.div(10.5, 2)')
-	PythonFuncs_openffi_host.div(10.5, 2)  # -- calling div
+	print('Calling PythonFuncsOpenFFIHost.div(10.5, 2)')
+	PythonFuncsOpenFFIHost.div(10.5, 2)  # -- calling div
 except TypeError:
 	print('TypeError (as expected!) - div(10.5, 2) is illegal, Parameters should be integers as defined in the IDL (PythonFuncs.proto)')
 
 # 10/0 - should fail. division by 0.
 try:
-	print('Calling PythonFuncs_openffi_host.div(10, 0)')
-	PythonFuncs_openffi_host.div(10, 0)  # -- calling div
+	print('Calling PythonFuncsOpenFFIHost.div(10, 0)')
+	PythonFuncsOpenFFIHost.div(10, 0)  # -- calling div
 except RuntimeError as err:
 	if 'ZeroDivisionError' in str(err):
 		print('ZeroDivisionError (as expected!) - div(10, 0) is illegal, cannot divide by zero')
 
 
 # concatenate strings
-print("Calling PythonFuncs_openffi_host.concat_strings(['A', 'B', 'C'])")
-concat = PythonFuncs_openffi_host.concat_strings(['A', 'B', 'C'])  # -- calling concat_strings
+print("Calling PythonFuncsOpenFFIHost.concat_strings(['A', 'B', 'C'])")
+concat = PythonFuncsOpenFFIHost.concat_strings(['A', 'B', 'C'])  # -- calling concat_strings
 if concat != 'A, B, C':
 	print("Expected 'A, B, C'. Returned: {}".format(concat))
 	exit(1)
@@ -49,15 +49,15 @@ gdata.boss_wins = 1
 gdata.player = 'Gordon Freeman'
 
 # calculates (pawn_wins + (boss_wins*5)) and returns complex type "game_score" defined in PythonFuncs_pb2
-print("Calling PythonFuncs_openffi_host.calculate_score(gdata)")
-gscore = PythonFuncs_openffi_host.calculate_score(gdata)  # -- calling calculate_score
+print("Calling PythonFuncsOpenFFIHost.calculate_score(gdata)")
+gscore = PythonFuncsOpenFFIHost.calculate_score(gdata)  # -- calling calculate_score
 if gscore.player != 'Gordon Freeman' or gscore.score != 10:
 	print("Expected player to be 'Gordon Freeman' and score to be 10. Returned player: {}, score: {}".format(gscore.player, gscore.score))
 	exit(1)
 
 # generates score returns an array of game_score complex type AND the sum of their score
-print("Calling PythonFuncs_openffi_host.gen_scores()")
-gengscore, total_sum = PythonFuncs_openffi_host.gen_scores()  # -- calling gen_scores
+print("Calling PythonFuncsOpenFFIHost.gen_scores()")
+gengscore, total_sum = PythonFuncsOpenFFIHost.gen_scores()  # -- calling gen_scores
 if len(gengscore) != 2:
 	print("Returned array size expected to be 2. Returned: {}".format(len(gengscore)))
 	exit(1)

@@ -6,7 +6,7 @@ protoc --python_out=. PythonFuncs.proto
 
 # compile openffi
 echo Generating PythonFuncs_openffi_guest.py and PythonFuncs_openffi_host.py by compiling PythonFuncs.proto with openffi
-openffi -c --idl PythonFuncs.proto -f python -t python
+openffi -c --idl PythonFuncs.proto -f python -t
 
 # run examples
 echo Running Example Functions
