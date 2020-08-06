@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"testing"
 	. "github.com/GreenFuze/OpenFFI/CLI/utils/go"
+	"testing"
 )
 
 
@@ -12,6 +12,8 @@ func TestProtoParserToJSON(t *testing.T){
 
 	proto := `
 syntax = "proto3";
+
+//		    	   openffi_target_lang:"python"
 
 //--------------------------------------------------------------------
 service Service1 { // module containing foreign functions
@@ -160,12 +162,13 @@ message Return2 {
 		t.Fatalf("F2 Return r22 parsed incorrectly. Got: %v", *mods[0].Functions[1].Return[1])
 	}
 
-	testHostTemplate(mods, t)
+	testGuestTemplate(mods, parser.TargetLanguage, t)
+	testHostTemplate(mods, parser.TargetLanguage, t)
 }
 //--------------------------------------------------------------------
-func testGuestTemplate(mods []*Module, t *testing.T){
+func testGuestTemplate(mods []*Module, targetLang string, t *testing.T){
 
-	gtp, err := NewGuestTemplateParameters("test.proto")
+	gtp, err := NewTemplateParameters("test.proto", PROTOBUF_PYTHON_SUFFIX, targetLang, ProtoTypeToPythonType)
 	if err != nil{
 		t.Fatal(err)
 	}
@@ -174,17 +177,17 @@ func testGuestTemplate(mods []*Module, t *testing.T){
 		gtp.AddModule(m)
 	}
 
-	guestCode, err := gtp.Generate()
+	_, err = gtp.Generate("guest", GuestTemplate)
 	if err != nil{
 		t.Fatalf("Failed to generate guest code: %v", err)
 	}
 
-	fmt.Println(guestCode)
+	//fmt.Println(guestCode)
 }
 //--------------------------------------------------------------------
-func testHostTemplate(mods []*Module, t *testing.T){
+func testHostTemplate(mods []*Module, targetLang string, t *testing.T){
 
-	htp, err := NewHostTemplateParameters("test.proto")
+	htp, err := NewTemplateParameters("test.proto", PROTOBUF_PYTHON_SUFFIX, targetLang, ProtoTypeToPythonType)
 	if err != nil{
 		t.Fatal(err)
 	}
@@ -193,11 +196,11 @@ func testHostTemplate(mods []*Module, t *testing.T){
 		htp.AddModule(m)
 	}
 
-	guestCode, err := htp.Generate()
+	hostCode, err := htp.Generate("host", HostTemplate)
 	if err != nil{
 		t.Fatalf("Failed to generate guest code: %v", err)
 	}
 
-	fmt.Println(guestCode)
+	fmt.Println(hostCode)
 }
 //--------------------------------------------------------------------

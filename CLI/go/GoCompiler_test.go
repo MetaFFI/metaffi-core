@@ -1,10 +1,8 @@
 package main
 
 import (
-	"fmt"
-	"io/ioutil"
-	"testing"
 	. "github.com/GreenFuze/OpenFFI/CLI/utils/go"
+	"testing"
 )
 
 //--------------------------------------------------------------------
@@ -13,6 +11,7 @@ func TestProtoParserToJSON(t *testing.T){
 	proto := `
 syntax = "proto3";
 
+// openffi_target_lang:    "go"
 
 //--------------------------------------------------------------------
 service Service1 { // openffi_module: ""
@@ -167,13 +166,13 @@ message Return2 {
 		t.Fatalf("F2 Return r22 parsed incorrectly. Got: %v", *mods[0].Functions[1].Return[1])
 	}
 
-	testGuestTemplate(mods, t)
-	testHostTemplate(mods, t)
+	testGuestTemplate(mods, parser.TargetLanguage, t)
+	testHostTemplate(mods, parser.TargetLanguage, t)
 }
 //--------------------------------------------------------------------
-func testGuestTemplate(mods []*Module, t *testing.T){
+func testGuestTemplate(mods []*Module, targetLang string, t *testing.T){
 
-	htp, err := NewTemplateParameters("test.proto", ".go")
+	htp, err := NewTemplateParameters("test.proto", PROTOBUF_GO_SUFFIX, targetLang, ProtoTypeToGoType)
 	if err != nil{
 		t.Fatal(err)
 	}
@@ -182,22 +181,17 @@ func testGuestTemplate(mods []*Module, t *testing.T){
 		htp.AddModule(m)
 	}
 
-	hostCode, err := htp.Generate("guest", GuestTemplate)
+	_, err = htp.Generate("guest", GuestTemplate)
 	if err != nil{
 		t.Fatalf("Failed to generate guest code: %v", err)
 	}
 
-	fmt.Println(hostCode)
-
-	if err = ioutil.WriteFile("guest.go.output", []byte(hostCode), 0600); err != nil{
-		t.Fatalf("Failed to write guest code: %v", err)
-	}
-
+	//fmt.Println(guestCode)
 }
 //--------------------------------------------------------------------
-func testHostTemplate(mods []*Module, t *testing.T){
+func testHostTemplate(mods []*Module, targetLang string, t *testing.T){
 
-	htp, err := NewTemplateParameters("test.proto", ".go")
+	htp, err := NewTemplateParameters("test.proto", PROTOBUF_GO_SUFFIX, targetLang, ProtoTypeToGoType)
 	if err != nil{
 		t.Fatal(err)
 	}
@@ -206,15 +200,12 @@ func testHostTemplate(mods []*Module, t *testing.T){
 		htp.AddModule(m)
 	}
 
-	hostCode, err := htp.Generate("host", HostTemplate)
+	_, err = htp.Generate("host", HostTemplate)
 	if err != nil{
 		t.Fatalf("Failed to generate guest code: %v", err)
 	}
 
-	fmt.Println(hostCode)
+	//fmt.Println(hostCode)
 
-	if err = ioutil.WriteFile("host.go.output", []byte(hostCode), 0600); err != nil{
-		t.Fatalf("Failed to write host code: %v", err)
-	}
 }
 //--------------------------------------------------------------------

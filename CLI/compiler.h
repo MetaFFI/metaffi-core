@@ -18,9 +18,10 @@ public:
 	compiler(const compiler&) = delete;
 	compiler(const compiler&&) = delete;
 
-	void compile_to_guest(const std::string& lang);
+	void compile_to_guest();
 	void compile_from_host(const std::vector<std::string>& langs);
 
 private:
 	void compile_from_host(const std::string& lang);
+	std::string get_target_lang() const;
 };

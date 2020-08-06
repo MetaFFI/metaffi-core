@@ -1,34 +1,46 @@
 package main
 
+import "fmt"
+
 //--------------------------------------------------------------------
-func ProtoTypeToGoType(prototype string) (res string, isComplexType bool){
+func ProtoTypeToGoType(prototype string, isArray bool) (typeStr string, isComplex bool){
+
+	isComplex = false
 
 	switch prototype {
 
-		case "double": return "float64", false
-		case "float": return "float32", false
+		case "double": typeStr = "float64"
+		case "float": typeStr = "float32"
 
 		case "fixed32": fallthrough
 		case "int32": fallthrough
 		case "sint32": fallthrough
 		case "sfixed32":
-			return "int32", false
+			typeStr = "int32"
 
 		case "sfixed64": fallthrough
 		case "fixed64": fallthrough
 		case "sint64": fallthrough
-		case "int64": return "int64", false
+		case "int64":
+			typeStr = "int64"
 
-		case "uint32": return "uint32", false
+		case "uint32": typeStr = "uint32"
 
-		case "uint64": return "uint64", false
+		case "uint64": typeStr = "uint64"
 
-		case "bool": return "bool", false
-		case "string": return "string", false
-		case "bytes": return "[]byte", false
+		case "bool": typeStr = "bool"
+		case "string": typeStr = "string"
+		case "bytes": typeStr = "[]byte"
 
+		default:
+			typeStr = prototype
+			isComplex = true
 	}
 
-	return prototype, true
+	if isArray{
+		typeStr = fmt.Sprintf("[]%v", typeStr)
+	}
+
+	return
 }
 //--------------------------------------------------------------------

@@ -23,7 +23,7 @@ func NewCompiler(proto string, protoFilename string) (*Compiler, error) {
 // @protobufFileName - The name of the protobuf python generated
 func (this *Compiler) CompileGuest() (string, error){
 
-	compilerParams, err := NewGuestTemplateParameters(this.parser.GetProtoFileName())
+	compilerParams, err := NewTemplateParameters(this.parser.GetProtoFileName(), PROTOBUF_PYTHON_SUFFIX, this.parser.TargetLanguage, ProtoTypeToPythonType)
 	if err != nil{
 		return "", err
 	}
@@ -39,13 +39,13 @@ func (this *Compiler) CompileGuest() (string, error){
 	}
 
 	// generate guest code
-	return compilerParams.Generate()
+	return compilerParams.Generate("guest", GuestTemplate)
 }
 //--------------------------------------------------------------------
 // @protobufFileName - The name of the protobuf python generated
 func (this *Compiler) CompileHost() (string, error){
 
-	compilerParams, err := NewHostTemplateParameters(this.parser.GetProtoFileName())
+	compilerParams, err := NewTemplateParameters(this.parser.GetProtoFileName(), PROTOBUF_PYTHON_SUFFIX, this.parser.TargetLanguage, ProtoTypeToPythonType)
 	if err != nil{
 		return "", err
 	}
@@ -61,6 +61,6 @@ func (this *Compiler) CompileHost() (string, error){
 	}
 
 	// generate host code
-	return compilerParams.Generate()
+	return compilerParams.Generate("host", HostTemplate)
 }
 //--------------------------------------------------------------------

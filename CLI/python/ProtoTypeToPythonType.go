@@ -1,18 +1,21 @@
 package main
 
+import "fmt"
+
 //--------------------------------------------------------------------
-func ProtoTypeToPythonType(prototype string) string{
+func ProtoTypeToPythonType(prototype string, isArray bool) (typeStr string, isComplex bool){
+
+	isComplex = false
 
 	switch prototype {
 
-		case "double": return "float"
-		case "float": return "float"
+		case "double": fallthrough
+		case "float":
+			typeStr = "float"
 
 		case "int32": fallthrough
 		case "sint32": fallthrough
-		case "sfixed32":
-			return "int"
-
+		case "sfixed32": fallthrough
 		case "int64": fallthrough
 		case "uint32": fallthrough
 		case "uint64": fallthrough
@@ -20,14 +23,21 @@ func ProtoTypeToPythonType(prototype string) string{
 		case "fixed32": fallthrough
 		case "fixed64": fallthrough
 		case "sfixed64":
-			return "int"
+			typeStr = "int"
 
-		case "bool": return "bool"
-		case "string": return "str"
-		case "bytes": return "bytes"
+		case "bool": typeStr = "bool"
+		case "string": typeStr = "str"
+		case "bytes": typeStr = "bytes"
 
+		default:
+			typeStr = prototype
+			isComplex = true
 	}
 
-	return prototype
+	if isArray{
+		typeStr = fmt.Sprintf("List[%v]", typeStr)
+	}
+
+	return
 }
 //--------------------------------------------------------------------

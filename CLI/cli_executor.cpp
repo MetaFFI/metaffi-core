@@ -20,7 +20,7 @@ cli_executor::cli_executor(int argc, char** argv) :
 
 	_compile_options.add_options()
 		("idl", po::value<std::string>() , "IDL containing functions defitions (i.e. foreign functions)")
-		("to-lang,t", po::value<std::string>() , "Language the functions are implemented (i.e. guest language)")
+		("to-lang,t", "Language the functions are implemented as stated in the IDL (i.e. guest language)")
 		("from-langs,f", po::value<std::vector<std::string>>()->multitoken() , "List of languages the functions are called from (i.e. host languages)")
 		("compile-serialization", "Compiles IDL to serialization code (TBD!)")
 		("output,o", po::value<std::string>()->default_value(boost::filesystem::current_path().generic_string()) , "Directory to generate the files (Default: current directory)")
@@ -35,7 +35,7 @@ cli_executor::cli_executor(int argc, char** argv) :
 	_openffi_options.add(_install_options);
 }
 //--------------------------------------------------------------------
-bool cli_executor::parse(void)
+bool cli_executor::parse()
 {
 	// parse command line
 	po::store(po::command_line_parser(this->_argc, this->_argv).options(_openffi_options).run(), vm);
@@ -66,7 +66,7 @@ bool cli_executor::parse(void)
 	
 }
 //--------------------------------------------------------------------
-bool cli_executor::compile(void)
+bool cli_executor::compile()
 {
 	// compile menu
 	po::store(po::command_line_parser(this->_argc, this->_argv).options(_compile_options).allow_unregistered().run(), vm);
@@ -90,7 +90,7 @@ bool cli_executor::compile(void)
 	
 	if(vm.count("to-lang"))
 	{
-		cmp.compile_to_guest(vm["to-lang"].as<std::string>());
+		cmp.compile_to_guest();
 	}
 	
 	if(vm.count("from-langs"))
@@ -107,7 +107,7 @@ bool cli_executor::compile(void)
 	return true;
 }
 //--------------------------------------------------------------------
-bool cli_executor::install(void)
+bool cli_executor::install()
 {
 	// compile menu
 	po::store(po::command_line_parser(this->_argc, this->_argv).options(_install_options).allow_unregistered().run(), vm);
