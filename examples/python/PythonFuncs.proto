@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+// openffi_target_lang: "python"
+
 //--------------------------------------------------------------------
 service PythonicUtils { // module containing foreign functions
 	rpc hello_world (Void) returns (Void);
