@@ -12,7 +12,7 @@ type TemplateParameters struct {
 	ProtoIDLFilenameNoExtension string
 	ProtobufFilename       		string
 	TargetLanguage				string
-	protoTypeToTargetType 		func(string)(string, bool)
+	protoTypeToTargetType 		func(protoType string, isarray bool)(typeStr string, isComplexType bool)
 
 	Modules []*TemplateModuleParameters
 }
@@ -51,7 +51,7 @@ func (this *TemplateFunctionParameterData) PointerIfNeeded(prefix string) string
 	}
 }
 //--------------------------------------------------------------------
-func NewTemplateParameters(protoIDLFilename string, protobufFilenameSuffix string, targetLanguage string, protoTypeToTargetType func(string)(string, bool)) (*TemplateParameters, error){
+func NewTemplateParameters(protoIDLFilename string, protobufFilenameSuffix string, targetLanguage string, protoTypeToTargetType func(string, bool)(string, bool)) (*TemplateParameters, error){
 
 	extensionIndex := strings.LastIndex(protoIDLFilename, ".")
 	if extensionIndex == -1{
@@ -73,16 +73,12 @@ func NewTemplateParameters(protoIDLFilename string, protobufFilenameSuffix strin
 	return gtp, nil
 }
 //--------------------------------------------------------------------
-func NewTemplateFunctionParameterData(p *ParameterData, protoTypeToTargetType func(string)(string, bool)) *TemplateFunctionParameterData{
+func NewTemplateFunctionParameterData(p *ParameterData, protoTypeToTargetType func(string, bool)(string, bool)) *TemplateFunctionParameterData{
 	htfp := &TemplateFunctionParameterData{
 		Name: strings.Title(p.Name),
 	}
 
-	htfp.Type, htfp.IsComplex = protoTypeToTargetType(p.Type)
-	if p.IsArray{
-		htfp.Type = fmt.Sprintf("[]%v", htfp.Type)
-	}
-
+	htfp.Type, htfp.IsComplex = protoTypeToTargetType(p.Type, p.IsArray)
 	htfp.ParamPass = p.PassParam
 
 	return htfp
