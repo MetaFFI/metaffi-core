@@ -27,7 +27,7 @@ func getDynamicLibSuffix() string{
 	}
 }
 //--------------------------------------------------------------------
-func getOutputFullFilesPath(outPath string, idlfile string, direction compileDirection) (codeFullFilePath string, libFullFilePath string){
+func getFilesDirs(outPath string, idlfile string, direction compileDirection) (codeFullFilePath string, libFullFilePath string, codeFullPath string){
 
 	idlfileWithoutExtension := strings.Replace(idlfile, filepath.Ext(idlfile), "", -1)
 
@@ -40,11 +40,17 @@ func getOutputFullFilesPath(outPath string, idlfile string, direction compileDir
 		outputPostfix = ".openffi.guest"
 	}
 
-	fullFilePathPrefix := outPath + string(os.PathSeparator) + idlfileWithoutExtension + outputPostfix
+	curDir, err := os.Getwd()
+	if err != nil{
+		panic(err)
+	}
 
 	// Go code to compile
-	codeFullFilePath = fullFilePathPrefix + ".go"
-	libFullFilePath = fullFilePathPrefix + getDynamicLibSuffix()
+	codeFullFilePath = curDir + string(os.PathSeparator) + idlfileWithoutExtension + outputPostfix + ".go"
+	codeFullPath = curDir + string(os.PathSeparator) // directory with go code
+
+	// output dynamic library path
+	libFullFilePath = outPath + string(os.PathSeparator) + idlfileWithoutExtension + outputPostfix + getDynamicLibSuffix()
 
 	return
 }
@@ -82,6 +88,8 @@ func compileIDL(idlPath string, outPath string, direction compileDirection) erro
 	switch direction {
 		case FROM_HOST: compileFunc = compiler.CompileHost
 		case TO_GUEST: compileFunc = compiler.CompileGuest
+		default:
+			return fmt.Errorf("Unknown requested call direction")
 	}
 
 	code, err := compileFunc()
@@ -98,7 +106,7 @@ func compileIDL(idlPath string, outPath string, direction compileDirection) erro
 		return fmt.Errorf("Failed to create output directory %v. Error: %v", outPath, err)
 	}
 
-	codeFullFilePath, libFullFilePath := getOutputFullFilesPath(outPath, idlfile, direction)
+	codeFullFilePath, libFullFilePath, codeFullPath := getFilesDirs(outPath, idlfile, direction)
 
 	fmt.Printf("Writing Go %v code to %v\n", getDirectionString(direction), codeFullFilePath)
 
@@ -107,12 +115,16 @@ func compileIDL(idlPath string, outPath string, direction compileDirection) erro
 		return fmt.Errorf("Failed to write %v. Error: %v", codeFullFilePath, err)
 	}
 
-	// build code to shared object
-	fmt.Printf("Building %v Go runtime linker to %v\n", getDirectionString(direction), codeFullFilePath)
-	buildCmd := exec.Command("go", "build", "-buildmode=c-shared", "-gcflags=-shared", "-o", libFullFilePath+getDynamicLibSuffix(), codeFullFilePath)
-	output, err := buildCmd.Output()
-	if err != nil{
-		return fmt.Errorf("Failed building %v Go runtime linker to %v. Exit with error: %v.\nOutput: %v", getDirectionString(direction), codeFullFilePath, err, string(output))
+	if direction == TO_GUEST{ // if guest - build code to shared object
+
+		fmt.Printf("Building %v Go runtime linker to %v\n", getDirectionString(direction), codeFullFilePath)
+		buildCmd := exec.Command("go", "build", "-tags=guest" , "-buildmode=c-shared", "-gcflags=-shared", "-o", libFullFilePath, codeFullPath)
+		fmt.Printf("%v\n", strings.Join(buildCmd.Args, " "))
+		output, err := buildCmd.CombinedOutput()
+		if err != nil{
+			return fmt.Errorf("Failed building %v Go runtime linker to %v. Exit with error: %v.\nOutput:\n%v", getDirectionString(direction), codeFullFilePath, err, string(output))
+		}
+
 	}
 
     return nil
