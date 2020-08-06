@@ -34,10 +34,10 @@ func getFilesDirs(outPath string, idlfile string, direction compileDirection) (c
 	var outputPostfix string
 	switch direction {
 	case FROM_HOST:
-		outputPostfix = ".openffi.host"
+		outputPostfix = "OpenFFIHost"
 
 	case TO_GUEST:
-		outputPostfix = ".openffi.guest"
+		outputPostfix = "OpenFFIGuest"
 	}
 
 	curDir, err := os.Getwd()

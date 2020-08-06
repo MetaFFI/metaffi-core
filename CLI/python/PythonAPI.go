@@ -46,7 +46,7 @@ func compile_idl(idlPath string, outPath string, direction compileDirection) err
 	var code string
 	switch direction {
 		case FROM_HOST:
-			outputPostfix = "_openffi_host.py"
+			outputPostfix = "OpenFFIHost.py"
 			code, err = compiler.CompileHost()
             if err != nil{
                 return fmt.Errorf("Failed to generate code. Error: %v", err)
@@ -54,7 +54,7 @@ func compile_idl(idlPath string, outPath string, direction compileDirection) err
 			break
 
 		case TO_GUEST:
-			outputPostfix = "_openffi_guest.py"
+			outputPostfix = "OpenffiGuest.py"
 			code, err = compiler.CompileGuest()
             if err != nil{
                 return fmt.Errorf("Failed to generate code. Error: %v", err)

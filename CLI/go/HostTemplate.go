@@ -209,7 +209,7 @@ func {{$f.ForeignFunctionName}}({{range $index, $elem := $f.ExpandedParameters}}
 	pruntime_plugin := C.CString(runtime_plugin)
 	defer C.free(unsafe.Pointer(pruntime_plugin))
 
-	module_name := "{{$pfn}}.openffi.guest"
+	module_name := "{{$pfn}}OpenFFIGuest"
 	pmodule_name := C.CString(module_name)
 	defer C.free(unsafe.Pointer(pmodule_name))
 

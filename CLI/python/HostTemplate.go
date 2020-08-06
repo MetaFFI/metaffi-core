@@ -56,7 +56,7 @@ def {{$f.ForeignFunctionName}}({{range $index, $elem := $f.ExpandedParameters}}{
 	
 	# call function
 	runtime_plugin = """xllr.{{$targetLang}}""".encode("utf-8")
-	module_name = """{{$pfn}}_openffi_guest""".encode("utf-8")
+	module_name = """{{$pfn}}OpenFFIGuest""".encode("utf-8")
 	func_name = """Foreign{{$f.ForeignFunctionName}}""".encode("utf-8")
 
 	# in parameters
