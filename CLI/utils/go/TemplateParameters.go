@@ -13,6 +13,7 @@ type TemplateParameters struct {
 	ProtobufFilename       		string
 	TargetLanguage				string
 	protoTypeToTargetType 		func(protoType string, isarray bool)(typeStr string, isComplexType bool)
+	modifyParameterName			func(string)string
 
 	Modules []*TemplateModuleParameters
 }
@@ -51,7 +52,11 @@ func (this *TemplateFunctionParameterData) PointerIfNeeded(prefix string) string
 	}
 }
 //--------------------------------------------------------------------
-func NewTemplateParameters(protoIDLFilename string, protobufFilenameSuffix string, targetLanguage string, protoTypeToTargetType func(string, bool)(string, bool)) (*TemplateParameters, error){
+func NewTemplateParameters(protoIDLFilename string,
+							protobufFilenameSuffix string,
+							targetLanguage string,
+							protoTypeToTargetType func(string, bool)(string, bool),
+							modifyParameterName func(string)string) (*TemplateParameters, error){
 
 	extensionIndex := strings.LastIndex(protoIDLFilename, ".")
 	if extensionIndex == -1{
@@ -60,12 +65,17 @@ func NewTemplateParameters(protoIDLFilename string, protobufFilenameSuffix strin
 
 	protoFilenameWithoutExtension := protoIDLFilename[:extensionIndex]
 
+	if modifyParameterName == nil{ // set default modifyParameterName() to not change anything
+		modifyParameterName = func(p string)string{ return p }
+	}
+
 	gtp := &TemplateParameters{
 		ProtoIDLFilename: protoIDLFilename,
 		ProtoIDLFilenameNoExtension: protoFilenameWithoutExtension,
 		ProtobufFilename: protoFilenameWithoutExtension + protobufFilenameSuffix,
 		TargetLanguage: targetLanguage,
 		protoTypeToTargetType: protoTypeToTargetType,
+		modifyParameterName: modifyParameterName,
 	}
 
 	gtp.Modules = make([]*TemplateModuleParameters, 0)
@@ -73,9 +83,12 @@ func NewTemplateParameters(protoIDLFilename string, protobufFilenameSuffix strin
 	return gtp, nil
 }
 //--------------------------------------------------------------------
-func NewTemplateFunctionParameterData(p *ParameterData, protoTypeToTargetType func(string, bool)(string, bool)) *TemplateFunctionParameterData{
+func NewTemplateFunctionParameterData(p *ParameterData,
+									protoTypeToTargetType func(string, bool)(string, bool),
+									modifyParameterName func(string)string) *TemplateFunctionParameterData{
+
 	htfp := &TemplateFunctionParameterData{
-		Name: strings.Title(p.Name),
+		Name: modifyParameterName(p.Name),
 	}
 
 	htfp.Type, htfp.IsComplex = protoTypeToTargetType(p.Type, p.IsArray)
@@ -106,11 +119,13 @@ func (this *TemplateParameters) AddModule(m *Module){
 
 		// generate parameters
 		for _, p := range f.Parameters{
-			funcParams.ExpandedParameters = append(funcParams.ExpandedParameters, NewTemplateFunctionParameterData(p, this.protoTypeToTargetType))
+			funcParams.ExpandedParameters = append(funcParams.ExpandedParameters,
+														NewTemplateFunctionParameterData(p, this.protoTypeToTargetType, this.modifyParameterName))
 		}
 
 		for _, r := range f.Return{
-			funcParams.ExpandedReturn = append(funcParams.ExpandedReturn, NewTemplateFunctionParameterData(r, this.protoTypeToTargetType))
+			funcParams.ExpandedReturn = append(funcParams.ExpandedReturn,
+														NewTemplateFunctionParameterData(r, this.protoTypeToTargetType, this.modifyParameterName))
 		}
 
 		modParams.Functions = append(modParams.Functions, funcParams)
