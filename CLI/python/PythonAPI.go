@@ -54,7 +54,7 @@ func compile_idl(idlPath string, outPath string, direction compileDirection) err
 			break
 
 		case TO_GUEST:
-			outputPostfix = "OpenffiGuest.py"
+			outputPostfix = "OpenFFIGuest.py"
 			code, err = compiler.CompileGuest()
             if err != nil{
                 return fmt.Errorf("Failed to generate code. Error: %v", err)
