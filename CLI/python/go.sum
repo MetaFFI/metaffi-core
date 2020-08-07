@@ -14,6 +14,8 @@ github.com/GreenFuze/OpenFFI/CLI/utils/go v0.0.0-20200807134515-d7e430305936 h1:
 github.com/GreenFuze/OpenFFI/CLI/utils/go v0.0.0-20200807134515-d7e430305936/go.mod h1:z6kWDV5pBiyRQ96BtxP0lVLVb9Z2gWyy8UzRc7i3VJ4=
 github.com/GreenFuze/OpenFFI/CLI/utils/go v0.0.0-20200807141947-6a5af47915ab h1:6J7Tx0DbkrGH/KLqqh/eIbeXpJofqLZESbr0Ba/UenQ=
 github.com/GreenFuze/OpenFFI/CLI/utils/go v0.0.0-20200807141947-6a5af47915ab/go.mod h1:z6kWDV5pBiyRQ96BtxP0lVLVb9Z2gWyy8UzRc7i3VJ4=
+github.com/GreenFuze/OpenFFI/CLI/utils/go v0.0.0-20200807224806-c9cca48a3885 h1:dWu1kGf5o9YZb946OLqyZ56OKkU4nciUf4buPouca7M=
+github.com/GreenFuze/OpenFFI/CLI/utils/go v0.0.0-20200807224806-c9cca48a3885/go.mod h1:z6kWDV5pBiyRQ96BtxP0lVLVb9Z2gWyy8UzRc7i3VJ4=
 github.com/antchfx/jsonquery v1.1.4 h1:+OlFO3QS9wjU0MKx9MgHm5f6o6hdd4e9mUTp0wTjxlM=
 github.com/antchfx/jsonquery v1.1.4/go.mod h1:cHs8r6Bymd8j6HI6Ej1IJbjahKvLBcIEh54dfmo+E9A=
 github.com/antchfx/xpath v1.1.7/go.mod h1:Yee4kTMuNiPYJ7nSNorELQMr1J33uOpXDMByNYhvtNk=
