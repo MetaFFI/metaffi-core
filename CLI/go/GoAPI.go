@@ -106,7 +106,7 @@ func compileIDL(idlPath string, outPath string, direction compileDirection) erro
 		return fmt.Errorf("Failed to create output directory %v. Error: %v", outPath, err)
 	}
 
-	codeFullFilePath, libFullFilePath, codeFullPath := getFilesDirs(outPath, idlfile, direction)
+	codeFullFilePath, libFullFilePath, _ := getFilesDirs(outPath, idlfile, direction)
 
 	fmt.Printf("Writing Go %v code to %v\n", getDirectionString(direction), codeFullFilePath)
 
@@ -118,7 +118,7 @@ func compileIDL(idlPath string, outPath string, direction compileDirection) erro
 	if direction == TO_GUEST{ // if guest - build code to shared object
 
 		fmt.Printf("Building %v Go runtime linker to %v\n", getDirectionString(direction), codeFullFilePath)
-		buildCmd := exec.Command("go", "build", "-tags=guest" , "-buildmode=c-shared", "-gcflags=-shared", "-o", libFullFilePath, codeFullPath)
+		buildCmd := exec.Command("go", "build", "-tags=guest" , "-buildmode=c-shared", "-gcflags=-shared", "-o", libFullFilePath)
 		fmt.Printf("%v\n", strings.Join(buildCmd.Args, " "))
 		output, err := buildCmd.CombinedOutput()
 		if err != nil{

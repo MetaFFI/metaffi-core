@@ -189,12 +189,12 @@ func loadXLLR() error{
 {{range $findex, $f := $m.Functions}}
 
 // Call to foreign {{.ForeignFunctionName}}
-func {{$f.ForeignFunctionName}}({{range $index, $elem := $f.ExpandedParameters}}{{if $index}},{{end}} {{$elem.Name}} {{$elem.Type}}{{end}}) ({{range $index, $elem := $f.ExpandedReturn}}{{if $index}},{{end}}{{$elem.Name}} {{$elem.Type}}{{end}}, err error){
+func {{$f.ForeignFunctionName}}({{range $index, $elem := $f.ExpandedParameters}}{{if $index}},{{end}} {{$elem.Name}} {{$elem.Type}}{{end}}) ({{range $index, $elem := $f.ExpandedReturn}}{{if $index}},{{end}}{{$elem.Name}} {{$elem.Type}}{{end}}{{if $f.ExpandedReturn}},{{end}} err error){
 
 	// serialize parameters
 	req := {{$f.ProtobufRequestStruct}}{}
 	{{range $index, $elem := $f.ExpandedParameters}}
-	req.{{$elem.Name}} = {{$elem.PointerIfNeeded ""}}
+	req.{{$elem.Name}} = {{$elem.Name}}
 	{{end}}
 
 	// load XLLR
@@ -225,8 +225,13 @@ func {{$f.ForeignFunctionName}}({{range $index, $elem := $f.ExpandedParameters}}
 	}
 
 	var pin_params *C.uchar
-	pin_params = (*C.uchar)(unsafe.Pointer(&in_params[0]))
-	in_params_len := C.ulong(len(in_params))
+	var in_params_len C.ulong
+	if len(in_params) > 0{
+		pin_params = (*C.uchar)(unsafe.Pointer(&in_params[0]))
+		in_params_len = C.ulong(len(in_params))
+	} else {
+		in_params_len = C.ulong(0)
+	}
 
 	var out_ret *C.uchar
 	var out_ret_len C.ulong
@@ -262,7 +267,7 @@ func {{$f.ForeignFunctionName}}({{range $index, $elem := $f.ExpandedParameters}}
 		return
 	}
 
-	return {{range $index, $elem := $f.ExpandedReturn}}{{if $index}},{{end}}{{$elem.DereferenceIfNeeded "ret."}}{{end}}, nil
+	return {{range $index, $elem := $f.ExpandedReturn}}{{if $index}},{{end}}ret.{{$elem.Name}}{{end}}{{if $f.ExpandedReturn}},{{end}} nil
 
 }
 {{end}}

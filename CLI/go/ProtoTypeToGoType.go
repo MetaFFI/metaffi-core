@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 //--------------------------------------------------------------------
 func ProtoTypeToGoType(prototype string, isArray bool) (typeStr string, isComplex bool){
@@ -33,7 +36,7 @@ func ProtoTypeToGoType(prototype string, isArray bool) (typeStr string, isComple
 		case "bytes": typeStr = "[]byte"
 
 		default:
-			typeStr = prototype
+			typeStr = "*"+UnixNotationToCamelHumps(prototype)
 			isComplex = true
 	}
 
@@ -42,5 +45,13 @@ func ProtoTypeToGoType(prototype string, isArray bool) (typeStr string, isComple
 	}
 
 	return
+}
+//--------------------------------------------------------------------
+func UnixNotationToCamelHumps(txt string)string{
+	txt = strings.ReplaceAll(txt, "_", " ")
+	txt = strings.Title(txt)
+	txt = strings.ReplaceAll(txt, " ", "")
+
+	return txt
 }
 //--------------------------------------------------------------------

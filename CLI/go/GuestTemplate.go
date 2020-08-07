@@ -59,7 +59,7 @@ func Foreign{{$f.ForeignFunctionName}}(in_params *C.char, in_params_len C.ulongl
 	}
 	
 	// call original function
-	{{range $index, $elem := $f.ExpandedReturn}}{{if $index}},{{end}}{{$elem.Name}}{{end}}{{if $f.ExpandedReturn}} := {{end}}{{$f.ForeignFunctionName}}({{range $index, $elem := $f.ExpandedParameters}}{{if $index}},{{end}}{{$elem.DereferenceIfNeeded "req."}}{{end}})
+	{{range $index, $elem := $f.ExpandedReturn}}{{if $index}},{{end}}{{$elem.Name}}{{end}}{{if $f.ExpandedReturn}} := {{end}}{{$f.ForeignFunctionName}}({{range $index, $elem := $f.ExpandedParameters}}{{if $index}},{{end}}{{$elem.NameDereferenceIfNeeded "req."}}{{end}})
 	
 	ret := {{$f.ProtobufResponseStruct}}{}
 
@@ -70,7 +70,7 @@ func Foreign{{$f.ForeignFunctionName}}(in_params *C.char, in_params_len C.ulongl
 		errToOutError(out_ret, out_ret_len, is_error, "Error returned", err)
 		return
 	} else {
-		ret.{{$elem.Name}} = {{$elem.PointerIfNeeded ""}}
+		ret.{{$elem.Name}} = {{$elem.NamePointerIfNeeded ""}}
 	}	
 	{{end}}
 

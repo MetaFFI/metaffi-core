@@ -38,18 +38,25 @@ type TemplateFunctionParameterData struct {
 	ParamPass *PassMethod
 	IsArray bool
 }
-func (this *TemplateFunctionParameterData) DereferenceIfNeeded(prefix string) string{
-	if this.IsComplex{
+func (this *TemplateFunctionParameterData) NameDereferenceIfNeeded(prefix string) string{
+	if this.IsComplex && !this.IsArray{
 		return "*"+prefix+this.Name
 	} else {
 		return prefix+this.Name
 	}
 }
-func (this *TemplateFunctionParameterData) PointerIfNeeded(prefix string) string{
+func (this *TemplateFunctionParameterData) NamePointerIfNeeded(prefix string) string{
 	if this.IsComplex && !this.IsArray{
 		return "&"+prefix+this.Name
 	} else {
 		return prefix+this.Name
+	}
+}
+func (this *TemplateFunctionParameterData) TypePointerIfNeeded(prefix string) string{
+	if this.IsComplex && !this.IsArray{
+		return "*"+prefix+this.Type
+	} else {
+		return prefix+this.Type
 	}
 }
 //--------------------------------------------------------------------
