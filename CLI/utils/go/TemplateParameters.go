@@ -36,6 +36,7 @@ type TemplateFunctionParameterData struct {
 	Type string
 	IsComplex bool
 	ParamPass *PassMethod
+	IsArray bool
 }
 func (this *TemplateFunctionParameterData) DereferenceIfNeeded(prefix string) string{
 	if this.IsComplex{
@@ -45,7 +46,7 @@ func (this *TemplateFunctionParameterData) DereferenceIfNeeded(prefix string) st
 	}
 }
 func (this *TemplateFunctionParameterData) PointerIfNeeded(prefix string) string{
-	if this.IsComplex{
+	if this.IsComplex && !this.IsArray{
 		return "&"+prefix+this.Name
 	} else {
 		return prefix+this.Name
@@ -92,6 +93,7 @@ func NewTemplateFunctionParameterData(p *ParameterData,
 	}
 
 	htfp.Type, htfp.IsComplex = protoTypeToTargetType(p.Type, p.IsArray)
+	htfp.IsArray = p.IsArray
 	htfp.ParamPass = p.PassParam
 
 	return htfp
