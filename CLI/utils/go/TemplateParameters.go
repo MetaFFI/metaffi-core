@@ -110,9 +110,9 @@ func (this *TemplateParameters) AddModule(m *Module){
 	for _, f := range m.Functions{
 
 		funcParams := &TemplateFunctionParameters{
-			ForeignFunctionName: f.Name,
-			ProtobufRequestStruct: f.RequestName,
-			ProtobufResponseStruct: f.ResponseName,
+			ForeignFunctionName: this.modifyParameterName(f.Name),
+			ProtobufRequestStruct: this.modifyParameterName(f.RequestName),
+			ProtobufResponseStruct: this.modifyParameterName(f.ResponseName),
 			ExpandedParameters: make([]*TemplateFunctionParameterData, 0),
 			ExpandedReturn: make([]*TemplateFunctionParameterData, 0),
 		}
