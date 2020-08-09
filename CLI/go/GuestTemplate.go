@@ -25,13 +25,20 @@ func errToOutError(out_err **C.char, out_err_len *C.ulonglong, is_error *C.char,
 }
 
 func panicHandler(out_err **C.char, out_err_len *C.ulonglong, is_error *C.char){
+	
 	if rec := recover(); rec != nil{
+		fmt.Println("Caught Panic")
+
 		msg := "Panic in Go function. Panic Data: "
 		switch recType := rec.(type){
 			case error: msg += (rec.(error)).Error()
 			case string: msg += rec.(string)
 			default: msg += fmt.Sprintf("Panic with type: %v - %v", recType, rec)
 		}
+
+		*is_error = 1
+		*out_err = C.CString(msg)
+		*out_err_len = C.ulonglong(len(msg))
 	}
 }
 
