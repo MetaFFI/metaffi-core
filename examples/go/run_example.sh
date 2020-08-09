@@ -1,16 +1,19 @@
 #!/usr/bin/env bash
 
 # compile protobuf
-echo Generating PythonFuncs_pb2.py by compiling PythonFuncs.proto with protoc
-protoc --python_out=. PythonFuncs.proto
+echo Generating GoFuncs.pb.go by compiling GoFuncs.proto with protoc
+protoc --go_out=. GoFuncs.proto
 
 # compile openffi
-echo Generating PythonFuncs_openffi_guest.py and PythonFuncs_openffi_host.py by compiling PythonFuncs.proto with openffi
-openffi -c --idl PythonFuncs.proto -f python -t
+echo Generating GoFuncsOpenFFIGuest.[so,dylib,dll] and GoFuncsOpenFFIHost.go by compiling GoFuncs.proto with openffi
+openffi -c --idl GoFuncs.proto -f go -t
 
-# run examples
-echo Running Example Functions
-python3.7 run.py
+# build and run examples
+echo Building Example Functions
+go build -o examples
+
+echo Run Example Functions
+./examples
 
 # if there's an unexpected error - print there's an error!
 exit_code=$?
