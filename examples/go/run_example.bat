@@ -1,16 +1,20 @@
 @echo off
 
 rem compile protobuf
-echo Generating PythonFuncs_pb2.py by compiling PythonFuncs.proto with protoc
-protoc --python_out=. PythonFuncs.proto
+echo Generating GoFuncs.pb.go by compiling GoFuncs.proto with protoc
+protoc --go_out=. GoFuncs.proto
 
 rem compile openffi
-echo Generating PythonFuncs_openffi_guest.py and PythonFuncs_openffi_host.py by compiling PythonFuncs.proto with openffi
-openffi -c --idl PythonFuncs.proto -f python -t python
+echo Generating GoFuncsOpenFFIGuest.[so,dylib,dll] and GoFuncsOpenFFIHost.go by compiling GoFuncs.proto with openffi
+openffi -c --idl GoFuncs.proto -f go -t
+
+rem build and run examples
+echo Building Example Functions
+go build -o examples
 
 rem run examples
-echo Running Example Functions
-python run.py
+echo Run Example Functions
+examples.exe
 
 rem if there's an unexpected error - print there's an error!
 if %ERRORLEVEL% GEQ 1 echo Example Failed && exit /b 1
