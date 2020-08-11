@@ -5,7 +5,7 @@ echo Generating PythonFuncs_pb2.py by compiling PythonFuncs.proto with protoc
 protoc --python_out=. PythonFuncs.proto
 
 # compile openffi
-echo Generating PythonFuncs_openffi_guest.py and PythonFuncs_openffi_host.py by compiling PythonFuncs.proto with openffi
+echo Generating PythonFuncsOpenFFIGuest.py and PythonFuncsOpenFFIHost.py by compiling PythonFuncs.proto with openffi
 openffi -c --idl PythonFuncs.proto -f python -t
 
 # run examples
