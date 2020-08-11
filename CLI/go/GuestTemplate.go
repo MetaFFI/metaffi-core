@@ -100,10 +100,12 @@ func Foreign{{$f.ForeignFunctionName}}(in_params *C.char, in_params_len C.ulongl
 		return
 	}
 	
-	// write serialized parameters to out_params
-	serializedParamsStr := string(serializedParams)
-	*out_params = C.CString(serializedParamsStr)
-	*out_params_len = C.ulonglong(len(serializedParamsStr))
+	if out_params != nil && out_params_len != nil{
+		// write serialized parameters to out_params
+		serializedParamsStr := string(serializedParams)
+		*out_params = C.CString(serializedParamsStr)
+		*out_params_len = C.ulonglong(len(serializedParamsStr))
+	}
 	
 }
 
