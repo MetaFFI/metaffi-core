@@ -6,6 +6,7 @@
 #include "utils.h"
 #include <boost/filesystem.hpp>
 #include <Python.h>
+#include <sstream>
 
 #define handle_err(err, err_len, desc) \
 	*err_len = strlen( desc ); \
@@ -35,6 +36,19 @@
 	
 
 //--------------------------------------------------------------------
+void load_package_path()
+{
+	std::string curpath(boost::filesystem::current_path().string());
+	
+	std::stringstream ss;
+	ss << "import sys" << std::endl;
+	//ss << "import site" << std::endl;
+	//ss << "sys.path.append(site.USER_SITE)" << std::endl;
+	ss << "sys.path.append('" << curpath << "')" << std::endl;
+	
+	PyRun_SimpleString(ss.str().c_str());
+}
+//--------------------------------------------------------------------
 void load_runtime(char** err, uint32_t* err_len)
 {
 	// load python runtime
@@ -45,8 +59,7 @@ void load_runtime(char** err, uint32_t* err_len)
 	
 	pyscope();
 	
-	add_sys_module_path(boost::filesystem::current_path().wstring());
-	
+	load_package_path();
 }
 //--------------------------------------------------------------------
 void free_runtime(char** err, uint32_t* err_len)

@@ -45,26 +45,3 @@ std::string get_py_error(void)
 	return std::string(pmsg, size);
 }
 //--------------------------------------------------------------------
-void add_sys_module_path(const std::wstring& pathToAdd)
-{
-	auto sep = []()->std::wstring {
-#if BOOST_OS_WINDOWS
-		return L";";
-#else
-		return L":";
-#endif
-	};
-	
-	std::wstring path(Py_GetPath());
-	path += sep();
-
-#if !BOOST_OS_WINDOWS
-	std::wstring dist_packages = L"/usr/lib/python3/dist-packages";
-	if(boost::filesystem::exists(dist_packages)){
-		path += sep() + dist_packages;
-	}
-#endif
-
-	PySys_SetPath(path.c_str());
-}
-//--------------------------------------------------------------------
