@@ -24,9 +24,10 @@ type TemplateModuleParameters struct {
 }
 //--------------------------------------------------------------------
 type TemplateFunctionParameters struct {
-	ForeignFunctionName    string
-	ProtobufRequestStruct  string
-	ProtobufResponseStruct string
+	ForeignFunctionName    		string
+	OriginalForeignFunctionName string
+	ProtobufRequestStruct  		string
+	ProtobufResponseStruct 		string
 	ExpandedParameters     []*TemplateFunctionParameterData
 	ExpandedReturn         []*TemplateFunctionParameterData
 }
@@ -120,6 +121,7 @@ func (this *TemplateParameters) AddModule(m *Module){
 
 		funcParams := &TemplateFunctionParameters{
 			ForeignFunctionName: this.modifyParameterName(f.Name),
+			OriginalForeignFunctionName: f.Name,
 			ProtobufRequestStruct: this.modifyParameterName(f.RequestName),
 			ProtobufResponseStruct: this.modifyParameterName(f.ResponseName),
 			ExpandedParameters: make([]*TemplateFunctionParameterData, 0),

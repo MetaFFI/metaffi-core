@@ -2,6 +2,7 @@
 #include "../../utils/scope_guard.hpp"
 #include <Python.h>
 #include <boost/predef.h>
+#include <boost/filesystem.hpp>
 
 
 //--------------------------------------------------------------------
@@ -46,15 +47,21 @@ std::string get_py_error(void)
 //--------------------------------------------------------------------
 void add_sys_module_path(const std::wstring& pathToAdd)
 {
-	std::wstring path(Py_GetPath());
-
+	auto sep = []()->std::wstring {
 #if BOOST_OS_WINDOWS
-	path += L";";
+		return L";";
 #else
-	path += L":";
+		return L":";
 #endif
-
-	path += pathToAdd;
+	};
+	
+	std::wstring path(Py_GetPath());
+	path += sep();
+	
+	std::wstring dist_packages = L"/usr/lib/python3/dist-packages";
+	if(boost::filesystem::exists(dist_packages)){
+		path += sep() + dist_packages;
+	}
 
 	PySys_SetPath(path.c_str());
 }

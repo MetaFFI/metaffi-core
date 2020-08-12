@@ -46,6 +46,7 @@ void load_runtime(char** err, uint32_t* err_len)
 	pyscope();
 	
 	add_sys_module_path(boost::filesystem::current_path().wstring());
+	
 }
 //--------------------------------------------------------------------
 void free_runtime(char** err, uint32_t* err_len)
@@ -65,6 +66,7 @@ void free_runtime(char** err, uint32_t* err_len)
 //--------------------------------------------------------------------
 void load_module(const char* mod, uint32_t module_len, char** err, uint32_t* err_len)
 {
+	
 	if(!Py_IsInitialized())
 	{
 		handle_err(err, err_len, "Runtime has not been loaded - module cannot be loaded!");
@@ -72,7 +74,7 @@ void load_module(const char* mod, uint32_t module_len, char** err, uint32_t* err
 	}
 	
 	pyscope();
-
+	
 	// copying to std::string to make sure the string is null terminated
 	std::string module_name(mod, module_len);
 	PyObject* pymod = PyImport_ImportModuleEx(module_name.c_str(), Py_None, Py_None, Py_None);
