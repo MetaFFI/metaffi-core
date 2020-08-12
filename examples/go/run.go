@@ -11,11 +11,20 @@ func main(){
 
     // Prints hello world.
     fmt.Println("Calling HelloWorld()")
-    HelloWorld()  // -- calling hello_world
+    err := HelloWorld()  // -- calling hello_world
+    if err != nil{
+        fmt.Printf("Failed to call HelloWorld() - %v\n", err)
+        os.Exit(1)
+    }
 
     // 10/2
     fmt.Println("Calling PythonFuncsOpenFFIHost.div(10, 2)")
     res, err := Div(10, 2)  // -- calling div
+    if err != nil{
+        fmt.Printf("Failed to call Div(10,2) - %v\n", err)
+        os.Exit(1)
+    }
+
     if res != 5.0{
     	fmt.Printf("10/2 expects 5.0. Returned: %v\n", res)
     	os.Exit(1)

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # compile protobuf
-echo Generating GoFuncs.pb.go by compiling GoFuncs.proto with protoc
+echo Generating GoFuncs.pb.go and GoFuncs_pb2.py by compiling GoFuncs.proto with protoc
 protoc --go_out=. --python_out=. GoFuncs.proto
 
 # compile openffi
@@ -10,7 +10,7 @@ openffi -c --idl GoFuncs.proto -f python -t
 
 # run examples
 echo Run Example Functions
-python3.7 run.py
+python3.8 run.py
 
 # if there's an unexpected error - print there's an error!
 exit_code=$?

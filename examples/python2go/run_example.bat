@@ -1,7 +1,7 @@
 @echo off
 
 rem compile protobuf
-echo Generating GoFuncs.pb.go by compiling GoFuncs.proto with protoc
+echo Generating GoFuncs.pb.go and GoFuncs_pb2.py by compiling GoFuncs.proto with protoc
 protoc --go_out=. --python_out=. GoFuncs.proto
 
 rem compile openffi
@@ -10,7 +10,7 @@ openffi -c --idl GoFuncs.proto -f python -t
 
 rem run examples
 echo Run Example Functions
-python3.7 run.py
+python3.8 run.py
 
 rem if there's an unexpected error - print there's an error!
 if %ERRORLEVEL% GEQ 1 echo Example Failed && exit /b 1

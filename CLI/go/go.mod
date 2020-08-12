@@ -3,7 +3,7 @@ module github.com/GreenFuze/OpenFFI/CLI/go
 go 1.12
 
 require (
-	github.com/GreenFuze/OpenFFI/CLI/utils/go v0.0.0-20200807224806-c9cca48a3885
+	github.com/GreenFuze/OpenFFI/CLI/utils/go v0.0.0-20200812050943-32ea9144a191
 	github.com/Masterminds/sprig v2.22.0+incompatible
 	github.com/antchfx/jsonquery v1.1.4
 	github.com/antchfx/xpath v1.1.10 // indirect

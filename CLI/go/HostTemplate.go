@@ -213,7 +213,7 @@ func {{$f.ForeignFunctionName}}({{range $index, $elem := $f.ExpandedParameters}}
 	pmodule_name := C.CString(module_name)
 	defer C.free(unsafe.Pointer(pmodule_name))
 
-	func_name := "Foreign{{$f.ForeignFunctionName}}"
+	func_name := "Foreign{{$f.OriginalForeignFunctionName}}"
 	pfunc_name := C.CString(func_name)
 	defer C.free(unsafe.Pointer(pfunc_name))
 

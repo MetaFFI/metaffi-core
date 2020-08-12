@@ -57,11 +57,13 @@ void add_sys_module_path(const std::wstring& pathToAdd)
 	
 	std::wstring path(Py_GetPath());
 	path += sep();
-	
+
+#if !BOOST_OS_WINDOWS
 	std::wstring dist_packages = L"/usr/lib/python3/dist-packages";
 	if(boost::filesystem::exists(dist_packages)){
 		path += sep() + dist_packages;
 	}
+#endif
 
 	PySys_SetPath(path.c_str());
 }

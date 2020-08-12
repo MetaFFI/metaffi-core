@@ -49,7 +49,7 @@ func panicHandler(out_err **C.char, out_err_len *C.ulonglong, is_error *C.char){
 
 // Call to foreign {{.ForeignFunctionName}}
 //export Foreign{{$f.ForeignFunctionName}}
-func Foreign{{$f.ForeignFunctionName}}(in_params *C.char, in_params_len C.ulonglong, out_params **C.char, out_params_len *C.ulonglong, out_ret **C.char, out_ret_len *C.ulonglong, is_error *C.char){
+func Foreign{{$f.OriginalForeignFunctionName}}(in_params *C.char, in_params_len C.ulonglong, out_params **C.char, out_params_len *C.ulonglong, out_ret **C.char, out_ret_len *C.ulonglong, is_error *C.char){
 
 	// catch panics and return them as errors
 	defer panicHandler(out_ret, out_ret_len, is_error)

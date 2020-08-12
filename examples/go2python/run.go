@@ -11,11 +11,20 @@ func main(){
 
     // Prints hello world.
     fmt.Println("Calling HelloWorld()")
-    HelloWorld()  // -- calling hello_world
+    err := HelloWorld()  // -- calling hello_world
+    if err != nil{
+        fmt.Printf("Failed to call HelloWorld() - %v\n", err)
+        os.Exit(1)
+    }
 
     // 10/2
     fmt.Println("Calling PythonFuncsOpenFFIHost.div(10, 2)")
     res, err := Div(10, 2)  // -- calling div
+    if err != nil{
+        fmt.Printf("Failed to call Div(10,2) - %v\n", err)
+        os.Exit(1)
+    }
+
     if res != 5.0{
     	fmt.Printf("10/2 expects 5.0. Returned: %v\n", res)
     	os.Exit(1)
@@ -83,13 +92,13 @@ func main(){
 		os.Exit(1)
 	}
 
-    if gengscore[0].Player != "Player1" || gengscore[0].Score != 1 {
-		fmt.Printf("Expected Player 1 to be \"Player1\" and score to be 11. Returned Player: %v, Score: %v\n", gengscore[0].Player, gengscore[0].Score)
+    if gengscore[0].Player != "player1" || gengscore[0].Score != 1 {
+		fmt.Printf("Expected Player 1 to be \"player1\" and score to be 1. Returned Player: %v, Score: %v\n", gengscore[0].Player, gengscore[0].Score)
 		os.Exit(1)
 	}
 
-    if gengscore[1].Player != "Player2" || gengscore[1].Score != 5{
-		fmt.Printf("Expected Player 1 to be \"Player1\" and score to be 11. Returned Player: %v, Score: %v\n", gengscore[1].Player, gengscore[1].Score)
+    if gengscore[1].Player != "player2" || gengscore[1].Score != 5{
+		fmt.Printf("Expected Player 1 to be \"player2\" and score to be 5. Returned Player: %v, Score: %v\n", gengscore[1].Player, gengscore[1].Score)
 		os.Exit(1)
 	}
 
