@@ -118,6 +118,16 @@ func compileIDL(idlPath string, outPath string, direction compileDirection) erro
 	if direction == TO_GUEST{ // if guest - build code to shared object
 
 		fmt.Printf("Building %v Go runtime linker to %v\n", getDirectionString(direction), codeFullFilePath)
+
+		if _, err := os.Stat("go.mod"); os.IsNotExist(err) { // if go.mod doesn't exist. create it.
+			modInitCmd := exec.Command("go", "mod", "init", "guest")
+			fmt.Printf("%v\n", strings.Join(modInitCmd.Args, " "))
+			output, err := modInitCmd.CombinedOutput()
+			if err != nil {
+				return fmt.Errorf("Failed building %v Go runtime linker to %v. Failed creating module 'guest' with error: %v.\nOutput:\n%v", getDirectionString(direction), codeFullFilePath, err, string(output))
+			}
+		}
+
 		buildCmd := exec.Command("go", "build", "-tags=guest" , "-buildmode=c-shared", "-gcflags=-shared", "-o", libFullFilePath)
 		fmt.Printf("%v\n", strings.Join(buildCmd.Args, " "))
 		output, err := buildCmd.CombinedOutput()

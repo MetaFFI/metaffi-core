@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+// openffi_target_lang: "go"
+option go_package = "main";
+
+//--------------------------------------------------------------------
+service GoUtils { // openffi_module: "github.com/Masterminds/goutils"
+	rpc Initials (initials_params) returns (initials_return);
+}
+//--------------------------------------------------------------------
+message initials_params {
+	string input = 1;
+}
+message initials_return {
+	string result = 1;
+}
+//--------------------------------------------------------------------
