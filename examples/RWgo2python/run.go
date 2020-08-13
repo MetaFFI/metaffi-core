@@ -7,9 +7,6 @@ import "os"
 
 func main(){
 
-	// call foreign functions via OpenFFI
-
-    // Prints hello world.
     fmt.Println("Calling WordsCount('one,two,three,four can I have a little more?'):")
     res, err := WordsCount("one,two,three,four can I have a little more?")  // -- calling hello_world
     if err != nil{
