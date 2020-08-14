@@ -38,7 +38,7 @@ std::string compiler::get_target_lang() const
 	throw std::runtime_error("openffi_target_lang was not found in IDL");
 }
 //--------------------------------------------------------------------
-void compiler::compile_to_guest()
+void compiler::compile_to_guest(bool compile_serialization_code)
 {
 	std::string lang(this->get_target_lang());
 	
@@ -57,6 +57,19 @@ void compiler::compile_to_guest()
 		}
 	});
 
+	if(compile_serialization_code)
+	{
+		loaded_plugin->compile_serialization(this->_idl_path.c_str(), this->_idl_path.size(),
+		                                     this->_output_path.c_str(), this->_output_path.size(),
+		                                     &err, &err_len);
+		
+		if(err)
+		{
+			std::string errmsg(err, err_len);
+			throw std::runtime_error(errmsg.c_str());
+		}
+	}
+	
 	// call compile_to_guest with IDL path and output path
 	loaded_plugin->compile_to_guest(this->_idl_path.c_str(), this->_idl_path.size(), 
 									this->_output_path.c_str(), this->_output_path.size(),
@@ -70,14 +83,14 @@ void compiler::compile_to_guest()
 
 }
 //--------------------------------------------------------------------
-void compiler::compile_from_host(const std::vector<std::string>& langs)
+void compiler::compile_from_host(const std::vector<std::string>& langs, bool compile_serialization_code)
 {
 	for(const std::string& lang : langs){
-		this->compile_from_host(lang);
+		this->compile_from_host(lang, compile_serialization_code);
 	}
 }
 //--------------------------------------------------------------------
-void compiler::compile_from_host(const std::string& lang)
+void compiler::compile_from_host(const std::string& lang, bool compile_serialization_code)
 {
     std::string plugin_filename("openffi.compiler.");
 	plugin_filename += lang;
@@ -93,7 +106,20 @@ void compiler::compile_from_host(const std::string& lang)
 			free(err);
 		}
 	});
-
+	
+	if(compile_serialization_code)
+	{
+		loaded_plugin->compile_serialization(this->_idl_path.c_str(), this->_idl_path.size(),
+		                                     this->_output_path.c_str(), this->_output_path.size(),
+		                                     &err, &err_len);
+		
+		if(err)
+		{
+			std::string errmsg(err, err_len);
+			throw std::runtime_error(errmsg.c_str());
+		}
+	}
+	
 	// call compile_to_guest with IDL path and output path
 	loaded_plugin->compile_from_host(this->_idl_path.c_str(), this->_idl_path.size(), 
 									this->_output_path.c_str(), this->_output_path.size(),

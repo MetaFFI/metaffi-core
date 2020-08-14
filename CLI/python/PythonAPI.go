@@ -3,6 +3,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 )
@@ -108,6 +109,28 @@ func compile_from_host(idl_path *C.char, idl_path_length C.uint,
 	if err != nil{
 		*out_err = C.CString(err.Error())
 		*out_err_len = C.uint(len(err.Error()))
+		return
+	}
+
+}
+//--------------------------------------------------------------------
+//export compile_serialization
+func compile_serialization(idl_path *C.char, idl_path_length C.uint,
+	output_path *C.char, output_path_length C.uint,
+	out_err **C.char, out_err_len *C.uint){
+
+	idlPath := C.GoStringN(idl_path, C.int(idl_path_length))
+	outPath := C.GoStringN(output_path, C.int(output_path_length))
+
+	// compile given IDL to Python
+	protoc := exec.Command("protoc", "--python_out="+outPath, idlPath)
+	fmt.Printf("%v\n", strings.Join(protoc.Args, " "))
+	output, err := protoc.CombinedOutput()
+
+	if err != nil{
+		msg := fmt.Sprintf("Failed to compile %v to Protobuf serialization code using \"protoc\". Exit code: %v.\nOutput: %v", idlPath, err, output)
+		*out_err = C.CString(msg)
+		*out_err_len = C.uint(len(msg))
 		return
 	}
 

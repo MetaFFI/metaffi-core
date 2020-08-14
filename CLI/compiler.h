@@ -18,10 +18,10 @@ public:
 	compiler(const compiler&) = delete;
 	compiler(const compiler&&) = delete;
 
-	void compile_to_guest();
-	void compile_from_host(const std::vector<std::string>& langs);
+	void compile_to_guest(bool compile_serialization_code);
+	void compile_from_host(const std::vector<std::string>& langs, bool compile_serialization_code);
 
 private:
-	void compile_from_host(const std::string& lang);
+	void compile_from_host(const std::string& lang, bool compile_serialization_code);
 	std::string get_target_lang() const;
 };

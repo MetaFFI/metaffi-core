@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
 
-# compile protobuf
-echo Generating PythonFuncs_pb2.py and PythonFuncs.pb.go by compiling PythonFuncs.proto with protoc
-protoc --python_out=. --go_out=. PythonFuncs.proto
-
 # compile openffi
 echo Generating PythonFuncsOpenFFIGuest.py and PythonFuncsOpenFFIHost.[so,dylib,dll] by compiling PythonFuncs.proto with openffi
 openffi -c --idl PythonFuncs.proto -f go -t

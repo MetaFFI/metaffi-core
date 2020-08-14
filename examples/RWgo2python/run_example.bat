@@ -3,10 +3,6 @@
 rem make sure python-strings-utils is installed
 pip3 install python-string-utils
 
-rem compile protobuf
-echo Generating PythonStringUtils_pb2.py and PythonStringUtils.pb.go by compiling PythonStringUtils.proto with protoc
-protoc --python_out=. --go_out=. PythonStringUtils.proto
-
 rem compile openffi
 echo Generating PythonStringUtilsOpenFFIGuest.py and PythonStringUtilsOpenFFIHost.[so,dylib,dll] by compiling PythonStringUtils.proto with openffi
 openffi -c --idl PythonStringUtils.proto -f go -t

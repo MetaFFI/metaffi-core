@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
 
-# compile protobuf
-echo Generating GoUtils.pb.go and GoUtils_pb2.py by compiling GoUtils.proto with protoc
-protoc --go_out=. --python_out=. GoUtils.proto
-
 # compile openffi
 echo Generating GoUtilsOpenFFIGuest.[so,dylib,dll] and GoUtilsOpenFFIGuest.py by compiling GoUtils.proto with openffi
 openffi -c --idl GoUtils.proto -f python -t

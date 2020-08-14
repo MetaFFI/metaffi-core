@@ -172,7 +172,7 @@ message Return2 {
 //--------------------------------------------------------------------
 func testGuestTemplate(mods []*Module, targetLang string, t *testing.T){
 
-	htp, err := NewTemplateParameters("test.proto", PROTOBUF_GO_SUFFIX, targetLang, ProtoTypeToGoType)
+	htp, err := NewTemplateParameters("test.proto", PROTOBUF_GO_SUFFIX, targetLang, ProtoTypeToGoType, UnixNotationToCamelHumps)
 	if err != nil{
 		t.Fatal(err)
 	}
@@ -191,7 +191,7 @@ func testGuestTemplate(mods []*Module, targetLang string, t *testing.T){
 //--------------------------------------------------------------------
 func testHostTemplate(mods []*Module, targetLang string, t *testing.T){
 
-	htp, err := NewTemplateParameters("test.proto", PROTOBUF_GO_SUFFIX, targetLang, ProtoTypeToGoType)
+	htp, err := NewTemplateParameters("test.proto", PROTOBUF_GO_SUFFIX, targetLang, ProtoTypeToGoType, UnixNotationToCamelHumps)
 	if err != nil{
 		t.Fatal(err)
 	}

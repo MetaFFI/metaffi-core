@@ -22,7 +22,7 @@ cli_executor::cli_executor(int argc, char** argv) :
 		("idl", po::value<std::string>() , "IDL containing functions defitions (i.e. foreign functions)")
 		("to-lang,t", "Language the functions are implemented as stated in the IDL (i.e. guest language)")
 		("from-langs,f", po::value<std::vector<std::string>>()->multitoken() , "List of languages the functions are called from (i.e. host languages)")
-		("compile-serialization", "Compiles IDL to serialization code (TBD!)")
+		("skip-compile-serialization", "Skip IDL compilation to serialization code (TBD!)")
 		("output,o", po::value<std::string>()->default_value(boost::filesystem::current_path().generic_string()) , "Directory to generate the files (Default: current directory)")
 		("redist", "Copies to output directory OpenFFI redistrabutable binaries for deployment (TBD!)");
 
@@ -88,14 +88,16 @@ bool cli_executor::compile()
 	
 	compiler cmp(vm["idl"].as<std::string>(), vm["output"].as<std::string>());
 	
+	bool compile_serialization_code = (vm.count("skip-compile-serialization") == 0);
+	
 	if(vm.count("to-lang"))
 	{
-		cmp.compile_to_guest();
+		cmp.compile_to_guest(compile_serialization_code);
 	}
 	
 	if(vm.count("from-langs"))
 	{
-		cmp.compile_from_host(vm["from-langs"].as<std::vector<std::string>>());
+		cmp.compile_from_host(vm["from-langs"].as<std::vector<std::string>>(), compile_serialization_code);
 	}
 	
 	if(vm.count("redist"))

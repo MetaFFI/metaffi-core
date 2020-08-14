@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
 
-# compile protobuf
-echo Generating GoFuncs.pb.go by compiling GoFuncs.proto with protoc
-protoc --go_out=. GoFuncs.proto
-
 # compile openffi
 echo Generating GoFuncsOpenFFIGuest.[so,dylib,dll] and GoFuncsOpenFFIHost.go by compiling GoFuncs.proto with openffi
 openffi -c --idl GoFuncs.proto -f go -t
