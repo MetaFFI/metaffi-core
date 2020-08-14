@@ -2,7 +2,7 @@
 
 rem compile openffi
 echo Generating PythonFuncs_openffi_guest.py and PythonFuncs_openffi_host.py by compiling PythonFuncs.proto with openffi
-openffi -c --idl PythonFuncs.proto -f python -t
+openffi -c --idl PythonFuncs.proto -f python3 -t
 
 rem run examples
 echo Running Example Functions

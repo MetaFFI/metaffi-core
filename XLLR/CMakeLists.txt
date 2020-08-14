@@ -16,7 +16,7 @@ add_library(xllr SHARED)
 target_include_directories(xllr PUBLIC ${CMAKE_CURRENT_LIST_DIR} ${Boost_INCLUDE_DIRS})
 set_property(TARGET xllr PROPERTY POSITION_INDEPENDENT_CODE ON)
 
-# remove the "lib" prefix in linux to get the expected filename "xllr.python.[ext]"
+# remove the "lib" prefix in linux to get the expected filename "xllr.python3.[ext]"
 SET_TARGET_PROPERTIES(xllr PROPERTIES PREFIX "")
 target_sources(xllr PUBLIC ${sources})
 
@@ -27,5 +27,5 @@ endif()
 
 # build xllr plugins dynamic library
 include(${CMAKE_CURRENT_SOURCE_DIR}/XLLR/example/CMakeLists.txt)
-include(${CMAKE_CURRENT_SOURCE_DIR}/XLLR/python/CMakeLists.txt)
+include(${CMAKE_CURRENT_SOURCE_DIR}/XLLR/python3/CMakeLists.txt)
 include(${CMAKE_CURRENT_SOURCE_DIR}/XLLR/go/CMakeLists.txt)

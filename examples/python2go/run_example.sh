@@ -2,7 +2,7 @@
 
 # compile openffi
 echo Generating GoFuncsOpenFFIGuest.[so,dylib,dll] and GoFuncsOpenFFIGuest.py by compiling GoFuncs.proto with openffi
-openffi -c --idl GoFuncs.proto -f python -t
+openffi -c --idl GoFuncs.proto -f python3 -t
 
 # run examples
 echo Run Example Functions

@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-// openffi_target_lang: "python"
+// openffi_target_lang: "python3"
 
 //--------------------------------------------------------------------
 service PythonicUtils { // module containing foreign functions

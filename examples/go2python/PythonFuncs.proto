@@ -2,7 +2,7 @@ syntax = "proto3";
 
 option go_package="main";
 
-// openffi_target_lang: "python"
+// openffi_target_lang: "python3"
 
 //--------------------------------------------------------------------
 service PythonicUtils { // module containing foreign functions

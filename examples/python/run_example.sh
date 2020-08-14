@@ -2,7 +2,7 @@
 
 # compile openffi
 echo Generating PythonFuncsOpenFFIGuest.py and PythonFuncsOpenFFIHost.py by compiling PythonFuncs.proto with openffi
-openffi -c --idl PythonFuncs.proto -f python -t
+openffi -c --idl PythonFuncs.proto -f python3 -t
 
 # run examples
 echo Running Example Functions

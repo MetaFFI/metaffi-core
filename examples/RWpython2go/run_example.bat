@@ -2,7 +2,7 @@
 
 rem compile openffi
 echo Generating GoUtilsOpenFFIGuest.[so,dylib,dll] and GoUtilsOpenFFIGuest.py by compiling GoUtils.proto with openffi
-openffi -c --idl GoUtils.proto -f python -t
+openffi -c --idl GoUtils.proto -f python3 -t
 
 rem run examples
 echo Run Example Functions

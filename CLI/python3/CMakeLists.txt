@@ -1,5 +1,5 @@
 
-# build openffi.compiler.python Go dynamic library
+# build openffi.compiler.python3 Go dynamic library
 
 # TODO: make c-shared as PIC
 
@@ -11,12 +11,12 @@ if(NOT GOEXEC)
 else()
 
 # build
-add_custom_target(openffi.compiler.python ALL)
-add_custom_command(TARGET openffi.compiler.python
+add_custom_target(openffi.compiler.python3 ALL)
+add_custom_command(TARGET openffi.compiler.python3
 					DEPENDS ${go_sources}
 					WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
-					COMMAND ${GOEXEC} build -buildmode=c-shared -gcflags=-shared -o ${CMAKE_CURRENT_BINARY_DIR}/openffi.compiler.python${CMAKE_SHARED_LIBRARY_SUFFIX} ${GO_SRCS}
-					COMMENT "Building openffi.compiler.python compiler plugin")
+					COMMAND ${GOEXEC} build -buildmode=c-shared -gcflags=-shared -o ${CMAKE_CURRENT_BINARY_DIR}/openffi.compiler.python3${CMAKE_SHARED_LIBRARY_SUFFIX} ${GO_SRCS}
+					COMMENT "Building openffi.compiler.python3 compiler plugin")
 
 
 # Unitest
