@@ -3,12 +3,19 @@
 #include <boost/filesystem.hpp>
 #include "../utils/scope_guard.hpp"
 #include <regex>
+#include <sstream>
 
 //--------------------------------------------------------------------
 compiler::compiler(const std::string& idl_path, const std::string& output_path):
 	_idl_path(idl_path),
 	_output_path(output_path)
 {
+	if(!boost::filesystem::exists(idl_path))
+	{
+		std::stringstream ss;
+		ss << "Error: " << idl_path << " was not found";
+		throw std::runtime_error(ss.str().c_str());
+	}
 }
 //--------------------------------------------------------------------
 std::string compiler::get_target_lang() const
