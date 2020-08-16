@@ -6,7 +6,7 @@ openffi -c --idl PythonFuncs.proto -f python3 -t
 
 # run examples
 echo Running Example Functions
-python3.8 run.py
+python3 run.py
 
 # if there's an unexpected error - print there's an error!
 exit_code=$?

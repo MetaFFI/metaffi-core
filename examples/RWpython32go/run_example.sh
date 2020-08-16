@@ -6,7 +6,7 @@ openffi -c --idl GoUtils.proto -f python3 -t
 
 # run examples
 echo Run Example Functions
-python3.8 run.py
+python3 run.py
 
 # if there's an unexpected error - print there's an error!
 exit_code=$?
