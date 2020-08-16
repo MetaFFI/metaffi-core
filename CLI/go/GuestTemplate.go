@@ -7,7 +7,11 @@ const GuestTemplate = `//+build guest
 
 package main
 
+/*
+#include <stdint.h>
+*/
 import "C"
+
 import "fmt"
 import "github.com/golang/protobuf/proto"
 
@@ -17,14 +21,14 @@ import "github.com/golang/protobuf/proto"
 
 func main(){} // main function must be declared to create dynamic library
 
-func errToOutError(out_err **C.char, out_err_len *C.ulonglong, is_error *C.char, customText string, err error){
+func errToOutError(out_err **C.char, out_err_len *C.uint64_t, is_error *C.uint8_t, customText string, err error){
 	*is_error = 1
 	txt := customText+err.Error()
 	*out_err = C.CString(txt)
 	*out_err_len = C.ulonglong(len(txt))
 }
 
-func panicHandler(out_err **C.char, out_err_len *C.ulonglong, is_error *C.char){
+func panicHandler(out_err **C.char, out_err_len *C.uint64_t, is_error *C.uint8_t){
 	
 	if rec := recover(); rec != nil{
 		fmt.Println("Caught Panic")
@@ -48,8 +52,8 @@ func panicHandler(out_err **C.char, out_err_len *C.ulonglong, is_error *C.char){
 {{range $findex, $f := $m.Functions}}
 
 // Call to foreign {{.ForeignFunctionName}}
-//export Foreign{{$f.ForeignFunctionName}}
-func Foreign{{$f.OriginalForeignFunctionName}}(in_params *C.char, in_params_len C.ulonglong, out_params **C.char, out_params_len *C.ulonglong, out_ret **C.char, out_ret_len *C.ulonglong, is_error *C.char){
+//export Foreign{{$f.OriginalForeignFunctionName}}
+func Foreign{{$f.OriginalForeignFunctionName}}(in_params *C.char, in_params_len C.uint64_t, out_params **C.char, out_params_len *C.uint64_t, out_ret **C.char, out_ret_len *C.uint64_t, is_error *C.uint8_t){
 
 	// catch panics and return them as errors
 	defer panicHandler(out_ret, out_ret_len, is_error)
