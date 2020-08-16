@@ -206,7 +206,7 @@ void call(
 	
 	scope_guard sgParams([&]()
 	{
-		//Py_DecRef(paramsArray);
+		Py_DecRef(paramsArray);
 	});
 	
 	PyTuple_SetItem(paramsArray, 0, pyParams);
@@ -224,13 +224,15 @@ void call(
 
 	scope_guard sgrets([&]()
 	{
-		//Py_DecRef(res);
-		//if(ret && res != ret){ Py_DecRef(ret); }
-		//if(out && out != Py_None){ Py_DecRef(out); }
-		//if(errmsg && errmsg != Py_None){ Py_DecRef(errmsg); }
+		if(res){ Py_DecRef(res); res = nullptr; }
+		
+		// if(ret && res != ret && ret != Py_None){ Py_DecRef(ret); ret = nullptr; } // crashes examples - getting clean up but by whom?
+		
+		if(out && out != Py_None){ Py_DecRef(out); out = nullptr; }
+		// if(errmsg && errmsg != Py_None){ Py_DecRef(errmsg); errmsg = nullptr; }
 	});
 
-	// if the return values is a turple:
+	// if the return values is a tuple:
 	// first parameter is the result - serialized
 	// second parameter is the out parameters - serialized OR empty
 	if(!PyTuple_Check(res))
@@ -296,7 +298,7 @@ void call(
 	*out_ret = (unsigned char*)malloc(*out_ret_len);
 	
 	memcpy(*out_ret, (unsigned char*)pretarray, *out_ret_len);
-
+	
 	*is_error = FALSE;
 }
 //--------------------------------------------------------------------
