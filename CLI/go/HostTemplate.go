@@ -225,21 +225,21 @@ func {{$f.ForeignFunctionName}}({{range $index, $elem := $f.ExpandedParameters}}
 	}
 
 	var pin_params *C.uchar
-	var in_params_len C.ulong
+	var in_params_len C.uint64_t
 	if len(in_params) > 0{
 		pin_params = (*C.uchar)(unsafe.Pointer(&in_params[0]))
-		in_params_len = C.ulong(len(in_params))
+		in_params_len = C.uint64_t(len(in_params))
 	} else {
-		in_params_len = C.ulong(0)
+		in_params_len = C.uint64_t(0)
 	}
 
 	var out_ret *C.uchar
-	var out_ret_len C.ulong
-	out_ret_len = C.ulong(0)
+	var out_ret_len C.uint64_t
+	out_ret_len = C.uint64_t(0)
 
 	var out_params *C.uchar
-	var out_params_len C.ulong
-	out_params_len = C.ulong(0)
+	var out_params_len C.uint64_t
+	out_params_len = C.uint64_t(0)
 
 	var out_is_error C.uchar
 	out_is_error = C.uchar(0)
