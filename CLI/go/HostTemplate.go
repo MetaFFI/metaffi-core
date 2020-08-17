@@ -14,8 +14,9 @@ import "unsafe"
 import "github.com/golang/protobuf/proto"
 import "runtime"
 
-// #cgo LDFLAGS: -L. -ldl
 /*
+#cgo !windows LDFLAGS: -L. -ldl
+
 #include <stdlib.h>
 #include <stdint.h>
 void* xllr_handle = NULL;
@@ -29,12 +30,27 @@ void (*pcall)(const char*, uint32_t,
 
 #ifdef _WIN32 //// --- START WINDOWS ---
 #include <Windows.h>
+void get_last_error_string(DWORD err, char** out_err_str)
+{
+    DWORD bufLen = FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |
+                                 FORMAT_MESSAGE_FROM_SYSTEM |
+							     FORMAT_MESSAGE_IGNORE_INSERTS,
+							     NULL,
+							     err,
+						         MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+						         (LPTSTR) out_err_str,
+						         0,
+						         NULL );
+
+    // TODO: out_err_str should get cleaned up!
+}
+
 void* load_library(const char* name, char** out_err)
 {
 	void* handle = LoadLibraryA(name);
 	if(!handle)
 	{
-		*out_err = GetLastError();
+		get_last_error_string(GetLastError(), out_err);
 	}
 
 	return handle;
@@ -49,7 +65,9 @@ const char* free_library(void* lib) // return error string. null if no error.
 
 	if(!FreeLibrary(lib))
 	{
-		return GetLastError();
+		char* out_err;
+		get_last_error_string(GetLastError(), &out_err);
+		return out_err;
 	}
 
 	return NULL;
@@ -60,7 +78,7 @@ void* load_symbol(void* handle, const char* name, char** out_err)
 	void* res = GetProcAddress(handle, name);
 	if(!res)
 	{
-		*out_err = GetLastError();
+		get_last_error_string(GetLastError(), out_err);
 		return NULL;
 	}
 
