@@ -6,7 +6,7 @@ openffi -c --idl GoFuncs.proto -f go -t
 
 rem build and run examples
 echo Building Example Functions
-go build -o examples
+go build -o examples.exe
 
 rem run examples
 echo Run Example Functions

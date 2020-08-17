@@ -9,10 +9,10 @@ openffi -c --idl PythonStringUtils.proto -f go -t
 
 rem build and run examples
 echo Building Examples Host
-go build -o examples
+go build -o examples.exe
 
 echo Run Example Functions
-./examples
+examples.exe
 
 rem if there's an unexpected error - print there's an error!
 if %ERRORLEVEL% GEQ 1 echo Example Failed && exit /b 1

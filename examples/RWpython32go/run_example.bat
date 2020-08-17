@@ -6,7 +6,7 @@ openffi -c --idl GoUtils.proto -f python3 -t
 
 rem run examples
 echo Run Example Functions
-python3 run.py
+python run.py
 
 rem if there's an unexpected error - print there's an error!
 if %ERRORLEVEL% GEQ 1 echo Example Failed && exit /b 1

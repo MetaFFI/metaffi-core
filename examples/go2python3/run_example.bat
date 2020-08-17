@@ -6,7 +6,7 @@ openffi -c --idl PythonFuncs.proto -f go -t
 
 rem build and run examples
 echo Building Examples Host
-go build -o examples
+go build -o examples.exe
 
 echo Run Example Functions
 examples.exe
