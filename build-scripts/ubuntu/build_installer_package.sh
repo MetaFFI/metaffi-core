@@ -19,21 +19,21 @@ if [ -z "$output_dir" ]; then
 fi
 
 # copy to "output" dir:
-## xllr.so to output/xllr/
-mkdir -p output/xllr/
-cp $output_dir/xllr.so output/xllr/
+## xllr.so to output
+mkdir -p output
+cp $output_dir/xllr.so output/
 
-## xllr plugins to output/xllr/ - deprecated after "openffi -install" command becomes available
-cp $output_dir/xllr.go.so output/xllr/
-cp $output_dir/xllr.python3.so output/xllr/
+## xllr plugins to output/ - deprecated after "openffi -install" command becomes available
+cp $output_dir/xllr.go.so output/
+cp $output_dir/xllr.python3.so output/
 
-## openffi executable output/cli/
-mkdir -p output/cli/
-cp $output_dir/openffi output/cli/
+## openffi executable output/
+mkdir -p output/
+cp $output_dir/openffi output/
 
-## compiler plugins output/cli/plugins/ - deprecated after "openffi -install" command becomes available
-cp $output_dir/openffi.compiler.go.so output/cli/
-cp $output_dir/openffi.compiler.python3.so output/cli/
+## compiler plugins output/plugins/ - deprecated after "openffi -install" command becomes available
+cp $output_dir/openffi.compiler.go.so output/
+cp $output_dir/openffi.compiler.python3.so output/
 
 ## copy install.sh script to output/
 cp install.sh output/

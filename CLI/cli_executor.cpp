@@ -27,8 +27,8 @@ cli_executor::cli_executor(int argc, char** argv) :
 		("redist", "Copies to output directory OpenFFI redistrabutable binaries for deployment (TBD!)");
 
 	_install_options.add_options()
-		("deps,d", po::value<std::string>(), "Download & install OpenFFI & OpenFFI plugin dependencies (TBD!)")
-		("lang", po::value<std::string>(), "Download & install OpenFFI supported language from given URL (TBD!)")
+		("lang", po::value<std::string>(), "Download & install OpenFFI supported language from given URL or local path (TBD!)")
+		("remove,r", po::value<std::string>(), "Remove supported language (TBD!)")
 		("list", "List installed OpenFFI languages (TBD!)");
 
 	_openffi_options.add(_compile_options);
