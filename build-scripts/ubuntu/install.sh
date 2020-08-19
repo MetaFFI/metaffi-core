@@ -35,6 +35,7 @@ fi
 # copy binaries to $install_path
 copy_to_install_path *.so $install_path
 copy_to_install_path openffi $install_path
+copy_to_install_path uninstall.sh $install_path
 
 # place symbolic link in /usr/bin
 link_files $install_path/openffi /usr/bin/openffi

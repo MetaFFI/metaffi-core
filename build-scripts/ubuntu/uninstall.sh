@@ -25,6 +25,7 @@ sudo rm $install_path/xllr.so
 sudo rm /usr/lib/xllr.so
 sudo rm $install_path/openffi
 sudo rm /usr/bin/openffi
+sudo rm $install_path/uninstall.sh
 
 # delete install path (only if empty)
 sudo rmdir $install_path
