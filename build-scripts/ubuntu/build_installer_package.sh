@@ -9,40 +9,82 @@ fi
 
 version=$1
 
+echo ---=== Building version $version ===---
+
+script_dir=$PWD
+
 # build binaries for installer
 # $output_dir is set after build.sh is executed
-./build.sh relwithdebinfo
+source ./build.sh relwithdebinfo
 
 if [ -z "$output_dir" ]; then
 	echo Something went wrong... output_dir variable was expected to be set.
 	exit 1
 fi
 
+# get back to the scripts dir
+cd $script_dir
+
+echo ---=== Copying files to installation path ===---
+
 # copy to "output" dir:
 ## xllr.so to output
 mkdir -p output
 cp $output_dir/xllr.so output/
+if [ $? != 0 ]; then
+	echo Failed copying file
+	exit 1
+fi
 
 ## xllr plugins to output/ - deprecated after "openffi -install" command becomes available
-cp $output_dir/xllr.go.so output/
-cp $output_dir/xllr.python3.so output/
+cp $output_dir/xllr.*.so output/
+if [ $? != 0 ]; then
+	echo Failed copying file
+	exit 1
+fi
 
 ## openffi executable output/
-mkdir -p output/
 cp $output_dir/openffi output/
+if [ $? != 0 ]; then
+	echo Failed copying file
+	exit 1
+fi
 
 ## compiler plugins output/plugins/ - deprecated after "openffi -install" command becomes available
-cp $output_dir/openffi.compiler.go.so output/
-cp $output_dir/openffi.compiler.python3.so output/
+cp $output_dir/openffi.compiler.*.so output/
+if [ $? != 0 ]; then
+	echo Failed copying file
+	exit 1
+fi
 
 ## copy install.sh script to output/
 cp install.sh output/
+if [ $? != 0 ]; then
+	echo Failed copying file
+	exit 1
+fi
 
 ## copy uninstall.sh script to output/
 cp uninstall.sh output/
+if [ $? != 0 ]; then
+	echo Failed copying file
+	exit 1
+fi
+
+echo ---=== Compressing installation path ===---
 
 # zip output directory
-tar -zcvf openffi-$version.tar.gz output/
+cd output
+tar -zcvf openffi-$version.tar.gz *
+if [ $? != 0 ]; then
+	cd ..
+	rm -R output
+	echo Failed compressing output directory
+	exit 1
+fi
+cd ..
+mv output/openffi-$version.tar.gz .
+rm -R output
 
 # done
-echo Done. Version is ready in openffi-$version.tar.gz
+echo ---=== Done. Version is ready in openffi-$version.tar.gz ===---

@@ -28,6 +28,8 @@ do
   cd ..
 done
 
+echo ---=== Building CMake ===---
+
 if [ -z "$local_cmake_toolchain_file" ]; then
 	echo "cmake -DCMAKE_BUILD_TYPE=$buildtype -B output-$buildtype ."
 	cmake -DCMAKE_BUILD_TYPE=$buildtype -B output-$buildtype .
@@ -43,10 +45,14 @@ fi
 
 cd output-$buildtype || (echo "cannot find output-$buildtype" && exit 1)
 
+echo ---=== Building OpenFFI ===---
+
 make
 if [ $? != 0 ]; then
 	echo Failed building with make
 	exit 1
 fi
 
-export output_dir="output-$buildtype"
+export output_dir="$PWD"
+
+echo ---=== OpenFFI built successfully to $output_dir ===---
