@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
 function link_files() {
-	sudo ln -s "$1" "$2"
+	echo "Linking $1 -> $2"
+	sudo ln -sf "$1" "$2"
 	if [ $? != 0 ]; then
 		echo Failed linking "$1" to "$2"
 		exit 1
@@ -9,9 +10,10 @@ function link_files() {
 }
 
 function copy_to_install_path() {
-	sudo cp "$1" "$2"
+	echo "Copying $1 -> $install_path"
+	sudo cp $1 $install_path
 	if [ $? != 0 ]; then
-		echo Failed copying "$1" to "$2"
+		echo Failed copying "$1" to $install_path
 		exit 1
 	fi
 }
@@ -24,6 +26,8 @@ if [ -z "$install_path" ]; then
 	install_path="/usr/lib/openffi"
 fi
 
+echo ---=== Installing OpenFFI to $install_path ===---
+
 echo Notice: This script is using sudo - password will be prompt
 
 sudo mkdir -p $install_path
@@ -32,10 +36,14 @@ if [ $? != 0 ]; then
 	exit 1
 fi
 
+echo ---=== Copying files to $install_path ===---
+
 # copy binaries to $install_path
-copy_to_install_path *.so $install_path
-copy_to_install_path openffi $install_path
-copy_to_install_path uninstall.sh $install_path
+copy_to_install_path "*.so"
+copy_to_install_path openffi
+copy_to_install_path uninstall.sh
+
+echo ---=== Linking files from $install_path to /usr/lib and /usr/bin ===---
 
 # place symbolic link in /usr/bin
 link_files $install_path/openffi /usr/bin/openffi
@@ -49,7 +57,7 @@ link_files $install_path/xllr.python3.so /usr/lib/xllr.python3.so
 link_files $install_path/openffi.compiler.go.so /usr/lib/openffi.compiler.go.so
 link_files $install_path/openffi.compiler.python3.so /usr/lib/openffi.compiler.python3.so
 
-echo OpenFFI installed successfully!
+echo ---=== OpenFFI installed successfully! ===---
 
 
 

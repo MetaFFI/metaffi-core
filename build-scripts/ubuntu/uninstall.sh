@@ -5,19 +5,18 @@ install_path=$(readlink -f /usr/lib/xllr.so)
 install_path=$(dirname $install_path)
 
 # unlink and delete every plugin (xllr.*.so and openffi.compiler.*.so)
-/home/tcs/src/github.com/GreenFuze/OpenFFI/cmake-build-debug
 for plugin in "$install_path"/xllr.*.so;
 do
 	sudo rm $plugin
 	plugin_name=$(basename $plugin)
-	sudo rm /usr/lib/$plugin_name
+	sudo rm -f /usr/lib/$plugin_name
 done
 
 for plugin in "$install_path"/openffi.compiler.*.so;
 do
 	sudo rm $plugin
 	plugin_name=$(basename $plugin)
-	sudo rm /usr/lib/$plugin_name
+	sudo rm -f /usr/lib/$plugin_name
 done
 
 # unlink and delete xllr.so and openffi
