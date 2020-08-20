@@ -20,10 +20,10 @@ function copy_to_install_path() {
 
 
 # $1 (optional) - install path.
-# If not set, using /usr/lib/openffi/
+# If not set, using /usr/local/lib/openffi/
 install_path=$1
 if [ -z "$install_path" ]; then
-	install_path="/usr/lib/openffi"
+	install_path="/usr/local/lib/openffi"
 fi
 
 echo ---=== Installing OpenFFI to $install_path ===---
@@ -39,23 +39,23 @@ fi
 echo ---=== Copying files to $install_path ===---
 
 # copy binaries to $install_path
-copy_to_install_path "*.so"
+copy_to_install_path "*.dylib"
 copy_to_install_path openffi
 copy_to_install_path uninstall.sh
 
-echo ---=== Linking files from $install_path to /usr/lib and /usr/bin ===---
+echo ---=== Linking files from $install_path to /usr/local/lib and /usr/bin ===---
 
 # place symbolic link in /usr/bin
-link_files $install_path/openffi /usr/bin/openffi
+link_files $install_path/openffi /usr/local/bin/openffi
 
-# place symbolic link in /usr/lib
-link_files $install_path/xllr.so /usr/lib/xllr.so
+# place symbolic link in /usr/local/lib
+link_files $install_path/xllr.dylib /usr/local/lib/xllr.dylib
 
 ## following will be deprecated once "openffi --install" option is implemented
-link_files $install_path/xllr.go.so /usr/lib/xllr.go.so
-link_files $install_path/xllr.python3.so /usr/lib/xllr.python3.so
-link_files $install_path/openffi.compiler.go.so /usr/lib/openffi.compiler.go.so
-link_files $install_path/openffi.compiler.python3.so /usr/lib/openffi.compiler.python3.so
+link_files $install_path/xllr.go.dylib /usr/local/lib/xllr.go.dylib
+link_files $install_path/xllr.python3.dylib /usr/local/lib/xllr.python3.dylib
+link_files $install_path/openffi.compiler.go.dylib /usr/local/lib/openffi.compiler.go.dylib
+link_files $install_path/openffi.compiler.python3.dylib /usr/local/lib/openffi.compiler.python3.dylib
 
 echo ---=== OpenFFI installed successfully! ===---
 

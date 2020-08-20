@@ -73,20 +73,20 @@ function build_installer_package([String] $version)
 
 	# copy to "output" dir:
 
-	## xllr.so to output
+	## xllr.dll to output
 	mkdir -p output
-	Copy-Item $global:output_dir/xllr.so output/
+	Copy-Item $global:output_dir/xllr.dll output/
 
 	## xllr plugins to output/ - deprecated after "openffi -install" command becomes available
-	Copy-Item $global:output_dir/xllr.go.so output/
-	Copy-Item $global:output_dir/xllr.python3.so output/
+	Copy-Item $global:output_dir/xllr.go.dll output/
+	Copy-Item $global:output_dir/xllr.python3.dll output/
 
 	## openffi executable output/
 	Copy-Item $global:output_dir/openffi output/
 
 	## compiler plugins output/plugins/ - deprecated after "openffi -install" command becomes available
-	Copy-Item $global:output_dir/openffi.compiler.go.so output/
-	Copy-Item $global:output_dir/openffi.compiler.python3.so output/
+	Copy-Item $global:output_dir/openffi.compiler.go.dll output/
+	Copy-Item $global:output_dir/openffi.compiler.python3.dll output/
 
 	## copy install scripts to output/
 	Copy-Item install.bat output/
@@ -119,7 +119,7 @@ function install([String] $install_path)
 	mkdir -p $install_path
 
 	# copy binaries to $install_path
-	Copy-Item *.so $install_path
+	Copy-Item *.dll $install_path
 	Copy-Item openffi $install_path
 	Copy-Item uninstall.bat $install_path
 	Copy-Item scripts.ps1 $install_path
@@ -143,7 +143,7 @@ function uninstall()
 	$syspath = "$syspath;$install_path"
 	Set-ItemProperty -Path ‘Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment’ -Name PATH -Value $syspath
 
-	Remove-Item xllr.*.so, openffi.compiler.*.so, xllr.so, openffi, uninstall.bat, scripts.ps1
+	Remove-Item xllr.*.dll, openffi.compiler.*.dll, xllr.dll, openffi, uninstall.bat, scripts.ps1
 
 	rmdir $install_path
 

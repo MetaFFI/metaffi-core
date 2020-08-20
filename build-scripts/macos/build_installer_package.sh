@@ -28,16 +28,16 @@ cd $script_dir
 echo ---=== Copying files to installation path ===---
 
 # copy to "output" dir:
-## xllr.so to output
+## xllr.dylib to output
 mkdir -p output
-cp $output_dir/xllr.so output/
+cp $output_dir/xllr.dylib output/
 if [ $? != 0 ]; then
 	echo Failed copying file
 	exit 1
 fi
 
 ## xllr plugins to output/ - deprecated after "openffi -install" command becomes available
-cp $output_dir/xllr.*.so output/
+cp $output_dir/xllr.*.dylib output/
 if [ $? != 0 ]; then
 	echo Failed copying file
 	exit 1
@@ -51,7 +51,7 @@ if [ $? != 0 ]; then
 fi
 
 ## compiler plugins output/plugins/ - deprecated after "openffi -install" command becomes available
-cp $output_dir/openffi.compiler.*.so output/
+cp $output_dir/openffi.compiler.*.dylib output/
 if [ $? != 0 ]; then
 	echo Failed copying file
 	exit 1
