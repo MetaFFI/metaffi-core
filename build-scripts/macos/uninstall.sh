@@ -1,7 +1,12 @@
 #!/usr/bin/env bash
 
 # find openffi install path by following /usr/local/bin/openffi symbolic link
-install_path=$(readlink -f /usr/local/lib/xllr.dylib)
+install_path=$(readlink /usr/local/lib/xllr.dylib)
+if [ $? != 0 ]; then
+	echo Failed to find installation path
+	exit 1
+fi
+
 install_path=$(dirname $install_path)
 
 # unlink and delete every plugin (xllr.*.dylib and openffi.compiler.*.dylib)
