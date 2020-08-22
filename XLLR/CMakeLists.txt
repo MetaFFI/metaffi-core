@@ -1,6 +1,6 @@
 set(Boost_USE_STATIC_LIBS ON)
-find_package(Boost COMPONENTS thread filesystem REQUIRED) # Boost library
-find_package(Python3 COMPONENTS Development) # Python library
+find_package(Boost REQUIRED COMPONENTS thread filesystem) # Boost library
+find_package(Python3 REQUIRED COMPONENTS Development) # Python library
 
 include(CTest)
 enable_testing()
