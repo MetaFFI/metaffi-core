@@ -1,2 +1,2 @@
 @echo off & setlocal
-powershell ExecutionPolicy ByPass -command ". "%cd%\scripts.ps1"; build_installer_package;"
+powershell -ExecutionPolicy Bypass -command ". '"%cd%\scripts.ps1"'; build_installer_package %1;"
