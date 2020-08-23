@@ -90,6 +90,8 @@ function build_installer_package([String] $version)
 
 	$outputDir = Get-Location
 
+	Write-Host "---=== Building version $version ===---"
+
 	# build
 	build "relwithdebinfo"
 
@@ -105,9 +107,9 @@ function build_installer_package([String] $version)
 
 	## xllr.dll to output
 
-	If (!(test-path output))
+	If (!(Test-Path output))
 	{
-		mkdir -p output
+		mkdir -p output > $null
 	}
 
 	if( ! $? )
@@ -116,7 +118,8 @@ function build_installer_package([String] $version)
 		Exit(1)
 	}
 
-	Write-Host "output PATH: $global:output_dir"
+	Write-Host "---=== Copying files to installation path ===---"
+
 	Copy-Item $global:output_dir/xllr.dll output/
 	if( ! $? )
 	{
@@ -184,6 +187,8 @@ function build_installer_package([String] $version)
 		Exit(1)
 	}
 
+	Write-Output "---=== Compressing installation path ===---"
+
 	# zip output directory
 	compress-archive -f -path "output/*" -destinationpath "openffi-$version.zip" -compressionlevel optimal
 	if( ! $? )
@@ -220,7 +225,7 @@ function install([String] $install_path)
 
 	if( ! (Test-Path $install_path) )
 	{
-		mkdir -p $install_path
+		mkdir -p $install_path > $null
 	}
 
 	# copy binaries to $install_path
