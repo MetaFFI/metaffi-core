@@ -1,9 +1,9 @@
 @echo off
 
-echo 'Running Go->Go'
-cd go
-run_example.bat 
-cd ..
+echo 'Skipping Go->Go example (experimental. Go cannot load a Go C-Shared library)'
+rem cd go
+rem run_example.bat
+rem cd ..
 echo =======================================
 echo 'Running Python3->Python3'
 cd python3
