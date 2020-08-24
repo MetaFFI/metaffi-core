@@ -7,6 +7,7 @@ const HostTemplate = `
 {{ $targetLang := .TargetLanguage}}
 from {{.ProtobufFilename}} import *
 from ctypes import *
+import ctypes.util
 from typing import List
 import platform
 import os
@@ -23,7 +24,7 @@ def load_xllr():
 def append_dynamic_lib_extension(fname):
 	osname = platform.system()
 	if osname == 'Windows':
-		return fname + '.dll'
+		return ctypes.util.find_library(fname + '.dll')
 	elif osname == 'Darwin':
 		return fname + '.dylib'
 	else:
