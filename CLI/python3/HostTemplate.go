@@ -19,9 +19,9 @@ def free_openffi():
 def load_xllr():
 	global xllrHandle
 	if xllrHandle == None:
-		xllrHandle = cdll.LoadLibrary(append_dynamic_lib_extension('xllr'))
+		xllrHandle = cdll.LoadLibrary(get_filename_to_load('xllr'))
 
-def append_dynamic_lib_extension(fname):
+def get_filename_to_load(fname):
 	osname = platform.system()
 	if osname == 'Windows':
 		return ctypes.util.find_library(fname + '.dll')
