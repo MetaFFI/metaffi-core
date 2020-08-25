@@ -243,8 +243,11 @@ function install([String] $install_path)
 		Exit(1)
 	}
 
-	$syspath = "$syspath;$install_path_for_env_var"
-	[Environment]::SetEnvironmentVariable("Path", $syspath, "Machine")
+	if( !($syspath -contains $install_path_for_env_var) )
+	{
+		$syspath = "$syspath;$install_path_for_env_var"
+		[Environment]::SetEnvironmentVariable("Path", $syspath, "Machine")
+	}
 
 	Write-Host OpenFFI installed successfully!
 
