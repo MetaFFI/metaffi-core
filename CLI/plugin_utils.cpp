@@ -68,11 +68,7 @@ void plugin_utils::install(const std::string& url_or_path, bool force)
 		std::stringstream ss_download_cmds;
 
 #ifdef _WIN32
-		ss_download_cmds << R"(powershell -ExecutionPolicy ByPass -command "Expand-Archive -Path )" << compressed_plugin_path << R"( -DestinationPath ")" << get_install_path() << "\"";
-		if(force)
-		{
-			ss_download_cmds << " -Force";
-		}
+		ss_download_cmds << R"(powershell -ExecutionPolicy ByPass -command "wget )" << url_or_path << R"( -OutFile ')" << compressed_plugin_path.generic_string() << "'";
 #else
 		ss_download_cmds << "wget -q " << url_or_path;
 #endif
@@ -155,10 +151,10 @@ void plugin_utils::remove(const std::string& name)
 	}
 	
 	std::stringstream compiler_path;
-	compiler_path << get_install_path() << boost::filesystem::path::preferred_separator << "openffi.compiler." << name << boost::dll::shared_library::suffix().generic_string();
+	compiler_path << get_install_path() << "/openffi.compiler." << name << boost::dll::shared_library::suffix().generic_string();
 	
 	std::stringstream xllr_path;
-	xllr_path << get_install_path() << boost::filesystem::path::preferred_separator << "xllr." << name << boost::dll::shared_library::suffix().generic_string();
+	xllr_path << get_install_path() << "/xllr." << name << boost::dll::shared_library::suffix().generic_string();
 	
 	if(boost::filesystem::exists(compiler_path.str()))
 	{
