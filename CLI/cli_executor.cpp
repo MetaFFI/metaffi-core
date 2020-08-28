@@ -1,21 +1,22 @@
 #include "cli_executor.h"
 #include <iostream>
 #include <boost/filesystem.hpp>
+#include "plugin_utils.h"
 #include "compiler.h"
 
 namespace po = boost::program_options;
 
 //--------------------------------------------------------------------
 cli_executor::cli_executor(int argc, char** argv) :
-	_argc(argc),
-	_argv(argv),
-	_openffi_options("OpenFFI"),
-	_compile_options("compile"),
-	_install_options("install")
+		_argc(argc),
+		_argv(argv),
+		_openffi_options("OpenFFI"),
+		_compile_options("compile"),
+		_plugin_options("plugin")
 {
 	_openffi_options.add_options()
 		("compile,c", "Compile definition file")
-		("install,i", "Install dependencies and plugins (TBD!)")
+		("plugin,p", "Install dependencies and plugins")
 		("help", "Display this help page");
 
 	_compile_options.add_options()
@@ -24,15 +25,15 @@ cli_executor::cli_executor(int argc, char** argv) :
 		("from-langs,f", po::value<std::vector<std::string>>()->multitoken() , "List of languages the functions are called from (i.e. host languages)")
 		("skip-compile-serialization", "Skip IDL compilation to serialization code")
 		("output,o", po::value<std::string>()->default_value(boost::filesystem::current_path().generic_string()) , "Directory to generate the files (Default: current directory)")
-		("redist", "Copies to output directory OpenFFI redistrabutable binaries for deployment (TBD!)");
+		("redist", "Copies to output directory OpenFFI runtime binaries and required runtime plugins for deployment (TBD!)");
 
-	_install_options.add_options()
-		("lang", po::value<std::string>(), "Download & install OpenFFI supported language from given URL or local path (TBD!)")
-		("remove,r", po::value<std::string>(), "Remove supported language (TBD!)")
-		("list", "List installed OpenFFI languages (TBD!)");
+	_plugin_options.add_options()
+		("install,i", po::value<std::string>(), "Download & install OpenFFI supported language from given URL or local path")
+		("remove,r", po::value<std::string>(), "Remove supported language")
+		("list", "List installed OpenFFI languages");
 
 	_openffi_options.add(_compile_options);
-	_openffi_options.add(_install_options);
+	_openffi_options.add(_plugin_options);
 }
 //--------------------------------------------------------------------
 bool cli_executor::parse()
@@ -54,9 +55,9 @@ bool cli_executor::parse()
 	{
 		return this->compile();
 	}
-	else if(vm.count("install"))
+	else if(vm.count("plugin"))
 	{
-		return this->install();
+		return this->plugin();
 	}
 	else
 	{
@@ -109,27 +110,46 @@ bool cli_executor::compile()
 	return true;
 }
 //--------------------------------------------------------------------
-bool cli_executor::install()
+bool cli_executor::plugin()
 {
 	// compile menu
-	po::store(po::command_line_parser(this->_argc, this->_argv).options(_install_options).allow_unregistered().run(), vm);
+	po::store(po::command_line_parser(this->_argc, this->_argv).options(_plugin_options).allow_unregistered().run(), vm);
 	po::notify(vm);
-
-	if(vm.count("deps"))
+	
+	if(vm.count("install") > 0 && vm.count("remove") > 0)
 	{
-		std::cout << "Requesting to install OpenFFI depedencies" << std::endl;
+		std::cout << "Cannot choose both install and remove options" << std::endl;
+		return false;
 	}
-	else if(vm.count("lang"))
+	
+	if(vm.count("install"))
 	{
-		std::cout << "Requesting to install language: " << vm["lang"].as<std::string>() << std::endl;
+		plugin_utils::install(vm["install"].as<std::string>(), true);
+	}
+	else if(vm.count("remove"))
+	{
+		plugin_utils::remove(vm["remove"].as<std::string>());
 	}
 	else if(vm.count("list"))
 	{
-		std::cout << "Requesting to list installed languages" << std::endl;
+		std::vector<std::string> plugins = plugin_utils::list();
+		
+		if(!plugins.empty())
+		{
+			for(const std::string& plugin : plugins)
+			{
+				std::cout << plugin << std::endl;
+			}
+		}
+		else
+		{
+			std::cout << "No plugins installed :-(" << std::endl;
+			std::cout << "Start installing using \"openffi plugin -install [URL or local path]\" command!" << std::endl;
+		}
 	}
 	else
 	{
-		_install_options.print(std::cout);
+		_plugin_options.print(std::cout);
 		return false;
 	}
 

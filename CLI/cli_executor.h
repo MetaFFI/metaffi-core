@@ -9,7 +9,7 @@ private:
 
 	boost::program_options::options_description _openffi_options;
 	boost::program_options::options_description _compile_options;
-	boost::program_options::options_description _install_options;
+	boost::program_options::options_description _plugin_options;
 
 	boost::program_options::variables_map vm;
 
@@ -23,6 +23,6 @@ public:
 
 private:
 	bool compile(void);
-	bool install(void);
+	bool plugin(void);
 };
 //--------------------------------------------------------------------
