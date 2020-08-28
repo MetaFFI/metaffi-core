@@ -14,4 +14,6 @@ public:
 	static void install(const std::string& url_or_path, bool force);
 	static void remove(const std::string& name);
 
+private:
+	static std::string get_install_path();
 };

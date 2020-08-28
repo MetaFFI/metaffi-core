@@ -26,7 +26,7 @@ std::vector<std::string> plugin_utils::list()
 	pattern << R"(openffi\.compiler\.([a-zA-Z0-9_]+)\)" << boost::dll::shared_library::suffix().generic_string();
 	std::regex plugin_name_pattern(pattern.str());
 	
-	for(boost::filesystem::directory_iterator di(boost::dll::program_location().parent_path()) ; di != end_di ; di++)
+	for(boost::filesystem::directory_iterator di(get_install_path()) ; di != end_di ; di++)
 	{
 		if( !boost::filesystem::is_regular_file(di->status())){
 			continue;
@@ -68,7 +68,7 @@ void plugin_utils::install(const std::string& url_or_path, bool force)
 		std::stringstream ss_download_cmds;
 
 #ifdef _WIN32
-		ss_download_cmds << R"(powershell -ExecutionPolicy ByPass -command "Expand-Archive -Path )" << compressed_plugin_path << R"( -DestinationPath ")" << boost::dll::program_location().parent_path() << "\"";
+		ss_download_cmds << R"(powershell -ExecutionPolicy ByPass -command "Expand-Archive -Path )" << compressed_plugin_path << R"( -DestinationPath ")" << get_install_path() << "\"";
 		if(force)
 		{
 			ss_download_cmds << " -Force";
@@ -128,13 +128,13 @@ void plugin_utils::install(const std::string& url_or_path, bool force)
 	// unzip/untar - TODO: Must be replaced with actual code. I'm just getting lazy here.
 	std::stringstream decompress_cmd;
 #ifdef _WIN32
-	decompress_cmd << R"(powershell -ExecutionPolicy ByPass -command "Expand-Archive -Path )" << compressed_plugin_path << R"( -DestinationPath ")" << boost::dll::program_location().parent_path() << "\"";
+	decompress_cmd << R"(powershell -ExecutionPolicy ByPass -command "Expand-Archive -Path )" << compressed_plugin_path << R"( -DestinationPath ")" << get_install_path() << "\"";
 	if(force)
 	{
 		decompress_cmd << " -Force";
 	}
 #else
-	decompress_cmd << "tar -C " << boost::dll::program_location().parent_path() << " -zx" << (force? "f " : " ") << compressed_plugin_path;
+	decompress_cmd << "tar -C " << get_install_path() << " -zx" << (force? "f " : " ") << compressed_plugin_path;
 #endif
 	
 	std::cout << "Decompressing: " << compressed_plugin_path << std::endl;
@@ -155,10 +155,10 @@ void plugin_utils::remove(const std::string& name)
 	}
 	
 	std::stringstream compiler_path;
-	compiler_path << boost::dll::program_location().parent_path().generic_string() << boost::filesystem::path::preferred_separator << "openffi.compiler." << name << boost::dll::shared_library::suffix().generic_string();
+	compiler_path << get_install_path() << boost::filesystem::path::preferred_separator << "openffi.compiler." << name << boost::dll::shared_library::suffix().generic_string();
 	
 	std::stringstream xllr_path;
-	xllr_path << boost::dll::program_location().parent_path().generic_string() << boost::filesystem::path::preferred_separator << "xllr." << name << boost::dll::shared_library::suffix().generic_string();
+	xllr_path << get_install_path() << boost::filesystem::path::preferred_separator << "xllr." << name << boost::dll::shared_library::suffix().generic_string();
 	
 	if(boost::filesystem::exists(compiler_path.str()))
 	{
@@ -173,5 +173,16 @@ void plugin_utils::remove(const std::string& name)
 	}
 	
 	std::cout << "Done removing " << name << std::endl;
+}
+//--------------------------------------------------------------------
+std::string plugin_utils::get_install_path()
+{
+	boost::filesystem::path location = boost::dll::program_location();
+	if(boost::filesystem::is_symlink(location))
+	{
+		location = boost::filesystem::read_symlink(location);
+	}
+	
+	return location.parent_path().generic_string();
 }
 //--------------------------------------------------------------------
