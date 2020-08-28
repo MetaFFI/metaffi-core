@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <boost/filesystem.hpp>
 
 class plugin_utils
 {
@@ -16,4 +17,6 @@ public:
 
 private:
 	static std::string get_install_path();
+	static boost::filesystem::path download(const std::string& url);
+	static std::vector<std::string> decompress(const boost::filesystem::path& compressed_file, bool force)
 };
