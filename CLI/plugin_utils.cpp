@@ -3,6 +3,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/dll.hpp>
 #include <regex>
+#include <sstream>
 #include "httplib.h"
 #include "uri.h"
 #include "../utils/scope_guard.hpp"
