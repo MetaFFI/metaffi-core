@@ -16,7 +16,7 @@ Jump to:
 
 * Don't want to settle for a library port and use the real thing???
 
-* Are you really going re-write this code just it's in a different language than your project?!
+* Are you really going re-write this code just because it's in a different language than your project?!
 
 * Tired of *language interop hell* to connect different languages in your project?
 
