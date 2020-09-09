@@ -25,7 +25,7 @@ func errToOutError(out_err **C.char, out_err_len *C.uint64_t, is_error *C.uint8_
 	*is_error = 1
 	txt := customText+err.Error()
 	*out_err = C.CString(txt)
-	*out_err_len = C.ulonglong(len(txt))
+	*out_err_len = C.uint64_t(len(txt))
 }
 
 func panicHandler(out_err **C.char, out_err_len *C.uint64_t, is_error *C.uint8_t){
@@ -42,7 +42,7 @@ func panicHandler(out_err **C.char, out_err_len *C.uint64_t, is_error *C.uint8_t
 
 		*is_error = 1
 		*out_err = C.CString(msg)
-		*out_err_len = C.ulonglong(len(msg))
+		*out_err_len = C.uint64_t(len(msg))
 	}
 }
 
@@ -95,7 +95,7 @@ func Foreign{{$f.OriginalForeignFunctionName}}(in_params *C.char, in_params_len 
 	// write serialized results to out_ret
 	serializedRetStr := string(serializedRet)
 	*out_ret = C.CString(serializedRetStr)
-	*out_ret_len = C.ulonglong(len(serializedRetStr))
+	*out_ret_len = C.uint64_t(len(serializedRetStr))
 
 	// === fill out_params
 	serializedParams, err := proto.Marshal(&req)
@@ -108,7 +108,7 @@ func Foreign{{$f.OriginalForeignFunctionName}}(in_params *C.char, in_params_len 
 		// write serialized parameters to out_params
 		serializedParamsStr := string(serializedParams)
 		*out_params = C.CString(serializedParamsStr)
-		*out_params_len = C.ulonglong(len(serializedParamsStr))
+		*out_params_len = C.uint64_t(len(serializedParamsStr))
 	}
 	
 }

@@ -18,5 +18,5 @@ public:
 private:
 	static std::string get_install_path();
 	static boost::filesystem::path download(const std::string& url);
-	static std::vector<std::string> decompress(const boost::filesystem::path& compressed_file, bool force)
+	static std::vector<std::string> decompress(const boost::filesystem::path& compressed_file, bool force);
 };

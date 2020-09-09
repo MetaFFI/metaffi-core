@@ -244,7 +244,7 @@ std::vector<std::string> plugin_utils::decompress(const boost::filesystem::path 
 	std::sort(list_after_install.begin(), list_after_install.end());
 	
 	std::vector<std::string> new_plugin;
-	std::set_difference(list_before_install.begin(), list_before_install.end(), list_after_install.begin(), list_after_install.end(), new_plugin);
+	std::set_difference(list_before_install.begin(), list_before_install.end(), list_after_install.begin(), list_after_install.end(), std::back_inserter(new_plugin));
 	
 	if(new_plugin.empty())
 	{
