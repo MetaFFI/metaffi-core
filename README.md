@@ -1,6 +1,6 @@
 # OpenFFI Framework
 
-**Latest Version: 0.0.1-alpha**
+**Latest Version: 0.0.2-alpha**
 
 OpenFFI framework is a simple and easy way to call functions in different programming languages.
 
@@ -165,7 +165,7 @@ Plugin management is available using OpenFFI CLI tool with the `-p` (or `--plugi
 
 To install a plugin:
 `openffi -p -i [plugin URL or local path]` \
-For example, `openffi -p -i https://github.com/GreenFuze/OpenFFI/releases/download/v0.0.1-alpha/openffi-ubuntu-python3.tar.gz`
+For example, `openffi -p -i https://github.com/GreenFuze/OpenFFI/releases/download/v0.0.2-alpha/openffi-ubuntu-python3.tar.gz`
 
 To remove a plugin run:
 `openffi -p -r [plugin]` \
@@ -182,11 +182,11 @@ Current official languages use Protobuf Compiler for data serialization (detaile
 * Go support requires `protoc-gen-go`, Protobuf's Go support which can be found [here](https://github.com/golang/protobuf). 
 
 ### Download
-#### Version 0.0.1-alpha
-* [Windows - openffi-windows-v0.0.1.zip](https://github.com/GreenFuze/OpenFFI/releases/download/v0.0.1-alpha/openffi-windows-v0.0.1.zip)
-* [Ubuntu - ubuntu-python3.tar.gz](https://github.com/GreenFuze/OpenFFI/releases/download/v0.0.1-alpha/openffi-ubuntu-python3.tar.gz)
-* [MacOS - openffi-macos-v0.0.1.tar.gz
-](https://github.com/GreenFuze/OpenFFI/releases/download/v0.0.1-alpha/openffi-macos-v0.0.1.tar.gz)
+#### Version 0.0.-alpha
+* [Windows - openffi-windows-v0.0.2.zip](https://github.com/GreenFuze/OpenFFI/releases/download/v0.0.2-alpha/openffi-windows-v0.0.2.zip)
+* [Ubuntu - openffi-ubuntu-v0.0.2.tar.gz](https://github.com/GreenFuze/OpenFFI/releases/download/v0.0.2-alpha/openffi-ubuntu-v0.0.2.tar.gz)
+* [MacOS - openffi-macos-v0.0.2.tar.gz
+](https://github.com/GreenFuze/OpenFFI/releases/download/v0.0.2-alpha/openffi-macos-v0.0.2.tar.gz)
 
 ### Install
 Download OpenFFI for your operating system and run the `install` script. Notice you will need administrative rights to install.
