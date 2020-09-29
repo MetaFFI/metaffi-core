@@ -190,7 +190,7 @@ func compile_serialization(idl_path *C.char, idl_path_length C.uint,
 	output, err := protoc.CombinedOutput()
 
 	if err != nil{
-		msg := fmt.Sprintf("Failed to compile %v to Protobuf serialization code using \"protoc\". Exit code: %v.\nOutput: %v", idlPath, err, output)
+		msg := fmt.Sprintf("Failed to compile %v to Protobuf serialization code using \"protoc\". Exit code: %v.\nOutput: %v", idlPath, err, string(output))
 		*out_err = C.CString(msg)
 		*out_err_len = C.uint(len(msg))
 		return
