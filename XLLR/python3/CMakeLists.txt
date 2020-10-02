@@ -16,9 +16,15 @@ SET_TARGET_PROPERTIES(xllr.python3 PROPERTIES PREFIX "")
 
 # get the name of the library and use this to link
 # it is to ignore full path of package managers like vcpkg
-get_filename_component(Py3Lib "${Python3_LIBRARIES}" NAME)
 
-target_link_libraries(xllr.python3 ${Py3Lib} Boost::filesystem)
+get_filename_component(py3Lib "${Python3_LIBRARIES}" NAME)
+
+find_library(isFoundNoFullPath ${py3Lib})
+if (${isFoundNoFullPath})
+	target_link_libraries(xllr.python3 ${py3Lib} Boost::filesystem)
+else()
+	target_link_libraries(xllr.python3 ${Python3_LIBRARIES} Boost::filesystem)
+endif()
 
 # Unitest Python
 add_executable(xllr_python3_test "${CMAKE_CURRENT_LIST_DIR}/xllr_python3_test.cpp")
