@@ -181,6 +181,8 @@ Current official languages use Protobuf Compiler for data serialization (detaile
 
 * Go support requires `protoc-gen-go`, Protobuf's Go support which can be found [here](https://github.com/golang/protobuf). 
 
+* Python3 support requires `protobuf` python package
+
 ### Download
 #### Version 0.0.2-alpha
 * [Windows - openffi-windows-v0.0.2.zip](https://github.com/GreenFuze/OpenFFI/releases/download/v0.0.2-alpha/openffi-windows-v0.0.2.zip)

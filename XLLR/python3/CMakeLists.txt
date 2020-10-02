@@ -14,7 +14,11 @@ set_property(TARGET xllr.python3 PROPERTY POSITION_INDEPENDENT_CODE ON)
 # remove the "lib" prefix in linux to get the expected filename "xllr.python3.[ext]"
 SET_TARGET_PROPERTIES(xllr.python3 PROPERTIES PREFIX "")
 
-target_link_libraries(xllr.python3 Python3::Python Boost::filesystem)
+# get the name of the library and use this to link
+# it is to ignore full path of package managers like vcpkg
+get_filename_component(Py3Lib "${Python3_LIBRARIES}" NAME)
+
+target_link_libraries(xllr.python3 ${Py3Lib} Boost::filesystem)
 
 # Unitest Python
 add_executable(xllr_python3_test "${CMAKE_CURRENT_LIST_DIR}/xllr_python3_test.cpp")
