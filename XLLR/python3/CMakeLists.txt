@@ -20,7 +20,7 @@ SET_TARGET_PROPERTIES(xllr.python3 PROPERTIES PREFIX "")
 get_filename_component(py3Lib "${Python3_LIBRARIES}" NAME)
 
 find_library(isFoundNoFullPath ${py3Lib})
-if (${isFoundNoFullPath})
+if (isFoundNoFullPath)
 	target_link_libraries(xllr.python3 ${py3Lib} Boost::filesystem)
 else()
 	target_link_libraries(xllr.python3 ${Python3_LIBRARIES} Boost::filesystem)
