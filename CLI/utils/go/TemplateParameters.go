@@ -39,6 +39,11 @@ type TemplateFunctionParameterData struct {
 	ParamPass *PassMethod
 	IsArray bool
 }
+//--------------------------------------------------------------------
+func (this *TemplateFunctionParameterData) NameAsTitle() string{
+	return strings.Title(this.Name);
+}
+//--------------------------------------------------------------------
 func (this *TemplateFunctionParameterData) NameDereferenceIfNeeded(prefix string) string{
 	if this.IsComplex && !this.IsArray{
 		return "*"+prefix+this.Name
@@ -46,6 +51,7 @@ func (this *TemplateFunctionParameterData) NameDereferenceIfNeeded(prefix string
 		return prefix+this.Name
 	}
 }
+//--------------------------------------------------------------------
 func (this *TemplateFunctionParameterData) NamePointerIfNeeded(prefix string) string{
 	if this.IsComplex && !this.IsArray{
 		return "&"+prefix+this.Name
@@ -53,6 +59,7 @@ func (this *TemplateFunctionParameterData) NamePointerIfNeeded(prefix string) st
 		return prefix+this.Name
 	}
 }
+//--------------------------------------------------------------------
 func (this *TemplateFunctionParameterData) TypePointerIfNeeded(prefix string) string{
 	if this.IsComplex && !this.IsArray{
 		return "*"+prefix+this.Type
@@ -194,7 +201,7 @@ func (this *TemplateParameters) Generate(templateName string, templateText strin
 
 	err = temp.Execute(&strbuf, this)
 	if err != nil{
-		return "", fmt.Errorf("Failed to execute guest template, err: %v", err)
+		return "", fmt.Errorf("Failed to execute template, err: %v", err)
 	}
 
 	return strbuf.String(), nil
