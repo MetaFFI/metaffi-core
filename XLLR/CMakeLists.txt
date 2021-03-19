@@ -23,5 +23,3 @@ if(NOT WIN32)
 	target_link_libraries(xllr pthread dl)
 endif()
 
-# build xllr plugins dynamic library
-include(${CMAKE_CURRENT_SOURCE_DIR}/XLLR/example/CMakeLists.txt)
