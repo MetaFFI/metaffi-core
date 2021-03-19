@@ -1,7 +1,4 @@
-set(Boost_USE_STATIC_LIBS ON)
-
 find_package(Boost REQUIRED COMPONENTS thread filesystem) # Boost library
-find_package(Python3 REQUIRED COMPONENTS Development) # Python library
 
 include(CTest)
 enable_testing()
@@ -28,5 +25,4 @@ endif()
 
 # build xllr plugins dynamic library
 include(${CMAKE_CURRENT_SOURCE_DIR}/XLLR/example/CMakeLists.txt)
-include(${CMAKE_CURRENT_SOURCE_DIR}/XLLR/python3/CMakeLists.txt)
 include(${CMAKE_CURRENT_SOURCE_DIR}/XLLR/go/CMakeLists.txt)

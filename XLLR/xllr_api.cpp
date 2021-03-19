@@ -1,4 +1,4 @@
-#include "xllr_api.h"
+#include "../../plugin-sdk/xllr_api.h"
 #include "plugin_repository.h"
 #include <unordered_map>
 #include <iostream>

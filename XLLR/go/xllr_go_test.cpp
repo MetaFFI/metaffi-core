@@ -1,13 +1,12 @@
 #include <iostream>
 #include <string>
-#include <string.h>
-#include <iostream>
-#include <fstream>
-#include "../xllr_api.h"
-#include "../../utils/scope_guard.hpp"
+#include <xllr_api.h>
+#include <utils/scope_guard.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/dll.hpp>
 #include <sstream>
+
+using namespace openffi::utils;
 
 #define reset_err \
 	out_err = nullptr; \

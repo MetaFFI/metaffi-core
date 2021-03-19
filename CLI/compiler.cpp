@@ -1,9 +1,11 @@
 #include "compiler.h"
 #include "compiler_plugin_interface_wrapper.h"
 #include <boost/filesystem.hpp>
-#include "../utils/scope_guard.hpp"
+#include <utils/scope_guard.hpp>
 #include <regex>
 #include <sstream>
+
+using namespace openffi::utils;
 
 //--------------------------------------------------------------------
 compiler::compiler(const std::string& idl_path, const std::string& output_path):

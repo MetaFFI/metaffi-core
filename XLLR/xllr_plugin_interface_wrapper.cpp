@@ -1,8 +1,9 @@
 #include "xllr_plugin_interface_wrapper.h"
-#include "../utils/scope_guard.hpp"
+#include <utils/scope_guard.hpp>
 #include <boost/filesystem.hpp>
-#include "../utils/function_loader.hpp"
+#include <utils/function_loader.hpp>
 
+using namespace openffi::utils;
 
 //--------------------------------------------------------------------
 xllr_plugin_interface_wrapper::xllr_plugin_interface_wrapper(const std::string& plugin_filename_without_extension)

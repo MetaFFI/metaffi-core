@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 #include <string.h>
-#include "../xllr_api.h"
+#include "../../../plugin-sdk/xllr_api.h"
 
 #define reset_err \
 	out_err = nullptr; \

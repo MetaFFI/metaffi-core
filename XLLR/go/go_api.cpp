@@ -1,11 +1,10 @@
 #include "go_api.h"
-#include <cstdlib>
-#include <cstring>
-#include <cstdio>
-#include "../../utils/scope_guard.hpp"
-#include "../../utils/function_loader.hpp"
+#include <utils/scope_guard.hpp>
+#include <utils/function_loader.hpp>
 #include <boost/filesystem.hpp>
 #include "modules_repository.h"
+
+using namespace openffi::utils;
 
 #define handle_err(err, err_len, desc) \
 	*err_len = strlen( desc ); \

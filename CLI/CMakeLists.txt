@@ -26,5 +26,4 @@ endif()
 
 # build compiler plugins dynamic library
 include(${CMAKE_CURRENT_SOURCE_DIR}/CLI/example/CMakeLists.txt)
-include(${CMAKE_CURRENT_SOURCE_DIR}/CLI/python3/CMakeLists.txt)
 include(${CMAKE_CURRENT_SOURCE_DIR}/CLI/go/CMakeLists.txt)

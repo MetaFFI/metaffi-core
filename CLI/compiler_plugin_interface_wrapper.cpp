@@ -1,5 +1,5 @@
 #include "compiler_plugin_interface_wrapper.h"
-#include "../utils/scope_guard.hpp"
+#include <utils/scope_guard.hpp>
 #include <boost/filesystem.hpp>
 #include "plugin_modules_repository.h"
 

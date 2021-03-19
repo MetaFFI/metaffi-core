@@ -1,3 +1,7 @@
+find_package(Boost REQUIRED COMPONENTS thread filesystem) # Boost library
+
+include(CTest)
+enable_testing()
 
 # build xllr.go
 add_library(xllr.go

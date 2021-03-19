@@ -8,7 +8,9 @@
 #include <boost/format.hpp>
 #include "httplib.h"
 #include "uri.h"
-#include "../utils/scope_guard.hpp"
+#include <utils/scope_guard.hpp>
+
+using namespace openffi::utils;
 
 //--------------------------------------------------------------------
 bool plugin_utils::is_installed(const std::string& plugin_name)

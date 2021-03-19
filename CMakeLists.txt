@@ -8,6 +8,9 @@ set(CMAKE_CXX_STANDARD 17)
 # BOOST_LIBRARYDIR    [path to boost]\lib64-msvc-[version]
 # BOOST_ROOT          [path to boost]\boost
 
+# Include SDK
+include(${CMAKE_CURRENT_LIST_DIR}/../plugin-sdk/CMakeLists.txt)
+
 # Build XLLR
 include(${CMAKE_CURRENT_SOURCE_DIR}/XLLR/CMakeLists.txt)
 include(${CMAKE_CURRENT_SOURCE_DIR}/CLI/CMakeLists.txt)

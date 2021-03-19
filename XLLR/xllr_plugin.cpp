@@ -1,7 +1,9 @@
 #include "xllr_plugin.h"
 #include <iostream>
-#include "../utils/scope_guard.hpp"
+#include <utils/scope_guard.hpp>
 #include <algorithm>
+
+using namespace openffi::utils;
 
 //--------------------------------------------------------------------
 xllr_plugin::xllr_plugin(const std::string& plugin_filename, bool is_init /*= true*/):_plugin_filename(plugin_filename)
