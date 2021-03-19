@@ -302,4 +302,4 @@ Every plugin is built out of 2 components:
 
 The *example* plugin ([example XLLR](XLLR/example/README.md) & [example Compiler](CLI/example/README.md)) written in C++, contains the least amount of code for plugin implementation and can be used as a template for implementers. The README.md details what is required to build OpenFFI plugin.
 
-The *Python3* plugin ([python3 XLLR](XLLR/python3/README.md) & [python3 Compiler](CLI/python3/README.md)) and *Go* plugin ([go XLLR](XLLR/go/README.md) & [go Compiler](CLI/go/README.md)) contain details about their implementations and can be used as a basis for new plugin.
+The *Python3* plugin ([python3 XLLR](XLLR/python3/README.md) & [python3 Compiler](CLI/python3/README.md)) and *Go* plugin ([go XLLR](../plugin-go/runtime/README.md) & [go Compiler](../plugin-go/compiler/README.md)) contain details about their implementations and can be used as a basis for new plugin.
