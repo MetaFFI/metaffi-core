@@ -1,5 +1,5 @@
 #pragma once
-#include "../../plugin-sdk/xllr_plugin_interface.h"
+#include "runtime/xllr_plugin_interface.h"
 #include <memory>
 #include <type_traits>
 #include <boost/dll.hpp>
