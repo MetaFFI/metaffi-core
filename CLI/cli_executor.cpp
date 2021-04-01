@@ -93,12 +93,12 @@ bool cli_executor::compile()
 	
 	if(vm.count("to-lang"))
 	{
-		cmp.compile_to_guest(compile_serialization_code);
+		cmp.compile_to_guest();
 	}
 	
 	if(vm.count("from-langs"))
 	{
-		cmp.compile_from_host(vm["from-langs"].as<std::vector<std::string>>(), compile_serialization_code);
+		cmp.compile_from_host(vm["from-langs"].as<std::vector<std::string>>());
 	}
 	
 	if(vm.count("redist"))

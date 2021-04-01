@@ -3,8 +3,6 @@
 #include <vector>
 #include <memory>
 
-struct idl_definition;
-
 class compiler
 {
 private:
@@ -12,9 +10,8 @@ private:
 	std::string _output_path;
 	
 	std::vector<std::string> _host_languages;
-	std::unique_ptr<idl_definition> _idl_def = nullptr;
-	
 	std::string _idl_source;
+	std::string _openffi_idl;
 
 public:
 	compiler(const std::string& idl_path, const std::string& output_path);
