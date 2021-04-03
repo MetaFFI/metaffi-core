@@ -24,4 +24,5 @@ public:
 
 private:
 	void compile_from_host(const std::string& lang);
+	std::string get_target_language();
 };

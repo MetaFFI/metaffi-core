@@ -7,11 +7,16 @@
 using namespace openffi::utils;
 
 //--------------------------------------------------------------------
-idl_plugin_interface_wrapper::idl_plugin_interface_wrapper(const std::string& plugin_filename_without_extension)
+idl_plugin_interface_wrapper::idl_plugin_interface_wrapper(const std::string& idl_extension)
 {
-	std::shared_ptr<boost::dll::shared_library> mod = load_plugin(plugin_filename_without_extension);
-	
+	std::shared_ptr<boost::dll::shared_library> mod = load_plugin(std::string("openffi.idl")+idl_extension);
+	this->pinit_plugin = load_func<void(void)>(*mod, "init_plugin");
 	this->pparse_idl = load_func<void(const char*, uint32_t, const char*, uint32_t, char**, uint32_t*, char**, uint32_t*)>(*mod, "parse_idl");
+}
+//--------------------------------------------------------------------
+void idl_plugin_interface_wrapper::init()
+{
+	(*this->pinit_plugin)();
 }
 //--------------------------------------------------------------------
 void idl_plugin_interface_wrapper::parse_idl(const char* idl_name, uint32_t idl_name_length,

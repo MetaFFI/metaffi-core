@@ -8,12 +8,15 @@
 class language_plugin_interface_wrapper : public language_plugin_interface
 {
 private:
+	std::shared_ptr<boost::dll::detail::import_type<void(void)>::type> pinit;
 	std::shared_ptr<boost::dll::detail::import_type<void(const char*, uint32_t, const char*, uint32_t, const char*, uint32_t, char**, uint32_t*)>::type> pcompile_to_guest;
 	std::shared_ptr<boost::dll::detail::import_type<void(const char*, uint32_t, const char*, uint32_t, const char*, uint32_t, char**, uint32_t*)>::type> pcompile_from_host;
 
 public:
 	explicit language_plugin_interface_wrapper(const std::string& plugin_filename_without_extension);
 
+	void init() override;
+	
 	/**
 	 * Compile IDL to code called from XLLR to the foreign function
 	 */ 

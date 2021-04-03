@@ -11,8 +11,14 @@ language_plugin_interface_wrapper::language_plugin_interface_wrapper(const std::
 {
 	std::shared_ptr<boost::dll::shared_library> mod = load_plugin(plugin_filename_without_extension);
 	
+	this->pinit = load_func<void(void)>(*mod, "init_plugin");
 	this->pcompile_to_guest = load_func<void(const char*, uint32_t, const char*, uint32_t, const char*, uint32_t, char**, uint32_t*)>(*mod, "compile_to_guest");
 	this->pcompile_from_host = load_func<void(const char*, uint32_t, const char*, uint32_t, const char*, uint32_t, char**, uint32_t*)>(*mod, "compile_from_host");
+}
+//--------------------------------------------------------------------
+void language_plugin_interface_wrapper::init()
+{
+	(*this->pinit)();
 }
 //--------------------------------------------------------------------
 void language_plugin_interface_wrapper::compile_to_guest(const char* idl_def_json, uint32_t idl_def_json_length,
