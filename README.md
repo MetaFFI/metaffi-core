@@ -293,7 +293,7 @@ OpenFFI compiler plugins generate files to support the OpenFFI XLLR runtime to p
 
 ## Tutorials
 ### Examples
-Detailed examples can be found in [examples](examples/README.md) directory.
+Detailed examples can be found in [examples](../Tests/examples/README.md) directory.
 
 ### Add New Language Support (Implement OpenFFI plugin)
 Every plugin is built out of 2 components:
