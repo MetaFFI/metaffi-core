@@ -2,43 +2,29 @@
 #include <utils/scope_guard.hpp>
 #include <boost/filesystem.hpp>
 #include <utils/function_loader.hpp>
+#include <utils/plugin_loader.hpp>
 
 using namespace openffi::utils;
 
 //--------------------------------------------------------------------
 xllr_plugin_interface_wrapper::xllr_plugin_interface_wrapper(const std::string& plugin_filename_without_extension)
 {
-	std::string plugin_filename = plugin_filename_without_extension+boost::dll::shared_library::suffix().generic_string();
+	std::shared_ptr<boost::dll::shared_library> plugin_dll = load_plugin(plugin_filename_without_extension);
 	
-	boost::dll::shared_library plugin_dll;
+	this->pload_runtime = load_func<void(char**,uint32_t*)>(*plugin_dll, "load_runtime");
 	
-	// if plugin exists in the same path of the program, load it from there (mainly used for easier development)
-	// otherwise, search system folders
-	if(boost::filesystem::exists( boost::filesystem::current_path().append(plugin_filename) ))
-	{
-		//std::cout << "Loading Functions from: " << boost::filesystem::current_path().append(plugin_filename) << std::endl;
-		plugin_dll.load( boost::filesystem::current_path().append(plugin_filename) );
-	}
-	else
-	{
-		//std::cout << "Loading Functions from: " << plugin_filename << std::endl;
-		plugin_dll.load(plugin_filename, boost::dll::load_mode::search_system_folders);
-	}
+	this->pfree_runtime = load_func<void(char**,uint32_t*)>(*plugin_dll, "free_runtime");
 	
-	this->pload_runtime = load_func<void(char**,uint32_t*)>(plugin_dll, "load_runtime");
+	this->pload_module = load_func<void(const char*, uint32_t, char**,uint32_t*)>(*plugin_dll, "load_module");
 	
-	this->pfree_runtime = load_func<void(char**,uint32_t*)>(plugin_dll, "free_runtime");
-	
-	this->pload_module = load_func<void(const char*, uint32_t, char**,uint32_t*)>(plugin_dll, "load_module");
-	
-	this->pfree_module = load_func<void(const char*, uint32_t, char**,uint32_t*)>(plugin_dll, "free_module");
+	this->pfree_module = load_func<void(const char*, uint32_t, char**,uint32_t*)>(*plugin_dll, "free_module");
 	
 	this->pcall = load_func<void(const char*, uint32_t,
 								const char*, uint32_t,
 								unsigned char*, uint64_t,
 								unsigned char**, uint64_t*,
 								unsigned char**, uint64_t*,
-								uint8_t*)>(plugin_dll, "call");
+								uint8_t*)>(*plugin_dll, "call");
 }
 //--------------------------------------------------------------------
 void xllr_plugin_interface_wrapper::load_runtime(char** err, uint32_t* err_len)

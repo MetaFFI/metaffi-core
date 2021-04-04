@@ -135,7 +135,8 @@ void compiler::compile_from_host(const std::string& lang)
 {
 	// generate serialization code
 	boost::filesystem::path idl_fs_path(_idl_path);
-	std::unique_ptr<serializer_plugin_interface_wrapper> serializer = std::make_unique<serializer_plugin_interface_wrapper>(idl_fs_path.string());
+	std::unique_ptr<serializer_plugin_interface_wrapper> serializer = std::make_unique<serializer_plugin_interface_wrapper>(idl_fs_path.extension().string());
+	serializer->init();
 	
 	char* err = nullptr;
 	uint32_t err_len = 0;
@@ -164,7 +165,7 @@ void compiler::compile_from_host(const std::string& lang)
 	
 	// load compiler
 	std::stringstream compiler_plugin_name;
-	compiler_plugin_name << "openffi.compiler.lang." << this->get_target_language();
+	compiler_plugin_name << "openffi.compiler.lang." << lang;
 	
 	// load plugin
 	std::unique_ptr<language_plugin_interface_wrapper> loaded_plugin = std::make_unique<language_plugin_interface_wrapper>(compiler_plugin_name.str());
