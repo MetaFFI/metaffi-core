@@ -20,9 +20,9 @@ public:
 	compiler(const compiler&&) = delete;
 
 	void compile_to_guest();
-	void compile_from_host(const std::vector<std::string>& langs);
+	void compile_from_host(const std::vector<std::string>& langs, const std::string& host_options);
 
 private:
-	void compile_from_host(const std::string& lang);
+	void compile_from_host(const std::string& lang, const std::string& host_options);
 	std::string get_target_language();
 };

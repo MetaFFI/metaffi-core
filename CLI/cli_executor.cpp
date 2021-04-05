@@ -24,6 +24,7 @@ cli_executor::cli_executor(int argc, char** argv) :
 		("to-lang,t", "Language the functions are implemented as stated in the IDL (i.e. guest language)")
 		("from-langs,f", po::value<std::vector<std::string>>()->multitoken() , "List of languages the functions are called from (i.e. host languages)")
 		("output,o", po::value<std::string>()->default_value(boost::filesystem::current_path().generic_string()) , "Directory to generate the files (Default: current directory)")
+		("host-options", po::value<std::string>()->default_value(std::string()) , "Options to the host language plugin (format: key1=val1,key2=val2...)")
 		("redist", "Copies to output directory OpenFFI runtime binaries and required runtime plugins for deployment (TBD!)");
 
 	_plugin_options.add_options()
@@ -95,7 +96,7 @@ bool cli_executor::compile()
 	
 	if(vm.count("from-langs"))
 	{
-		cmp.compile_from_host(vm["from-langs"].as<std::vector<std::string>>());
+		cmp.compile_from_host(vm["from-langs"].as<std::vector<std::string>>(), vm["host-options"].as<std::string>());
 	}
 	
 	if(vm.count("redist"))

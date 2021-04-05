@@ -124,14 +124,14 @@ void compiler::compile_to_guest()
 
 }
 //--------------------------------------------------------------------
-void compiler::compile_from_host(const std::vector<std::string>& langs)
+void compiler::compile_from_host(const std::vector<std::string>& langs, const std::string& host_options)
 {
 	for(const std::string& lang : langs){
-		this->compile_from_host(lang);
+		this->compile_from_host(lang, host_options);
 	}
 }
 //--------------------------------------------------------------------
-void compiler::compile_from_host(const std::string& lang)
+void compiler::compile_from_host(const std::string& lang, const std::string& host_options)
 {
 	// generate serialization code
 	boost::filesystem::path idl_fs_path(_idl_path);
@@ -178,6 +178,7 @@ void compiler::compile_from_host(const std::string& lang)
 	loaded_plugin->compile_from_host(this->_openffi_idl.c_str(), this->_openffi_idl.size(),
 	                                 this->_output_path.c_str(), this->_output_path.size(),
 	                                 serialization_code.c_str(), serialization_code.length(),
+	                                 host_options.c_str(), host_options.length(),
 	                                 &err, &err_len);
 
 	if(err)
