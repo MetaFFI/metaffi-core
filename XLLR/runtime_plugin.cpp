@@ -1,4 +1,4 @@
-#include "xllr_plugin.h"
+#include "runtime_plugin.h"
 #include <iostream>
 #include <utils/scope_guard.hpp>
 #include <algorithm>
@@ -6,14 +6,14 @@
 using namespace openffi::utils;
 
 //--------------------------------------------------------------------
-xllr_plugin::xllr_plugin(const std::string& plugin_filename, bool is_init /*= true*/):_plugin_filename(plugin_filename)
+runtime_plugin::runtime_plugin(const std::string& plugin_filename, bool is_init /*= true*/):_plugin_filename(plugin_filename)
 {
 	if(is_init){
 		init();
 	}
 }
 //--------------------------------------------------------------------
-xllr_plugin::~xllr_plugin() 
+runtime_plugin::~runtime_plugin() 
 {
 	try
 	{
@@ -29,20 +29,20 @@ xllr_plugin::~xllr_plugin()
 	}
 }
 //--------------------------------------------------------------------
-void xllr_plugin::init(void) 
+void runtime_plugin::init() 
 {
     // load dynamic library
-	this->_loaded_plugin = std::make_unique<xllr_plugin_interface_wrapper>(this->_plugin_filename);
+	this->_loaded_plugin = std::make_unique<runtime_plugin_interface_wrapper>(this->_plugin_filename);
 }
 //--------------------------------------------------------------------
-void xllr_plugin::fini(void)
+void runtime_plugin::fini()
 {
 	// make sure plugin is released before unloading the dynamic library
     this->free_runtime();
 	this->_loaded_plugin = nullptr;
 }
 //--------------------------------------------------------------------
-void xllr_plugin::load_runtime(void) 
+void runtime_plugin::load_runtime() 
 {
 	boost::upgrade_lock<boost::shared_mutex> read_lock(this->_mutex); // read lock
 	// check if runtime has been loaded
@@ -65,16 +65,16 @@ void xllr_plugin::load_runtime(void)
 	_is_runtime_loaded = true;
 }
 //--------------------------------------------------------------------
-void xllr_plugin::free_runtime(void) 
+void runtime_plugin::free_runtime() 
 {
-	// free all modules first
-	std::vector<std::string> keys(this->_loaded_modules.size());
-	for(auto& cur_mod : this->_loaded_modules){
+	// free all functions first
+	std::vector<int64_t> keys(this->_loaded_functions.size());
+	for(auto& cur_mod : this->_loaded_functions){
 		keys.push_back(cur_mod.first);
 	}
 
-	for(const std::string& k : keys){
-		this->free_module(k);
+	for(const auto& k : keys){
+		this->free_function(k);
 	}
 
 	boost::upgrade_lock<boost::shared_mutex> read_lock(this->_mutex); // read lock
@@ -100,36 +100,32 @@ void xllr_plugin::free_runtime(void)
 	_is_runtime_loaded = false;
 }
 //--------------------------------------------------------------------
-std::shared_ptr<foreign_module> xllr_plugin::get_module(const std::string& module_name) const
+std::shared_ptr<foreign_function> runtime_plugin::get_function(int64_t function_id) const
 {
 	boost::upgrade_lock<boost::shared_mutex> read_lock(this->_mutex); // read lock
 
 	// check if module already been loaded
-	auto it = _loaded_modules.find(module_name);
-	if(it == _loaded_modules.end()){
+	auto it = _loaded_functions.find(function_id);
+	if(it == _loaded_functions.end()){
 		return nullptr;
 	}
 
 	return it->second;
 }
 //--------------------------------------------------------------------
-std::shared_ptr<foreign_module> xllr_plugin::load_module(const std::string& module_name) 
+std::shared_ptr<foreign_function> runtime_plugin::load_function(const std::string& function_path, int64_t function_id)
 {
 	this->load_runtime(); // verify that runtime has been loaded
 
-	boost::upgrade_lock<boost::shared_mutex> read_lock(this->_mutex); // read lock
-
-	// check if module already been loaded
-	auto it = _loaded_modules.find(module_name);
-	if(it != _loaded_modules.end()){
-		return it->second;
+	if(auto f = _loaded_functions.find(function_id); f != _loaded_functions.end()){
+		return f->second;
 	}
-
-	boost::upgrade_to_unique_lock<boost::shared_mutex> exclusive_lock(read_lock); // upgrade to writer
+	
+	boost::unique_lock<boost::shared_mutex> exclusive_lock(this->_mutex);
 
     char* err = nullptr;
 	uint32_t err_len = 0;
-    this->_loaded_plugin->load_module(module_name.c_str(), module_name.length(), &err, &err_len);
+    int64_t id = this->_loaded_plugin->load_function(function_path.c_str(), function_path.length(), &err, &err_len);
 
 	if(err != nullptr)
 	{
@@ -138,26 +134,26 @@ std::shared_ptr<foreign_module> xllr_plugin::load_module(const std::string& modu
 	}
 
 	// insert sorted (because of binary search)
-	auto fmod = std::make_shared<foreign_module>(this->_loaded_plugin, module_name);
-	this->_loaded_modules[module_name] = fmod;
+	auto fmod = std::make_shared<foreign_function>(this->_loaded_plugin, id);
+	this->_loaded_functions[fmod->id()] = fmod;
 	return fmod;
 
 }
 //--------------------------------------------------------------------
-void xllr_plugin::free_module(const std::string& module_name) 
+void runtime_plugin::free_function(int64_t function_id)
 {
 	boost::upgrade_lock<boost::shared_mutex> read_lock(this->_mutex); // read lock
 
-	// check if module is not loaded
-	auto it = _loaded_modules.find(module_name);
-	if(it == _loaded_modules.end()){
+	// check if function is not loaded
+	auto it = _loaded_functions.find(function_id);
+	if(it == _loaded_functions.end()){
 		return;
 	}
 
 	boost::upgrade_to_unique_lock<boost::shared_mutex> exclusive_lock(read_lock); // upgrade to writer
     char* err = nullptr;
 	uint32_t err_len = 0;
-    this->_loaded_plugin->free_module(module_name.c_str(), module_name.length(), &err, &err_len);
+    this->_loaded_plugin->free_function(function_id, &err, &err_len);
 
 	if(err != nullptr)
 	{
@@ -166,6 +162,6 @@ void xllr_plugin::free_module(const std::string& module_name)
 	}
 	
 	// remove from vector
-	this->_loaded_modules.erase(it);
+	this->_loaded_functions.erase(it);
 }
 //--------------------------------------------------------------------

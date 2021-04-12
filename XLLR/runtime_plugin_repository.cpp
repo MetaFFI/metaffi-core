@@ -1,8 +1,8 @@
-#include "plugin_repository.h"
+#include "runtime_plugin_repository.h"
 #include <iostream>
 
 //--------------------------------------------------------------------
-plugin_respository::~plugin_respository()
+runtime_plugin_respository::~runtime_plugin_respository()
 {
 	try
 	{
@@ -26,7 +26,7 @@ plugin_respository::~plugin_respository()
 	
 }
 //--------------------------------------------------------------------
-std::shared_ptr<xllr_plugin> plugin_respository::get(const std::string& plugin) const
+std::shared_ptr<runtime_plugin> runtime_plugin_respository::get(const std::string& plugin) const
 {
 	// readers lock
 	boost::shared_lock<boost::shared_mutex> readlock(this->_mutex);
@@ -40,7 +40,7 @@ std::shared_ptr<xllr_plugin> plugin_respository::get(const std::string& plugin) 
 	return it->second;
 }
 //--------------------------------------------------------------------
-std::shared_ptr<xllr_plugin> plugin_respository::load(const std::string& plugin)
+std::shared_ptr<runtime_plugin> runtime_plugin_respository::load(const std::string& plugin)
 {
 
     // readers lock
@@ -55,12 +55,12 @@ std::shared_ptr<xllr_plugin> plugin_respository::load(const std::string& plugin)
 	// not found - load it
 	boost::upgrade_to_unique_lock<boost::shared_mutex> exclusive_lock(read_lock);
 
-	std::shared_ptr<xllr_plugin> res = std::make_shared<xllr_plugin>(plugin);
+	std::shared_ptr<runtime_plugin> res = std::make_shared<runtime_plugin>(plugin);
 	this->_plugins[plugin] = res;
 	return res;
 }
 //--------------------------------------------------------------------
-void plugin_respository::release(const std::string& plugin)
+void runtime_plugin_respository::release(const std::string& plugin)
 {
     // readers lock
 	boost::upgrade_lock<boost::shared_mutex> read_lock(this->_mutex);

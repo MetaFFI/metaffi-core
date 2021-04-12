@@ -1,5 +1,5 @@
 #include "runtime/xllr_api.h"
-#include "plugin_repository.h"
+#include "runtime_plugin_repository.h"
 #include <unordered_map>
 #include <iostream>
 #include <cstring>
@@ -42,18 +42,18 @@ catch(...)\
 }
 
 
-plugin_respository g_plugins;
+runtime_plugin_respository g_runtime_plugins;
 
 //--------------------------------------------------------------------
-void load_runtime_plugin(const char* runtime_plugin, uint32_t runtime_plugin_len, char** err, uint32_t* err_len) 
+void load_runtime_plugin(const char* runtime_plugin_name, uint32_t runtime_plugin_name_len, char** err, uint32_t* err_len)
 {
     try
     {
 		*err = nullptr;
 		*err_len = 0;
-
+		
 		// loads plugin if not loaded
-        std::shared_ptr<xllr_plugin> loaded_plugin = g_plugins.load(std::string(runtime_plugin, runtime_plugin_len));
+	    std::shared_ptr<runtime_plugin> loaded_plugin = g_runtime_plugins.load(std::string(runtime_plugin_name, runtime_plugin_name_len));
 		loaded_plugin->load_runtime();
     }
     handle_err(err, err_len,);
@@ -67,43 +67,44 @@ void free_runtime_plugin(const char* runtime_plugin, uint32_t runtime_plugin_len
 		*err_len = 0;
 
 		// loads plugin if not loaded
-        g_plugins.release(std::string(runtime_plugin, runtime_plugin_len));
+        g_runtime_plugins.release(std::string(runtime_plugin, runtime_plugin_len));
     }
     handle_err(err, err_len,);
 }
 //--------------------------------------------------------------------
-void load_module(const char* runtime_plugin, uint32_t runtime_plugin_len, const char* module, uint32_t module_len, char** err, uint32_t* err_len) 
+int64_t load_function(const char* runtime_plugin_name, uint32_t runtime_plugin_name_len, const char* function_path, uint32_t function_path_len, int64_t function_id, char** err, uint32_t* err_len)
 {
 	try
     {
-		std::string plugin_name(runtime_plugin, runtime_plugin_len);
-		std::shared_ptr<xllr_plugin> p = g_plugins.get(plugin_name);
+		std::string runtime_plugin_name_str(runtime_plugin_name, runtime_plugin_name_len);
+		std::shared_ptr<runtime_plugin> p = g_runtime_plugins.get(runtime_plugin_name_str);
 
 		if(!p) // if plugin not loaded - lazy load plugin
 		{
-			p = g_plugins.load(plugin_name);
+			p = g_runtime_plugins.load(runtime_plugin_name_str);
 		}
-
-		p->load_module(std::string(module, module_len));
+		
+		return p->load_function(std::string(function_path, function_path_len), function_id)->id();
 
     }
     handle_err(err, err_len,);
+	
+	return -1;
 }
 //--------------------------------------------------------------------
-void free_module(const char* runtime_plugin, uint32_t runtime_plugin_len, const char* module, uint32_t module_len, char** err, uint32_t* err_len) 
+void free_function(const char* runtime_plugin_name, uint32_t runtime_plugin_len, int64_t function_id, char** err, uint32_t* err_len)
 {
     try
     {
-		std::shared_ptr<xllr_plugin> p = g_plugins.get(std::string(runtime_plugin, runtime_plugin_len));
-		p->free_module(std::string(module, module_len));
+		std::shared_ptr<runtime_plugin> p = g_runtime_plugins.get(std::string(runtime_plugin_name, runtime_plugin_len));
+		p->free_function(function_id);
     }
     handle_err(err, err_len,);
 }
 //--------------------------------------------------------------------
 void call(
-	const char* runtime_plugin, uint32_t runtime_plugin_len,
-	const char* module_name, uint32_t module_name_len,
-	const char* func_name, uint32_t func_name_len,
+	const char* runtime_plugin_name, uint32_t runtime_plugin_name_len,
+	int64_t function_id,
 	unsigned char* in_params, uint64_t in_params_len,
 	unsigned char** out_params, uint64_t* out_params_len,
 	unsigned char** out_ret, uint64_t* out_ret_len,
@@ -113,24 +114,19 @@ void call(
 	try
     {
 		// check if module is loaded, if not - lazy load it.
-		std::string plugin_name(runtime_plugin, runtime_plugin_len);
-		std::string module(module_name, module_name_len);
-		std::shared_ptr<xllr_plugin> p = g_plugins.get(plugin_name);
-		std::shared_ptr<foreign_module> m;
-
-		if(!p) // if plugin not loaded - lazy load plugin and module
+		std::shared_ptr<runtime_plugin> p = g_runtime_plugins.get(std::string(runtime_plugin_name, runtime_plugin_name_len));
+		if(!p)
 		{
-			p = g_plugins.load(plugin_name);
-			m = p->load_module(module);
+			throw std::runtime_error("runtime plugin has not been loaded");
 		}
-		else if(m = p->get_module(module); !m) // load foreign module
+		
+		std::shared_ptr<foreign_function> f = p->get_function(function_id);
+		if(!f)
 		{
-			// check if module is load, if not, load it
-			m = p->load_module(module);
+			throw std::runtime_error("foreign function has not been loaded");
 		}
 
-		m->call(
-			func_name, func_name_len,
+		f->call(
 			in_params, in_params_len,
 			out_params, out_params_len,
 			out_ret, out_ret_len,

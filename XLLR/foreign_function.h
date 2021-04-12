@@ -2,23 +2,22 @@
 #include <stdint.h>
 #include <string>
 #include <memory>
-#include "xllr_plugin_interface_wrapper.h"
+#include "runtime_plugin_interface_wrapper.h"
 
 //--------------------------------------------------------------------
-class foreign_module
+class foreign_function
 {
 private:
-	std::string _module_name;
-	std::shared_ptr<xllr_plugin_interface_wrapper> _plugin;
+	int64_t _id;
+	std::shared_ptr<runtime_plugin_interface_wrapper> _plugin;
 
 public:
-	foreign_module(std::shared_ptr<xllr_plugin_interface_wrapper> plugin, const std::string& module_name);
-	~foreign_module() = default;
+	foreign_function(std::shared_ptr<runtime_plugin_interface_wrapper> plugin, int64_t id);
+	~foreign_function() = default;
+	
+	[[nodiscard]] int64_t id() const;
 
 	void call(
-		// function name to call
-        const char* funcname, uint32_t funcname_len,
-        
 		// serialized parameters
         unsigned char* in_params, uint64_t in_params_len,
 
