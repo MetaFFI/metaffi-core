@@ -9,10 +9,9 @@ catch(const std::exception& e)\
 {\
 	before_handle\
 	if(err)\
-	{\
+	{
 		*err_len = strlen(e.what());\
-		*err = (char*)malloc(*err_len+1);\
-		(*err)[*err_len-1] = 0;\
+		*err = (char*)calloc(1, *err_len+1);\
 \
 		std::strncpy(*err, e.what(), *err_len);\
 	}\
@@ -30,8 +29,7 @@ catch(...)\
 	if(err)\
 	{\
 		*err_len = strlen(e);\
-		*err = (char*)malloc(*err_len+1);\
-		(*err)[*err_len-1] = 0;\
+		*err = (char*)calloc(1, *err_len+1);\
 \
 		std::strncpy(*err, e, *err_len);\
 	}\
@@ -83,9 +81,8 @@ int64_t load_function(const char* runtime_plugin_name, uint32_t runtime_plugin_n
 		{
 			p = g_runtime_plugins.load(runtime_plugin_name_str);
 		}
-		
-		return p->load_function(std::string(function_path, function_path_len), function_id)->id();
-
+	
+	    return p->load_function(std::string(function_path, function_path_len), function_id)->id();
     }
     handle_err(err, err_len,);
 	
