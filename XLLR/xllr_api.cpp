@@ -9,7 +9,7 @@ catch(const std::exception& e)\
 {\
 	before_handle\
 	if(err)\
-	{
+	{ \
 		*err_len = strlen(e.what());\
 		*err = (char*)calloc(1, *err_len+1);\
 \
