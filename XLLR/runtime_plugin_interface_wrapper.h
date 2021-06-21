@@ -15,10 +15,9 @@ private:
 	std::shared_ptr<boost::dll::detail::import_type<void(int64_t, char**, uint32_t*)>::type> pfree_function;
 
 	std::shared_ptr<boost::dll::detail::import_type<void(int64_t,
-														 unsigned char*, uint64_t,
-														 unsigned char**, uint64_t*,
-														 unsigned char**, uint64_t*,
-														 uint8_t*)>::type> pcall;
+	                                                     void**, uint64_t,
+	                                                     void**, uint64_t,
+	                                                     char**, uint64_t*)>::type> pcall;
 
 public:
 	explicit runtime_plugin_interface_wrapper(const std::string& plugin_filename_without_extension);
@@ -47,20 +46,10 @@ public:
 	 * Call foreign function
 	 */
 	void call(
-			//function id to call
 			int64_t function_id,
-			
-			// serialized parameters
-			unsigned char* in_params, uint64_t in_params_len,
-
-			// serialized returned ref parameters
-			unsigned char** out_params, uint64_t* out_params_len,
-			
-			// out - serialized result or error message
-			unsigned char** out_ret, uint64_t* out_ret_len,
-			
-			// out - 0 if not an error, otherwise an error
-			uint8_t* out_is_error
+			void** parameters, uint64_t parameters_len,
+			void** return_values, uint64_t return_values_len,
+			char** out_err, uint64_t* out_err_len
 	) override;
 
 };

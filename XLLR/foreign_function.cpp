@@ -10,16 +10,14 @@ int64_t foreign_function::id() const
 }
 //--------------------------------------------------------------------
 void foreign_function::call(
-		unsigned char* in_params, uint64_t in_params_len,
-        unsigned char** out_params, uint64_t* out_params_len,
-        unsigned char** out_ret, uint64_t* out_ret_len,
-		uint8_t* out_is_error
+		void** parameters, uint64_t parameters_len,
+		void** return_values, uint64_t return_values_len,
+		char** out_err, uint64_t* out_err_len
 	)
 {
 	this->_plugin->call(this->_id,
-						in_params, in_params_len,
-						out_params, out_params_len,
-						out_ret, out_ret_len,
-						out_is_error);
+	                    parameters, parameters_len,
+	                    return_values, return_values_len,
+	                    out_err, out_err_len);
 }
 //--------------------------------------------------------------------

@@ -1,5 +1,6 @@
 #pragma once
-#include <stdint.h>
+#include <cstdarg>
+#include <cstdint>
 #include <string>
 #include <memory>
 #include "runtime_plugin_interface_wrapper.h"
@@ -18,16 +19,10 @@ public:
 	[[nodiscard]] int64_t id() const;
 
 	void call(
-		// serialized parameters
-        unsigned char* in_params, uint64_t in_params_len,
-
-        // serialized parameters
-        unsigned char** in_out_params, uint64_t* in_out_params_len,
-        
-        // out - serialized result or error message
-        unsigned char** out_ret, uint64_t* out_ret_len,
-
-		uint8_t* out_is_error
+		// error string
+		void** parameters, uint64_t parameters_len,
+		void** return_values, uint64_t return_values_len,
+		char** out_err, uint64_t* out_err_len
 	);
 };
 //--------------------------------------------------------------------

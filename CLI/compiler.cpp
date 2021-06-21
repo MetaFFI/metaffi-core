@@ -83,21 +83,10 @@ void compiler::compile_to_guest()
 		}
 	});
 	
-	char* out_serialization_code = nullptr;
-	uint32_t out_serialization_code_length = 0;
-	serializer->compile_serialization(_openffi_idl.c_str(), _openffi_idl.length(),
-	                                  target_language.c_str(), target_language.length(),
-	                                  &out_serialization_code, &out_serialization_code_length,
-	                                  &err, &err_len);
 	if(err)
 	{
 		throw std::runtime_error(std::string(err, err_len));
 	}
-	
-	std::string serialization_code(out_serialization_code, out_serialization_code_length);
-	free(out_serialization_code);
-	
-	
 	
 	// load compiler
 	std::stringstream compiler_plugin_name;
@@ -114,7 +103,6 @@ void compiler::compile_to_guest()
 	// call compile_to_guest with IDL path and output path
 	loaded_plugin->compile_to_guest(this->_openffi_idl.c_str(), this->_openffi_idl.size(),
 									this->_output_path.c_str(), this->_output_path.size(),
-									serialization_code.c_str(), serialization_code.length(),
 									&err, &err_len);
 
 	if(err)
@@ -146,19 +134,10 @@ void compiler::compile_from_host(const std::string& lang, const std::string& hos
 		}
 	});
 	
-	char* out_serialization_code = nullptr;
-	uint32_t out_serialization_code_length = 0;
-	serializer->compile_serialization(_openffi_idl.c_str(), _openffi_idl.length(),
-	                                  lang.c_str(), lang.length(),
-	                                  &out_serialization_code, &out_serialization_code_length,
-	                                  &err, &err_len);
-	
 	if(err)
 	{
 		throw std::runtime_error(std::string(err, err_len));
 	}
-	
-	std::string serialization_code(out_serialization_code, out_serialization_code_length);
 	
 	std::string plugin_filename("openffi.compiler.");
 	plugin_filename += lang;
@@ -177,7 +156,6 @@ void compiler::compile_from_host(const std::string& lang, const std::string& hos
 	// call compile_to_guest with IDL path and output path
 	loaded_plugin->compile_from_host(this->_openffi_idl.c_str(), this->_openffi_idl.size(),
 	                                 this->_output_path.c_str(), this->_output_path.size(),
-	                                 serialization_code.c_str(), serialization_code.length(),
 	                                 host_options.c_str(), host_options.length(),
 	                                 &err, &err_len);
 

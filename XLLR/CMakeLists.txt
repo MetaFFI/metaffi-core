@@ -11,10 +11,9 @@ set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 # build XLLR
 add_library(xllr SHARED)
-target_include_directories(xllr PUBLIC ${CMAKE_CURRENT_LIST_DIR} ${Boost_INCLUDE_DIRS})
+target_include_directories(xllr PUBLIC ${CMAKE_CURRENT_LIST_DIR} ${Boost_INCLUDE_DIRS} $ENV{OPENFFI_HOME})
 set_property(TARGET xllr PROPERTY POSITION_INDEPENDENT_CODE ON)
 
-# remove the "lib" prefix in linux to get the expected filename "xllr.python3.[ext]"
 SET_TARGET_PROPERTIES(xllr PROPERTIES PREFIX "")
 target_sources(xllr PUBLIC ${sources})
 
@@ -23,3 +22,21 @@ if(NOT WIN32)
 	target_link_libraries(xllr pthread dl)
 endif()
 
+# Copy openffi_primitives.h to openffi directory
+add_custom_command(TARGET xllr POST_BUILD
+		COMMAND "${CMAKE_COMMAND}" -E copy
+		"${CMAKE_CURRENT_LIST_DIR}/../../plugin-sdk/runtime/openffi_primitives.h"
+		"$ENV{OPENFFI_HOME}/include/openffi_primitives.h"
+		COMMENT "Copy ${CMAKE_CURRENT_LIST_DIR}/../../plugin-sdk/runtime/openffi_primitives.h -> $ENV{OPENFFI_HOME}/include/openffi_primitives.h")
+
+add_custom_command(TARGET xllr POST_BUILD
+		COMMAND "${CMAKE_COMMAND}" -E copy
+		"../../plugin-sdk/runtime/common_data_type_helper_loader.h"
+		"$ENV{OPENFFI_HOME}/include/common_data_type_helper_loader.h"
+		COMMENT "Copy ${CMAKE_CURRENT_LIST_DIR}/../../plugin-sdk/runtime/common_data_type_helper_loader.h -> $ENV{OPENFFI_HOME}/include/common_data_type_helper_loader.h")
+
+add_custom_command(TARGET xllr POST_BUILD
+		COMMAND "${CMAKE_COMMAND}" -E copy
+		"../../plugin-sdk/runtime/common_data_type_helper_loader.c"
+		"$ENV{OPENFFI_HOME}/include/common_data_type_helper_loader.c"
+		COMMENT "Copy ${CMAKE_CURRENT_LIST_DIR}/../../plugin-sdk/runtime/common_data_type_helper_loader.c -> $ENV{OPENFFI_HOME}/include/common_data_type_helper_loader.c")
