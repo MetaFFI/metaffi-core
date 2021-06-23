@@ -15,7 +15,7 @@ int8_t is_arg_overflow(uint64_t* size_left, int size)
 	}
 }
 //--------------------------------------------------------------------
-int get_type(void** data_array, int index, uint64_t* out_type)
+int get_type(void** data_array, int index, openffi_type* out_type)
 {
 	*out_type = *(uint64_t*)data_array[index];
 	return index + 1;

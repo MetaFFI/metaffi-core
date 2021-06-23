@@ -11,7 +11,7 @@ extern "C"
 
 int8_t is_arg_overflow(uint64_t* size_left, int size);
 
-int get_type(void** data_array, int index, uint64_t* out_type);
+int get_type(void** data_array, int index, openffi_type* out_type);
 
 void** alloc_args_buffer(int size);
 
@@ -57,27 +57,27 @@ get_arg_type_decl(openffi_size);
 get_arg_type_decl(openffi_bool);
 
 #define get_arg_type_array_decl(type) \
-int get_arg_##type##_array(void** data_array, int index, type** out_res, openffi_size** dimensions, openffi_size* dimensions_length);
+int get_arg_##type##_array(void** data_array, int index, type** out_res, openffi_size** dimensions_lengths, openffi_size* dimensions);
 
 #define get_arg_type_array(type)\
-int get_arg_##type##_array(void** data_array, int index, type** out_res, openffi_size** dimensions, openffi_size* dimensions_length) \
+int get_arg_##type##_array(void** data_array, int index, type** out_res, openffi_size** dimensions_lengths, openffi_size* dimensions) \
 { \
     *out_res = ((type*)data_array[index]); \
-    *dimensions = ((openffi_size*)data_array[index+1]); \
-    *dimensions_length = *((openffi_size*)data_array[index+2]); \
+    *dimensions_lengths = ((openffi_size*)data_array[index+1]); \
+    *dimensions = *((openffi_size*)data_array[index+2]); \
 	return index + 3;\
 }
 
 #define get_arg_type_str_array_decl(type)\
-int get_arg_##type##_array(void** data_array, int index, type** array, openffi_size** sizes_array, openffi_size** dimensions, openffi_size* dimensions_length);
+int get_arg_##type##_array(void** data_array, int index, type** array, openffi_size** sizes_array, openffi_size** dimensions_lengths, openffi_size* dimensions);
 
 #define get_arg_type_str_array(type)\
-int get_arg_##type##_array(void** data_array, int index, type** array, openffi_size** sizes_array, openffi_size** dimensions, openffi_size* dimensions_length) \
+int get_arg_##type##_array(void** data_array, int index, type** array, openffi_size** sizes_array, openffi_size** dimensions_lengths, openffi_size* dimensions) \
 {  \
     *array = ((type*)data_array[index]); \
     *sizes_array = (openffi_size*)data_array[index+1]; \
-    *dimensions = ((openffi_size*)data_array[index+2]); \
-    *dimensions_length = *((openffi_size*)data_array[index+3]); \
+    *dimensions_lengths = ((openffi_size*)data_array[index+2]); \
+    *dimensions = *((openffi_size*)data_array[index+3]); \
 	return index + 4; \
 }
 
@@ -148,18 +148,18 @@ set_arg_type_decl(openffi_size);
 set_arg_type_decl(openffi_bool);
 
 #define set_arg_openffi_str_array_decl(type)\
-int set_arg_##type##_array(void** data_array, int index, type* array, openffi_size* string_sizes, openffi_size* dimensions, openffi_size* dimensions_length);
+int set_arg_##type##_array(void** data_array, int index, type* array, openffi_size* string_sizes, openffi_size* dimensions_lengths, openffi_size* dimensions);
 
 #define set_arg_openffi_str_array(type)\
-int set_arg_##type##_array(void** data_array, int index, type* array, openffi_size* string_sizes, openffi_size* dimensions, openffi_size* dimensions_length)\
+int set_arg_##type##_array(void** data_array, int index, type* array, openffi_size* string_sizes, openffi_size* dimensions_lengths, openffi_size* dimensions)\
 {\
     openffi_type* ptype = (openffi_type*)malloc( sizeof(openffi_type) ); \
     *ptype = type##_type | openffi_array_type; \
 	set_arg(data_array, index, (void*)ptype); \
     set_arg(data_array, index+1, (void*)array); \
     set_arg(data_array, index+2, (void*)string_sizes); \
-    set_arg(data_array, index+3, (void*)dimensions); \
-    set_arg(data_array, index+4, (void*)dimensions_length); \
+    set_arg(data_array, index+3, (void*)dimensions_lengths); \
+    set_arg(data_array, index+4, (void*)dimensions); \
     return index + 5; \
 }
 
@@ -169,16 +169,16 @@ set_arg_openffi_str_array_decl(openffi_string16);
 set_arg_openffi_str_array_decl(openffi_string32);
 
 #define set_arg_type_array_decl(type) \
-int set_arg_##type##_array(void** data_array, int index, type* array, openffi_size* dimensions, openffi_size* dimensions_length);
+int set_arg_##type##_array(void** data_array, int index, type* array, openffi_size* dimensions_lengths, openffi_size* dimensions);
 
 #define set_arg_type_array(type) \
-int set_arg_##type##_array(void** data_array, int index, type* array, openffi_size* dimensions, openffi_size* dimensions_length) \
+int set_arg_##type##_array(void** data_array, int index, type* array, openffi_size* dimensions_lengths, openffi_size* dimensions) \
 { \
     data_array[index] = (openffi_type*)malloc( sizeof(openffi_type) ); \
     *((openffi_type*)data_array[index]) = type##_type | openffi_array_type; \
     data_array[index+1] = (void*)array;\
-    data_array[index+2] = (void*)dimensions;\
-    data_array[index+3] = dimensions_length;\
+    data_array[index+2] = (void*)dimensions_lengths;\
+    data_array[index+3] = dimensions;\
     return index + 4; \
 }
 
