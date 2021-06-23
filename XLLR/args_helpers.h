@@ -22,7 +22,7 @@ int get_arg_##type(void** data_array, int index, type* out_res);
 int get_arg_##type(void** data_array, int index, type* out_res) \
 { \
     *out_res = *((type*)data_array[index]); \
-	return index+1; \
+	return index+openffi_type_type_size; \
 }
 
 #define get_arg_type_str_decl(type)\
@@ -33,7 +33,7 @@ int get_arg_##type(void** data_array, int index, type* out_res, openffi_size* le
 { \
     *length = *((openffi_size*)data_array[index+1]);\
     *out_res = ((type)data_array[index]); \
-	return index + 2; \
+	return index + type##_type_size; \
 }
 
 get_arg_type_str_decl(openffi_string);
@@ -65,7 +65,7 @@ int get_arg_##type##_array(void** data_array, int index, type** out_res, openffi
     *out_res = ((type*)data_array[index]); \
     *dimensions_lengths = ((openffi_size*)data_array[index+1]); \
     *dimensions = *((openffi_size*)data_array[index+2]); \
-	return index + 3;\
+	return index + type##_type_size + openffi_array_type_size;\
 }
 
 #define get_arg_type_str_array_decl(type)\
@@ -78,7 +78,7 @@ int get_arg_##type##_array(void** data_array, int index, type** array, openffi_s
     *sizes_array = (openffi_size*)data_array[index+1]; \
     *dimensions_lengths = ((openffi_size*)data_array[index+2]); \
     *dimensions = *((openffi_size*)data_array[index+3]); \
-	return index + 4; \
+	return index + type##_type_size + openffi_array_type_size; \
 }
 
 get_arg_type_str_array_decl(openffi_string);
@@ -114,7 +114,7 @@ int set_arg_##type(void** data_array, int index, openffi_string val, openffi_siz
     set_arg(data_array, index, (void*)ptype); \
     set_arg(data_array, index+1, (void*)val); \
     set_arg(data_array, index+2, (void*)length); \
-	return index + 3;\
+	return index + openffi_type_type_size + type##_type_size;\
 }
 set_arg_openffi_str_decl(openffi_string);
 set_arg_openffi_str_decl(openffi_string8);
@@ -131,7 +131,7 @@ int set_arg_##type(void** data_array, int index, type* val) \
     *ptype = type##_type; \
     set_arg(data_array, index, (void*)ptype); \
     set_arg(data_array, index+1, (void*)val); \
-    return index + 2; \
+    return index + openffi_type_type_size + type##_type_size; \
 }
 
 set_arg_type_decl(openffi_float64);
@@ -160,7 +160,7 @@ int set_arg_##type##_array(void** data_array, int index, type* array, openffi_si
     set_arg(data_array, index+2, (void*)string_sizes); \
     set_arg(data_array, index+3, (void*)dimensions_lengths); \
     set_arg(data_array, index+4, (void*)dimensions); \
-    return index + 5; \
+    return index + openffi_type_type_size + type##_type_size + openffi_array_type_size; \
 }
 
 set_arg_openffi_str_array_decl(openffi_string);
@@ -179,7 +179,7 @@ int set_arg_##type##_array(void** data_array, int index, type* array, openffi_si
     data_array[index+1] = (void*)array;\
     data_array[index+2] = (void*)dimensions_lengths;\
     data_array[index+3] = dimensions;\
-    return index + 4; \
+    return index + openffi_type_type_size + openffi_array_type_size + type##_type_size; \
 }
 
 set_arg_type_array_decl(openffi_float64);
