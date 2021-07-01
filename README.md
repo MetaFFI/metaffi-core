@@ -175,7 +175,7 @@ To remove a plugin run:
 
 ### Prerequisites
 
-Current official languages use Protobuf Compiler for data serialization (detailed in [Data-Type Serialization & Protobuf section](#data-type-serialization-&-protobuf)). Therefore Google Protobuf need to be installed.
+Current official languages use Protobuf Compiler for data serialization (detailed in [Data-Type Serialization & Protobuf section](#data-otype-serialization-&-protobuf)). Therefore Google Protobuf need to be installed.
 
 **Notice:** Deployed machines (not for developers) do not need Protobuf compiler. It is just for development needs. `-redist` (TBD!) option in OpenFFI CLI tool will provide you with all the binaries needed for deployment.
 
@@ -238,7 +238,7 @@ The OpenFFI compiler has 3 roles:
 2. Serialize/Deserialize parameters (official plugins use Google Protobuf)
 3. Use C-FFI library to call to/from XLLR in host/guest languages
 
-It is the compiler plugin that chooses the C-FFI mechanism used or the type of parameter serialization.
+It is the compiler plugin that chooses the C-FFI mechanism used or the otype of parameter serialization.
 
 For example, the official *Python3* plugin uses CTypes for C-FFI and Protobuf serialization with `.proto` IDL. Another implementer can make *FasterPython3* plugin that uses "cffi" to C-FFI and FlatBuffers for serialization with its IDL. 
  

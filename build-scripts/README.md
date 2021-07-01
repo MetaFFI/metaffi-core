@@ -20,11 +20,11 @@ In Ubuntu & MacOS, scripts are bash files.
 
 ### Build
 Run the `build` scripts in your operating system. `build` requires 2 parameters:
-* (required) build-type: Debug, Release, RelWithDebInfo
+* (required) build-otype: Debug, Release, RelWithDebInfo
 * (optional) CMake Toolchain file (optional): Set from parameter or CMAKE_TOOLCHAIN_FILE environment variable.
     * Toolchain file is required for cases you are using package management (like vcpkg) to manage your C/C++ libraries (like boost)
 
-OpenFFI will be build to *OpenFFIRoot/output-[build-type]* directory
+OpenFFI will be build to *OpenFFIRoot/output-[build-otype]* directory
 
 <BR />
 
