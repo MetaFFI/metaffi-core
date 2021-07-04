@@ -15,8 +15,8 @@ private:
 	std::shared_ptr<boost::dll::detail::import_type<void(int64_t, char**, uint32_t*)>::type> pfree_function;
 
 	std::shared_ptr<boost::dll::detail::import_type<void(int64_t,
-	                                                     void**, uint64_t,
-	                                                     void**, uint64_t,
+	                                                     cdt*, uint64_t,
+	                                                     cdt*, uint64_t,
 	                                                     char**, uint64_t*)>::type> pcall;
 
 public:
@@ -47,8 +47,8 @@ public:
 	 */
 	void call(
 			int64_t function_id,
-			void** parameters, uint64_t parameters_len,
-			void** return_values, uint64_t return_values_len,
+			cdt* parameters, uint64_t parameters_len,
+			cdt* return_values, uint64_t return_values_len,
 			char** out_err, uint64_t* out_err_len
 	) override;
 

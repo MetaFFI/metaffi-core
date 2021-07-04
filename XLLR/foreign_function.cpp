@@ -10,8 +10,8 @@ int64_t foreign_function::id() const
 }
 //--------------------------------------------------------------------
 void foreign_function::call(
-		void** parameters, uint64_t parameters_len,
-		void** return_values, uint64_t return_values_len,
+		cdt* parameters, uint64_t parameters_len,
+		cdt* return_values, uint64_t return_values_len,
 		char** out_err, uint64_t* out_err_len
 	)
 {

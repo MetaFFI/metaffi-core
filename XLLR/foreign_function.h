@@ -4,6 +4,7 @@
 #include <string>
 #include <memory>
 #include "runtime_plugin_interface_wrapper.h"
+#include <runtime/cdt_structs.h>
 
 //--------------------------------------------------------------------
 class foreign_function
@@ -20,8 +21,8 @@ public:
 
 	void call(
 		// error string
-		void** parameters, uint64_t parameters_len,
-		void** return_values, uint64_t return_values_len,
+		cdt* parameters, uint64_t parameters_len,
+		cdt* return_values, uint64_t return_values_len,
 		char** out_err, uint64_t* out_err_len
 	);
 };
