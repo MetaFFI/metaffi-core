@@ -1,7 +1,6 @@
 #include "compiler.h"
 #include "language_plugin_interface_wrapper.h"
 #include "idl_plugin_interface_wrapper.h"
-#include "serializer_plugin_interface_wrapper.h"
 #include <boost/filesystem.hpp>
 #include <utils/scope_guard.hpp>
 #include <regex>
@@ -72,9 +71,6 @@ void compiler::compile_to_guest()
 	
 	std::string target_language = this->get_target_language();
 	
-	std::unique_ptr<serializer_plugin_interface_wrapper> serializer = std::make_unique<serializer_plugin_interface_wrapper>(idl_fs_path.extension().string());
-	serializer->init();
-	
 	char* err = nullptr;
 	uint32_t err_len = 0;
 	scope_guard sg([&](){
@@ -123,8 +119,6 @@ void compiler::compile_from_host(const std::string& lang, const std::string& hos
 {
 	// generate serialization code
 	boost::filesystem::path idl_fs_path(_idl_path);
-	std::unique_ptr<serializer_plugin_interface_wrapper> serializer = std::make_unique<serializer_plugin_interface_wrapper>(idl_fs_path.extension().string());
-	serializer->init();
 	
 	char* err = nullptr;
 	uint32_t err_len = 0;

@@ -31,12 +31,18 @@ add_custom_command(TARGET xllr POST_BUILD
 
 add_custom_command(TARGET xllr POST_BUILD
 		COMMAND "${CMAKE_COMMAND}" -E copy
-		"../../plugin-sdk/runtime/cdt_capi_loader.h"
+		"../../plugin-sdk/runtime/cdt_structs.h"
 		"$ENV{OPENFFI_HOME}/include/cdt_loader.h"
-		COMMENT "Copy ${CMAKE_CURRENT_LIST_DIR}/../../plugin-sdk/runtime/cdt_loader.h -> $ENV{OPENFFI_HOME}/include/cdt_loader.h")
+		COMMENT "Copy ${CMAKE_CURRENT_LIST_DIR}/../../plugin-sdk/runtime/cdt_structs.h -> $ENV{OPENFFI_HOME}/include/cdt_structs.h")
+
+add_custom_command(TARGET xllr POST_BUILD
+		COMMAND "${CMAKE_COMMAND}" -E copy
+		"../../plugin-sdk/runtime/cdt_capi_loader.h"
+		"$ENV{OPENFFI_HOME}/include/cdt_capi_loader.h"
+		COMMENT "Copy ${CMAKE_CURRENT_LIST_DIR}/../../plugin-sdk/runtime/cdt_capi_loader.h -> $ENV{OPENFFI_HOME}/include/cdt_capi_loader.h")
 
 add_custom_command(TARGET xllr POST_BUILD
 		COMMAND "${CMAKE_COMMAND}" -E copy
 		"../../plugin-sdk/runtime/cdt_capi_loader.c"
-		"$ENV{OPENFFI_HOME}/include/cdt_loader.c"
-		COMMENT "Copy ${CMAKE_CURRENT_LIST_DIR}/../../plugin-sdk/runtime/cdt_loader.c -> $ENV{OPENFFI_HOME}/include/cdt_loader.c")
+		"$ENV{OPENFFI_HOME}/include/cdt_capi_loader.c"
+		COMMENT "Copy ${CMAKE_CURRENT_LIST_DIR}/../../plugin-sdk/runtime/cdt_capi_loader.c -> $ENV{OPENFFI_HOME}/include/cdt_capi_loader.c")
