@@ -21,6 +21,7 @@ public:
 
 	void compile_to_guest();
 	void compile_from_host(const std::vector<std::string>& langs, const std::string& host_options);
+	void print_idl();
 
 private:
 	void compile_from_host(const std::string& lang, const std::string& host_options);

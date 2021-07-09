@@ -44,8 +44,8 @@ alloc_numeric_on_heap_decl(openffi_uint8);
 alloc_numeric_on_heap_decl(openffi_size);
 alloc_numeric_on_heap_decl(openffi_bool);
 alloc_numeric_on_heap_decl(openffi_type);
+alloc_numeric_on_heap_decl(openffi_handle);
 
-alloc_string_on_heap_decl(openffi_string);
 alloc_string_on_heap_decl(openffi_string8);
 alloc_string_on_heap_decl(openffi_string16);
 alloc_string_on_heap_decl(openffi_string32);
@@ -59,64 +59,6 @@ alloc_string_on_heap_decl(openffi_string32);
 
 openffi_type get_type(cdt* data_array, int index);
 cdt* get_cdt(cdt* data_array, int index);
-
-//
-//#define get_cdt_numeric_type_decl(type) \
-//int get_cdt_##type(cdt* data_array, int index, type** out_res); \
-//int get_cdt_##type##_array(cdt* data_array, int index, type** out_res, openffi_size** dimensions_lengths, openffi_size* dimensions);
-//
-//#define get_cdt_string_type_decl(type)\
-//int get_cdt_##type(cdt* data_array, int index, type* out_res, openffi_size** length); \
-//int get_cdt_##type##_array(cdt* data_array, int index, type** array, openffi_size** sizes_array, openffi_size** dimensions_lengths, openffi_size* dimensions);
-//
-//get_cdt_numeric_type_decl(openffi_float64);
-//get_cdt_numeric_type_decl(openffi_float32);
-//get_cdt_numeric_type_decl(openffi_int64);
-//get_cdt_numeric_type_decl(openffi_int32);
-//get_cdt_numeric_type_decl(openffi_int16);
-//get_cdt_numeric_type_decl(openffi_int8);
-//get_cdt_numeric_type_decl(openffi_uint64);
-//get_cdt_numeric_type_decl(openffi_uint32);
-//get_cdt_numeric_type_decl(openffi_uint16);
-//get_cdt_numeric_type_decl(openffi_uint8);
-//get_cdt_numeric_type_decl(openffi_size);
-//get_cdt_numeric_type_decl(openffi_bool);
-//get_cdt_string_type_decl(openffi_string);
-//get_cdt_string_type_decl(openffi_string8);
-//get_cdt_string_type_decl(openffi_string16);
-//get_cdt_string_type_decl(openffi_string32);
-//
-//
-////====================================================================
-//
-///************************************************
-//*   Setters
-//*************************************************/
-//
-//#define set_cdt_string_type_decl(type)\
-//int set_cdt_##type(cdt* data_array, int index, openffi_string val, openffi_size* length, openffi_bool free_required); \
-//int set_cdt_##type##_array(cdt* data_array, int index, type* array, openffi_size* string_sizes, openffi_size* dimensions_lengths, openffi_size dimensions, openffi_bool free_required);
-//
-//#define set_cdt_numeric_type_decl(type) \
-//int set_cdt_##type(cdt* data_array, int index, type* val, openffi_bool free_required); \
-//int set_cdt_##type##_array(cdt* data_array, int index, type* array, openffi_size* dimensions_lengths, openffi_size dimensions, openffi_bool free_required);
-//
-//set_cdt_numeric_type_decl(openffi_float64);
-//set_cdt_numeric_type_decl(openffi_float32);
-//set_cdt_numeric_type_decl(openffi_int64);
-//set_cdt_numeric_type_decl(openffi_int32);
-//set_cdt_numeric_type_decl(openffi_int16);
-//set_cdt_numeric_type_decl(openffi_int8);
-//set_cdt_numeric_type_decl(openffi_uint64);
-//set_cdt_numeric_type_decl(openffi_uint32);
-//set_cdt_numeric_type_decl(openffi_uint16);
-//set_cdt_numeric_type_decl(openffi_uint8);
-//set_cdt_numeric_type_decl(openffi_size);
-//set_cdt_numeric_type_decl(openffi_bool);
-//set_cdt_string_type_decl(openffi_string);
-//set_cdt_string_type_decl(openffi_string8);
-//set_cdt_string_type_decl(openffi_string16);
-//set_cdt_string_type_decl(openffi_string32);
 
 //====================================================================
 
@@ -141,7 +83,7 @@ get_numeric_element_decl(openffi_uint32);
 get_numeric_element_decl(openffi_uint16);
 get_numeric_element_decl(openffi_uint8);
 get_numeric_element_decl(openffi_size);
-get_string_element_decl(openffi_string);
+get_numeric_element_decl(openffi_handle);
 get_string_element_decl(openffi_string8);
 get_string_element_decl(openffi_string16);
 get_string_element_decl(openffi_string32);
@@ -168,7 +110,7 @@ set_numeric_element_decl(openffi_uint32);
 set_numeric_element_decl(openffi_uint16);
 set_numeric_element_decl(openffi_uint8);
 set_numeric_element_decl(openffi_size);
-set_string_element_decl(openffi_string);
+set_numeric_element_decl(openffi_handle);
 set_string_element_decl(openffi_string8);
 set_string_element_decl(openffi_string16);
 set_string_element_decl(openffi_string32);

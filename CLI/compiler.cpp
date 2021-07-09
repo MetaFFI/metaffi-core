@@ -159,3 +159,8 @@ void compiler::compile_from_host(const std::string& lang, const std::string& hos
 	}
 }
 //--------------------------------------------------------------------
+void compiler::print_idl()
+{
+	std::cout << this->_openffi_idl << std::endl;
+}
+//--------------------------------------------------------------------

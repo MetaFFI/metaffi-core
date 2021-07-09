@@ -21,8 +21,9 @@ cli_executor::cli_executor(int argc, char** argv) :
 
 	_compile_options.add_options()
 		("idl", po::value<std::string>() , "IDL containing functions defitions (i.e. foreign functions)")
-		("to-lang,t", "Language the functions are implemented as stated in the IDL (i.e. guest language)")
-		("from-langs,f", po::value<std::vector<std::string>>()->multitoken() , "List of languages the functions are called from (i.e. host languages)")
+		("print-idl", "Prints OpenFFI IDL used")
+		("guest-lang,g", "Language the functions are implemented as stated in the IDL (i.e. guest language)")
+		("host-langs,h", po::value<std::vector<std::string>>()->multitoken() , "List of languages the functions are called from (i.e. host languages)")
 		("output,o", po::value<std::string>()->default_value(boost::filesystem::current_path().generic_string()) , "Directory to generate the files (Default: current directory)")
 		("host-options", po::value<std::string>()->default_value(std::string()) , "Options to the host language plugin (format: key1=val1,key2=val2...)");
 
@@ -79,7 +80,7 @@ bool cli_executor::compile()
 		return false;
 	}
 	
-	if(!vm.count("from-langs") && !vm.count("to-lang"))
+	if(!vm.count("host-langs") && !vm.count("guest-lang"))
 	{
 		std::cout << "Expects at least from-langs or to-lang argument" << std::endl;
 		_compile_options.print(std::cout);
@@ -87,6 +88,11 @@ bool cli_executor::compile()
 	}
 	
 	compiler cmp(vm["idl"].as<std::string>(), vm["output"].as<std::string>());
+	
+	if(vm.count("print-idl"))
+	{
+		cmp.print_idl();
+	}
 	
 	if(vm.count("to-lang"))
 	{
@@ -98,12 +104,6 @@ bool cli_executor::compile()
 		cmp.compile_from_host(vm["from-langs"].as<std::vector<std::string>>(), vm["host-options"].as<std::string>());
 	}
 	
-	if(vm.count("redist"))
-	{
-		// TODO: implement redist
-		std::cout << "Copy redist" << std::endl;
-	}
-
 	return true;
 }
 //--------------------------------------------------------------------
