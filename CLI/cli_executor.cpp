@@ -80,9 +80,9 @@ bool cli_executor::compile()
 		return false;
 	}
 	
-	if(!vm.count("host-langs") && !vm.count("guest-lang"))
+	if(vm.count("host-langs") == 0 && vm.count("guest-lang") == 0)
 	{
-		std::cout << "Expects at least from-langs or to-lang argument" << std::endl;
+		std::cout << "Expects at least host-langs or guest-lang argument" << std::endl;
 		_compile_options.print(std::cout);
 		return false;
 	}
@@ -94,14 +94,14 @@ bool cli_executor::compile()
 		cmp.print_idl();
 	}
 	
-	if(vm.count("to-lang"))
+	if(vm.count("guest-lang"))
 	{
 		cmp.compile_to_guest();
 	}
 	
-	if(vm.count("from-langs"))
+	if(vm.count("host-langs"))
 	{
-		cmp.compile_from_host(vm["from-langs"].as<std::vector<std::string>>(), vm["host-options"].as<std::string>());
+		cmp.compile_from_host(vm["host-langs"].as<std::vector<std::string>>(), vm["host-options"].as<std::string>());
 	}
 	
 	return true;
