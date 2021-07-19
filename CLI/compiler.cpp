@@ -24,8 +24,18 @@ compiler::compiler(const std::string& idl_path, const std::string& output_path):
 	                 std::istreambuf_iterator<char>());
 	ifs.close();
 	
-	// get idl data
 	boost::filesystem::path idl_fs_path(_idl_path);
+	
+	std::string extension = idl_fs_path.extension().string();
+	std::transform(extension.begin(), extension.end(), extension.begin(), [](unsigned char c){ return std::tolower(c); });
+	
+	if(extension == ".json") // if not openffi IDL - load relevant plugin to compile openffi IDL
+	{
+		_openffi_idl = _idl_source;
+		return;
+	}
+	
+	// get idl data
 	std::unique_ptr<idl_plugin_interface_wrapper> idl = std::make_unique<idl_plugin_interface_wrapper>(idl_fs_path.extension().string());
 	idl->init();
 	
@@ -43,12 +53,13 @@ compiler::compiler(const std::string& idl_path, const std::string& output_path):
 	
 	_openffi_idl = std::string(out_idl_def_json, out_idl_def_json_length);
 	free(out_idl_def_json);
+	
 }
 //--------------------------------------------------------------------
 std::string compiler::get_target_language()
 {
 	// get target language
-	std::regex target_lang_regex(R"(\"openffi_target_language\":\"([^\"]+)\")");
+	std::regex target_lang_regex(R"(target_language"[ ]*:[ ]*"([^\"]+))");
 	std::smatch matches;
 	if(!std::regex_search(_openffi_idl, matches, target_lang_regex))
 	{
