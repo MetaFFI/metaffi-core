@@ -1,8 +1,12 @@
 #include "runtime/xllr_api.h"
 #include "runtime_plugin_repository.h"
-#include <unordered_map>
+#include <shared_mutex>
 #include <iostream>
 #include <cstring>
+#include <set>
+
+std::set<std::string> runtime_flags;
+std::shared_mutex runtime_flags_lock;
 
 #define handle_err(err, err_len, before_handle)	\
 catch(const std::exception& e)\
@@ -131,5 +135,17 @@ void call(
 		);
 	}
 	handle_err((char**)out_err, out_err_len,);
+}
+//--------------------------------------------------------------------
+void set_runtime_flag(const char* flag_name, uint64_t flag_name_length)
+{
+    std::unique_lock<std::shared_mutex> write_lock(runtime_flags_lock); // write lock
+    runtime_flags.insert(std::string(flag_name, flag_name_length));
+}
+//--------------------------------------------------------------------
+int is_runtime_flag_set(const char* flag_name, uint64_t flag_name_length)
+{
+    std::shared_lock<std::shared_mutex> read_lock(runtime_flags_lock); // read lock
+	return runtime_flags.find(std::string(flag_name, flag_name_length)) != runtime_flags.end() ? 1 : 0;
 }
 //--------------------------------------------------------------------
