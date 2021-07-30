@@ -10,36 +10,36 @@ namespace po = boost::program_options;
 cli_executor::cli_executor(int argc, char** argv) :
 		_argc(argc),
 		_argv(argv),
-		_openffi_options("OpenFFI"),
+		_metaffi_options("MetaFFI"),
 		_compile_options("compile"),
 		_plugin_options("plugin")
 {
-	_openffi_options.add_options()
+	_metaffi_options.add_options()
 		("compile,c", "Compile definition file")
 		("plugin,p", "Install dependencies and plugins")
 		("help", "Display this help page");
 
 	_compile_options.add_options()
 		("idl", po::value<std::string>() , "IDL containing functions defitions (i.e. foreign functions)")
-		("print-idl", "Prints OpenFFI IDL used")
+		("print-idl", "Prints MetaFFI IDL used")
 		("guest-lang,g", "Language the functions are implemented as stated in the IDL (i.e. guest language)")
 		("host-langs,h", po::value<std::vector<std::string>>()->multitoken() , "List of languages the functions are called from (i.e. host languages)")
 		("output,o", po::value<std::string>()->default_value(boost::filesystem::current_path().generic_string()) , "Directory to generate the files (Default: current directory)")
 		("host-options", po::value<std::string>()->default_value(std::string()) , "Options to the host language plugin (format: key1=val1,key2=val2...)");
 
 	_plugin_options.add_options()
-		("install,i", po::value<std::string>(), "Download & install OpenFFI supported language from given URL or local path")
+		("install,i", po::value<std::string>(), "Download & install MetaFFI supported language from given URL or local path")
 		("remove,r", po::value<std::string>(), "Remove supported language")
-		("list", "List installed OpenFFI languages");
+		("list", "List installed MetaFFI languages");
 
-	_openffi_options.add(_compile_options);
-	_openffi_options.add(_plugin_options);
+	_metaffi_options.add(_compile_options);
+	_metaffi_options.add(_plugin_options);
 }
 //--------------------------------------------------------------------
 bool cli_executor::parse()
 {
 	// parse command line
-	po::store(po::command_line_parser(this->_argc, this->_argv).options(_openffi_options).run(), vm);
+	po::store(po::command_line_parser(this->_argc, this->_argv).options(_metaffi_options).run(), vm);
 	po::notify(vm);
 
 	// if no args or help - call help
@@ -47,7 +47,7 @@ bool cli_executor::parse()
 		vm.count("help") ||
 		(vm.count("compile") && vm.count("install"))) // make sure only one option is selected
 	{
-		_openffi_options.print(std::cout);
+		_metaffi_options.print(std::cout);
 		return false;
 	}
 
@@ -61,7 +61,7 @@ bool cli_executor::parse()
 	}
 	else
 	{
-		_openffi_options.print(std::cout);
+		_metaffi_options.print(std::cout);
 		return false;
 	}
 	
@@ -141,7 +141,7 @@ bool cli_executor::plugin()
 		else
 		{
 			std::cout << "No plugins installed :-(" << std::endl;
-			std::cout << "Start installing using \"openffi plugin -install [URL or local path]\" command!" << std::endl;
+			std::cout << "Start installing using \"metaffi plugin -install [URL or local path]\" command!" << std::endl;
 		}
 	}
 	else

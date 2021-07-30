@@ -7,7 +7,7 @@ private:
 	int _argc;
 	char** _argv;
 
-	boost::program_options::options_description _openffi_options;
+	boost::program_options::options_description _metaffi_options;
 	boost::program_options::options_description _compile_options;
 	boost::program_options::options_description _plugin_options;
 

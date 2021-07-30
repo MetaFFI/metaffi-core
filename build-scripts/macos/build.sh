@@ -45,7 +45,7 @@ fi
 
 cd output-$buildtype || (echo "cannot find output-$buildtype" && exit 1)
 
-echo ---=== Building OpenFFI ===---
+echo ---=== Building MetaFFI ===---
 
 make
 if [ $? != 0 ]; then
@@ -55,4 +55,4 @@ fi
 
 export output_dir="$PWD"
 
-echo ---=== OpenFFI built successfully to $output_dir ===---
+echo ---=== MetaFFI built successfully to $output_dir ===---

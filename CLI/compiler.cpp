@@ -5,7 +5,7 @@
 #include <utils/scope_guard.hpp>
 #include <regex>
 
-using namespace openffi::utils;
+using namespace metaffi::utils;
 
 //--------------------------------------------------------------------
 compiler::compiler(const std::string& idl_path, const std::string& output_path):
@@ -29,9 +29,9 @@ compiler::compiler(const std::string& idl_path, const std::string& output_path):
 	std::string extension = idl_fs_path.extension().string();
 	std::transform(extension.begin(), extension.end(), extension.begin(), [](unsigned char c){ return std::tolower(c); });
 	
-	if(extension == ".json") // if not openffi IDL - load relevant plugin to compile openffi IDL
+	if(extension == ".json") // if not metaffi IDL - load relevant plugin to compile metaffi IDL
 	{
-		_openffi_idl = _idl_source;
+		_metaffi_idl = _idl_source;
 		return;
 	}
 	
@@ -51,7 +51,7 @@ compiler::compiler(const std::string& idl_path, const std::string& output_path):
 		throw std::runtime_error(std::string(err, err_len));
 	}
 	
-	_openffi_idl = std::string(out_idl_def_json, out_idl_def_json_length);
+	_metaffi_idl = std::string(out_idl_def_json, out_idl_def_json_length);
 	free(out_idl_def_json);
 	
 }
@@ -61,14 +61,14 @@ std::string compiler::get_target_language()
 	// get target language
 	std::regex target_lang_regex(R"(target_language"[ ]*:[ ]*"([^\"]+))");
 	std::smatch matches;
-	if(!std::regex_search(_openffi_idl, matches, target_lang_regex))
+	if(!std::regex_search(_metaffi_idl, matches, target_lang_regex))
 	{
-		throw std::runtime_error("OpenFFI IDL does not contains openffi_target_language tag");
+		throw std::runtime_error("MetaFFI IDL does not contains metaffi_target_language tag");
 	}
 	
 	if(matches.size() < 2)
 	{
-		throw std::runtime_error("openffi_target_language tag does not contain target language");
+		throw std::runtime_error("metaffi_target_language tag does not contain target language");
 	}
 	
 	return matches[1].str();
@@ -97,7 +97,7 @@ void compiler::compile_to_guest()
 	
 	// load compiler
 	std::stringstream compiler_plugin_name;
-	compiler_plugin_name << "openffi.compiler.lang." << target_language;
+	compiler_plugin_name << "metaffi.compiler.lang." << target_language;
 
 	// load plugin
 	std::unique_ptr<language_plugin_interface_wrapper> loaded_plugin = std::make_unique<language_plugin_interface_wrapper>(compiler_plugin_name.str());
@@ -108,7 +108,7 @@ void compiler::compile_to_guest()
 	
 	
 	// call compile_to_guest with IDL path and output path
-	loaded_plugin->compile_to_guest(this->_openffi_idl.c_str(), this->_openffi_idl.size(),
+	loaded_plugin->compile_to_guest(this->_metaffi_idl.c_str(), this->_metaffi_idl.size(),
 									this->_output_path.c_str(), this->_output_path.size(),
 									&err, &err_len);
 
@@ -144,12 +144,12 @@ void compiler::compile_from_host(const std::string& lang, const std::string& hos
 		throw std::runtime_error(std::string(err, err_len));
 	}
 	
-	std::string plugin_filename("openffi.compiler.");
+	std::string plugin_filename("metaffi.compiler.");
 	plugin_filename += lang;
 	
 	// load compiler
 	std::stringstream compiler_plugin_name;
-	compiler_plugin_name << "openffi.compiler.lang." << lang;
+	compiler_plugin_name << "metaffi.compiler.lang." << lang;
 	
 	// load plugin
 	std::unique_ptr<language_plugin_interface_wrapper> loaded_plugin = std::make_unique<language_plugin_interface_wrapper>(compiler_plugin_name.str());
@@ -159,7 +159,7 @@ void compiler::compile_from_host(const std::string& lang, const std::string& hos
 	err_len = 0;
 	
 	// call compile_to_guest with IDL path and output path
-	loaded_plugin->compile_from_host(this->_openffi_idl.c_str(), this->_openffi_idl.size(),
+	loaded_plugin->compile_from_host(this->_metaffi_idl.c_str(), this->_metaffi_idl.size(),
 	                                 this->_output_path.c_str(), this->_output_path.size(),
 	                                 host_options.c_str(), host_options.length(),
 	                                 &err, &err_len);
@@ -172,6 +172,6 @@ void compiler::compile_from_host(const std::string& lang, const std::string& hos
 //--------------------------------------------------------------------
 void compiler::print_idl()
 {
-	std::cout << this->_openffi_idl << std::endl;
+	std::cout << this->_metaffi_idl << std::endl;
 }
 //--------------------------------------------------------------------

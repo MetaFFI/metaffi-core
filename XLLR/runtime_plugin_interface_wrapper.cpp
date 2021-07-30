@@ -4,7 +4,7 @@
 #include <utils/function_loader.hpp>
 #include <utils/plugin_loader.hpp>
 
-using namespace openffi::utils;
+using namespace metaffi::utils;
 
 //--------------------------------------------------------------------
 runtime_plugin_interface_wrapper::runtime_plugin_interface_wrapper(const std::string& plugin_filename_without_extension)

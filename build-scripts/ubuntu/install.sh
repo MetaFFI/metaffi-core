@@ -20,13 +20,13 @@ function copy_to_install_path() {
 
 
 # $1 (optional) - install path.
-# If not set, using /usr/lib/openffi/
+# If not set, using /usr/lib/metaffi/
 install_path=$1
 if [ -z "$install_path" ]; then
-	install_path="/usr/lib/openffi"
+	install_path="/usr/lib/metaffi"
 fi
 
-echo ---=== Installing OpenFFI to $install_path ===---
+echo ---=== Installing MetaFFI to $install_path ===---
 
 echo Notice: This script is using sudo - password will be prompt
 
@@ -40,24 +40,24 @@ echo ---=== Copying files to $install_path ===---
 
 # copy binaries to $install_path
 copy_to_install_path "*.so"
-copy_to_install_path openffi
+copy_to_install_path metaffi
 copy_to_install_path uninstall.sh
 
 echo ---=== Linking files from $install_path to /usr/lib and /usr/bin ===---
 
 # place symbolic link in /usr/bin
-link_files $install_path/openffi /usr/bin/openffi
+link_files $install_path/metaffi /usr/bin/metaffi
 
 # place symbolic link in /usr/lib
 link_files $install_path/xllr.so /usr/lib/xllr.so
 
-## following will be deprecated once "openffi --install" option is implemented
+## following will be deprecated once "metaffi --install" option is implemented
 link_files $install_path/xllr.go.so /usr/lib/xllr.go.so
 link_files $install_path/xllr.python3.so /usr/lib/xllr.python3.so
-link_files $install_path/openffi.compiler.go.so /usr/lib/openffi.compiler.go.so
-link_files $install_path/openffi.compiler.python3.so /usr/lib/openffi.compiler.python3.so
+link_files $install_path/metaffi.compiler.go.so /usr/lib/metaffi.compiler.go.so
+link_files $install_path/metaffi.compiler.python3.so /usr/lib/metaffi.compiler.python3.so
 
-echo ---=== OpenFFI installed successfully! ===---
+echo ---=== MetaFFI installed successfully! ===---
 
 
 

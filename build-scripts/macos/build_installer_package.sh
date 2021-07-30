@@ -36,22 +36,22 @@ if [ $? != 0 ]; then
 	exit 1
 fi
 
-## xllr plugins to output/ - deprecated after "openffi -install" command becomes available
+## xllr plugins to output/ - deprecated after "metaffi -install" command becomes available
 cp $output_dir/xllr.*.dylib output/
 if [ $? != 0 ]; then
 	echo Failed copying file
 	exit 1
 fi
 
-## openffi executable output/
-cp $output_dir/openffi output/
+## metaffi executable output/
+cp $output_dir/metaffi output/
 if [ $? != 0 ]; then
 	echo Failed copying file
 	exit 1
 fi
 
-## compiler plugins output/plugins/ - deprecated after "openffi -install" command becomes available
-cp $output_dir/openffi.compiler.*.dylib output/
+## compiler plugins output/plugins/ - deprecated after "metaffi -install" command becomes available
+cp $output_dir/metaffi.compiler.*.dylib output/
 if [ $? != 0 ]; then
 	echo Failed copying file
 	exit 1
@@ -75,7 +75,7 @@ echo ---=== Compressing installation path ===---
 
 # zip output directory
 cd output
-tar -zcvf openffi-$version.tar.gz *
+tar -zcvf metaffi-$version.tar.gz *
 if [ $? != 0 ]; then
 	cd ..
 	rm -R output
@@ -83,8 +83,8 @@ if [ $? != 0 ]; then
 	exit 1
 fi
 cd ..
-mv output/openffi-$version.tar.gz .
+mv output/metaffi-$version.tar.gz .
 rm -R output
 
 # done
-echo ---=== Done. Version is ready in openffi-$version.tar.gz ===---
+echo ---=== Done. Version is ready in metaffi-$version.tar.gz ===---

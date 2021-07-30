@@ -1,7 +1,7 @@
 ## Build From Source
 The `build-scripts` directory contains 4 scripts for each supported operating system:
-* `build` - Build OpenFFI project
-* `build_installer_package` - Build OpenFFI installer package
+* `build` - Build MetaFFI project
+* `build_installer_package` - Build MetaFFI installer package
 * `install` - Install script that will be placed inside the installer package
 * `uninstall` - Install script that will be placed inside the installer package
 
@@ -24,7 +24,7 @@ Run the `build` scripts in your operating system. `build` requires 2 parameters:
 * (optional) CMake Toolchain file (optional): Set from parameter or CMAKE_TOOLCHAIN_FILE environment variable.
     * Toolchain file is required for cases you are using package management (like vcpkg) to manage your C/C++ libraries (like boost)
 
-OpenFFI will be build to *OpenFFIRoot/output-[build-otype]* directory
+MetaFFI will be build to *MetaFFIRoot/output-[build-otype]* directory
 
 <BR />
 

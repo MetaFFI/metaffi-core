@@ -10,7 +10,7 @@
 #include "uri.h"
 #include <utils/scope_guard.hpp>
 
-using namespace openffi::utils;
+using namespace metaffi::utils;
 
 //--------------------------------------------------------------------
 bool plugin_utils::is_installed(const std::string& plugin_name)
@@ -27,7 +27,7 @@ std::vector<std::string> plugin_utils::list()
 	boost::filesystem::directory_iterator end_di;
 	
 	std::stringstream pattern;
-	pattern << R"(openffi\.compiler\.([a-zA-Z0-9_]+)\)" << boost::dll::shared_library::suffix().generic_string();
+	pattern << R"(metaffi\.compiler\.([a-zA-Z0-9_]+)\)" << boost::dll::shared_library::suffix().generic_string();
 	std::regex plugin_name_pattern(pattern.str());
 	
 	for(boost::filesystem::directory_iterator di(get_install_path()) ; di != end_di ; di++)
@@ -106,7 +106,7 @@ void plugin_utils::remove(const std::string& name)
 	}
 	
 	std::stringstream compiler_path;
-	compiler_path << get_install_path() << "/openffi.compiler." << name << boost::dll::shared_library::suffix().generic_string();
+	compiler_path << get_install_path() << "/metaffi.compiler." << name << boost::dll::shared_library::suffix().generic_string();
 	
 	std::stringstream xllr_path;
 	xllr_path << get_install_path() << "/xllr." << name << boost::dll::shared_library::suffix().generic_string();
@@ -130,7 +130,7 @@ void plugin_utils::remove(const std::string& name)
 	std::vector<std::string> to_remove_files
 	{
 			{ (boost::format("xllr.%1%%2%") % name % boost::dll::shared_library::suffix().generic_string()).str() },
-			{ (boost::format("openffi.compiler.%1%%2%") % name % boost::dll::shared_library::suffix().generic_string()).str() }
+			{ (boost::format("metaffi.compiler.%1%%2%") % name % boost::dll::shared_library::suffix().generic_string()).str() }
 	};
 	
 	#ifdef __linux__
@@ -256,7 +256,7 @@ std::vector<std::string> plugin_utils::decompress(const boost::filesystem::path 
 	std::vector<std::string> new_files
 	{
 		{ (boost::format("xllr.%1%%2%") % new_plugin[0] % boost::dll::shared_library::suffix().generic_string()).str() },
-		{ (boost::format("openffi.compiler.%1%%2%") % new_plugin[0] % boost::dll::shared_library::suffix().generic_string()).str() }
+		{ (boost::format("metaffi.compiler.%1%%2%") % new_plugin[0] % boost::dll::shared_library::suffix().generic_string()).str() }
 	};
 	
 	return new_files;

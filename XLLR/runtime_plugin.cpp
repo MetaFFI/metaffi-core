@@ -3,7 +3,7 @@
 #include <utils/scope_guard.hpp>
 #include <algorithm>
 
-using namespace openffi::utils;
+using namespace metaffi::utils;
 
 //--------------------------------------------------------------------
 runtime_plugin::runtime_plugin(const std::string& plugin_filename, bool is_init /*= true*/):_plugin_filename(plugin_filename)

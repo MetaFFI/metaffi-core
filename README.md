@@ -1,15 +1,15 @@
-# OpenFFI Framework
+# MetaFFI Framework
 
 **Latest Version: 0.0.3**
 
-OpenFFI framework is a simple and easy way to call functions in different programming languages.
+MetaFFI framework is a simple and easy way to call functions in different programming languages.
 
 Jump to:
 * [Usage section](#usage)
 * [Download section](#download)
  
 
-## Do you need OpenFFI?
+## Do you need MetaFFI?
 * Are you tired of searching for that library only in your project's language?
 
 * The library you're looking for is available only in a different language?
@@ -20,16 +20,16 @@ Jump to:
 
 * Tired of *language interop hell* to connect different languages in your project?
 
-**WORRY NO MORE - *OpenFFI* is exactly what you need!**
+**WORRY NO MORE - *MetaFFI* is exactly what you need!**
 
 
 <BR>
 
-OpenFFI Framework provides an easy, simple and straightforward way to call functions from one programming language to another. The framework hides from the user and encapsulates all the hassle of performing FFI calls ([Foreign Function Interface](https://en.wikipedia.org/wiki/Foreign_function_interface) - calling a function in another language). OpenFFI by itself is **not** an FFI solution, but it inter-connects seamlessly different FFIs to provide a simple, clean, unified mechanism. 
+MetaFFI Framework provides an easy, simple and straightforward way to call functions from one programming language to another. The framework hides from the user and encapsulates all the hassle of performing FFI calls ([Foreign Function Interface](https://en.wikipedia.org/wiki/Foreign_function_interface) - calling a function in another language). MetaFFI by itself is **not** an FFI solution, but it inter-connects seamlessly different FFIs to provide a simple, clean, unified mechanism. 
 
-#### World without OpenFFI
+#### World without MetaFFI
 For example, I want to call from *Go* to *Python3* and vice-versa.\
-Let's see how it looks **without OpenFFI** (there might be other techniques, but none is easy):
+Let's see how it looks **without MetaFFI** (there might be other techniques, but none is easy):
 
 __Go &rarr; Python3__:
 1. Write a C function exposed to [CGo](https://golang.org/cmd/cgo/) that receives the Python3 function parameters in C data types. The function needs to implement the following using [Python3 C-API](https://docs.python.org/3/c-api/index.html):
@@ -74,24 +74,24 @@ The other way around is a completely different mechanism:
 
 That's it! Easy as rocket science in the stone age! :tired_face:
 
-#### World With OpenFFI
-I want to call from *Go* to function `f(params)` *Python3* and vice-versa, but this time with OpenFFI!
+#### World With MetaFFI
+I want to call from *Go* to function `f(params)` *Python3* and vice-versa, but this time with MetaFFI!
 
 __Go &rarr; Python3__:
 1. Define your function in Protobuf using a [.proto](https://developers.google.com/protocol-buffers/docs/proto3) file
-2. Compile the `.proto` file using OpenFFI is stating you want to call from Go to Python3: `openffi -c --idl myfuncs.proto -t --from go`
+2. Compile the `.proto` file using MetaFFI is stating you want to call from Go to Python3: `metaffi -c --idl myfuncs.proto -t --from go`
 
 That's it!
 
-OpenFFI generated a `myfuncsOpenFFIHost.go` file with an `f(params)` stub to call natively from Go, with Go data types!
+MetaFFI generated a `myfuncsMetaFFIHost.go` file with an `f(params)` stub to call natively from Go, with Go data types!
 
 __Python3 &rarr; Go__: \
 1. Define your function in Protobuf using a [.proto](https://developers.google.com/protocol-buffers/docs/proto3#services) file
-2. Compile the `.proto` file using OpenFFI is stating you want to call from Go to Python3: `openffi -c --idl myfuncs.proto -t --from python3`
+2. Compile the `.proto` file using MetaFFI is stating you want to call from Go to Python3: `metaffi -c --idl myfuncs.proto -t --from python3`
 
 You're Done!
 
-OpenFFI generated a `myfuncsOpenFFIHost.py` file with an `f(params)` stub to call natively from Python3, with Pythonic data types!
+MetaFFI generated a `myfuncsMetaFFIHost.py` file with an `f(params)` stub to call natively from Python3, with Pythonic data types!
 
 <BR />
 
@@ -116,11 +116,11 @@ GoUtils.proto:
 ```
 syntax = "proto3";
 
-// openffi_target_lang: "go"
+// metaffi_target_lang: "go"
 option go_package = "main";
 
 //--------------------------------------------------------------------
-service GoUtils { // openffi_module: "github.com/Masterminds/goutils"
+service GoUtils { // metaffi_module: "github.com/Masterminds/goutils"
    rpc Initials (initials_params) returns (initials_return);
 }
 //--------------------------------------------------------------------
@@ -132,44 +132,44 @@ message initials_return {
 }
 //--------------------------------------------------------------------
 ```
-The `openffi_target_lang` tag states the foreign language OpenFFI should use to call this function.
+The `metaffi_target_lang` tag states the foreign language MetaFFI should use to call this function.
 
-The `openffi_module` tag tells OpenFFI the name of the module. In case it doesn't exist, it uses "service" name.
+The `metaffi_module` tag tells MetaFFI the name of the module. In case it doesn't exist, it uses "service" name.
 
-2. Run OpenFFI CLI tool to compile `PythonFuncs.proto`: \
-`openffi -c --idl GoUtils.proto -f python3 -t`
+2. Run MetaFFI CLI tool to compile `PythonFuncs.proto`: \
+`metaffi -c --idl GoUtils.proto -f python3 -t`
 
-* `-c` (or `--compile`) - Tells OpenFFI to compile
+* `-c` (or `--compile`) - Tells MetaFFI to compile
 * `--idl` - State the IDL to compile
 * `-f` (or `--from`) - State the language(s) you're calling from
-* `-t` (or `--to`) - Tells OpenFFI to generate code that links OpenFFI runtime to the foreign function
+* `-t` (or `--to`) - Tells MetaFFI to generate code that links MetaFFI runtime to the foreign function
 
 3. Use the code!
 ```
-from GoUtilsOpenFFIHost import * # This module contains the Python stub
+from GoUtilsMetaFFIHost import * # This module contains the Python stub
 
-# call foreign functions via OpenFFI
+# call foreign functions via MetaFFI
 res = Initials('James Tiberius Kirk')
 print(res) # prints 'JTK'
 ```
 
 ### Managing Installed Languages (i.e. Plugins)
-OpenFFI comes with 2 languages support:
+MetaFFI comes with 2 languages support:
 * Python3
 * Go
 
-Plugin management is available using OpenFFI CLI tool with the `-p` (or `--plugin`) switch.
+Plugin management is available using MetaFFI CLI tool with the `-p` (or `--plugin`) switch.
 
 * To list installed plugins:
-`openffi -p --list`
+`metaffi -p --list`
 
 To install a plugin:
-`openffi -p -i [plugin URL or local path]` \
-For example, `openffi -p -i https://github.com/GreenFuze/OpenFFI/releases/download/v0.0.3/openffi-ubuntu-python3.tar.gz`
+`metaffi -p -i [plugin URL or local path]` \
+For example, `metaffi -p -i https://github.com/GreenFuze/MetaFFI/releases/download/v0.0.3/metaffi-ubuntu-python3.tar.gz`
 
 To remove a plugin run:
-`openffi -p -r [plugin]` \
- For example, `openffi -p -r python3`
+`metaffi -p -r [plugin]` \
+ For example, `metaffi -p -r python3`
 
 ## Installation
 
@@ -177,7 +177,7 @@ To remove a plugin run:
 
 Current official languages use Protobuf Compiler for data serialization (detailed in [Data-Type Serialization & Protobuf section](#data-otype-serialization-&-protobuf)). Therefore Google Protobuf need to be installed.
 
-**Notice:** Deployed machines (not for developers) do not need Protobuf compiler. It is just for development needs. `-redist` (TBD!) option in OpenFFI CLI tool will provide you with all the binaries needed for deployment.
+**Notice:** Deployed machines (not for developers) do not need Protobuf compiler. It is just for development needs. `-redist` (TBD!) option in MetaFFI CLI tool will provide you with all the binaries needed for deployment.
 
 * Go support requires `protoc-gen-go`, Protobuf's Go support which can be found [here](https://github.com/golang/protobuf). 
 
@@ -185,18 +185,18 @@ Current official languages use Protobuf Compiler for data serialization (detaile
 
 ### Download
 #### Version 0.0.3-alpha
-* [Windows - openffi-windows-v0.0.3.zip](https://github.com/GreenFuze/OpenFFI/releases/download/v0.0.3/openffi-windows-v0.0.3.zip)
-* [Ubuntu - openffi-ubuntu-v0.0.3.tar.gz](https://github.com/GreenFuze/OpenFFI/releases/download/v0.0.3/openffi-ubuntu-v0.0.3.tar.gz)
-* [MacOS - openffi-macos-v0.0.3.tar.gz
-](https://github.com/GreenFuze/OpenFFI/releases/download/v0.0.3/openffi-macos-v0.0.3.tar.gz)
+* [Windows - metaffi-windows-v0.0.3.zip](https://github.com/GreenFuze/MetaFFI/releases/download/v0.0.3/metaffi-windows-v0.0.3.zip)
+* [Ubuntu - metaffi-ubuntu-v0.0.3.tar.gz](https://github.com/GreenFuze/MetaFFI/releases/download/v0.0.3/metaffi-ubuntu-v0.0.3.tar.gz)
+* [MacOS - metaffi-macos-v0.0.3.tar.gz
+](https://github.com/GreenFuze/MetaFFI/releases/download/v0.0.3/metaffi-macos-v0.0.3.tar.gz)
 
 ### Install
-Download OpenFFI for your operating system and run the `install` script. Notice you will need administrative rights to install.
+Download MetaFFI for your operating system and run the `install` script. Notice you will need administrative rights to install.
 * Linux/Mac - `sudo ./install.sh`
 * Windows - In Command Prompt with Administrative rights run `install.bat`
 
 ## Official Supported Languages
-OpenFFI comes with 2 supported languages:
+MetaFFI comes with 2 supported languages:
 * Python3
 * Go
 
@@ -215,14 +215,14 @@ OpenFFI comes with 2 supported languages:
 ## Build From Source
 Detailed in [/build-scripts/README.md](build-scripts/README.MD)
 
-## OpenFFI Internals (in a nutshell)
-OpenFFI design is entirely modular, built out of plugins loaded in runtime to support different languages, runtime and serializations.
+## MetaFFI Internals (in a nutshell)
+MetaFFI design is entirely modular, built out of plugins loaded in runtime to support different languages, runtime and serializations.
 
-Each language support is an OpenFFI plugin built out of 2 parts:
+Each language support is an MetaFFI plugin built out of 2 parts:
 1. XLLR - Used during runtime
 2. Compiler - Used during compile time
 
-OpenFFI uses in-direct FFI to link the supported languages together. No supported language knows how to call another directly. Instead, OpenFFI uses FFI from C and FFI to C to form a link between two supported languages. This approach allows an OpenFFI plugin implementer to implement only C-FFI to gain function calls to **all** the OpenFFI supported languages.
+MetaFFI uses in-direct FFI to link the supported languages together. No supported language knows how to call another directly. Instead, MetaFFI uses FFI from C and FFI to C to form a link between two supported languages. This approach allows an MetaFFI plugin implementer to implement only C-FFI to gain function calls to **all** the MetaFFI supported languages.
 
 ### Cross-Language Linker Runtime (XLLR)
 XLLR links the host language and the foreign language during runtime. It exposes C-API to call an arbitrary function in the requested language.
@@ -230,10 +230,10 @@ XLLR links the host language and the foreign language during runtime. It exposes
 Once XLLR called, it loads an XLLR-plugin which handles the requested guest language and passes the call to it. The plugin handles the actual call.
 
 It is the XLLR plugin that implements foreign language runtime management.\
-For example, while the official *Python3* plugin uses the stock Python3 which uses CPython, another implementer can make a *Pypy3* plugin that uses Pypy engine instead of CPython. Users will be able to install the new plugin using the `openffi -p -i [URL]` command. 
+For example, while the official *Python3* plugin uses the stock Python3 which uses CPython, another implementer can make a *Pypy3* plugin that uses Pypy engine instead of CPython. Users will be able to install the new plugin using the `metaffi -p -i [URL]` command. 
 
 ### Compiler
-The OpenFFI compiler has 3 roles:
+The MetaFFI compiler has 3 roles:
 1. Generate stub for the foreign function in the host language
 2. Serialize/Deserialize parameters (official plugins use Google Protobuf)
 3. Use C-FFI library to call to/from XLLR in host/guest languages
@@ -243,7 +243,7 @@ It is the compiler plugin that chooses the C-FFI mechanism used or the otype of 
 For example, the official *Python3* plugin uses CTypes for C-FFI and Protobuf serialization with `.proto` IDL. Another implementer can make *FasterPython3* plugin that uses "cffi" to C-FFI and FlatBuffers for serialization with its IDL. 
  
 
-### OpenFFI In-Direct FFI Star-Graph vs Common Direct FFI Clique-Graph
+### MetaFFI In-Direct FFI Star-Graph vs Common Direct FFI Clique-Graph
 FFI libraries provide direct linking from language L1 to L2, this forces developers to learn, maintain and understand multiple libraries. Just a few well-known examples are:
 * Python CTypes: FFI Python → C
 * JNI: JAVA → C
@@ -259,18 +259,18 @@ In the general case, if a developer wishes to use N languages:
 
 ![Language FFI Libraries](images/graphs.png)
 
-In OpenFFI, we are taking a different approach, instead of cross-linking the two languages directly, we are cross-linking them indirectly via XLLR (Cross-Language Linker Runtime), which is a C++ library with C-interface. XLLR acts as a coordinator between the different languages. Thus a language needs to link only to XLLR, and through it, it is linked indirectly to all other languages. By doing so, we accomplish two goals:
+In MetaFFI, we are taking a different approach, instead of cross-linking the two languages directly, we are cross-linking them indirectly via XLLR (Cross-Language Linker Runtime), which is a C++ library with C-interface. XLLR acts as a coordinator between the different languages. Thus a language needs to link only to XLLR, and through it, it is linked indirectly to all other languages. By doing so, we accomplish two goals:
 1. Single library & API - Simple to learn, understand and maintain. One usage for all cross-language calls.
-2. In the worst case, when N languages are calling each other via OpenFFI, the calling graph between all languages forms a star (graph (b)), meaning, it requires an XLLR language implementer to use FFI to/from C.
-To add support for Java, the implementer doesn't need to know anything about other OpenFFI supported languages. In total, for N languages, only 2N links to the XLLR are required. Notice that an OpenFFI user uses all different links to all other languages by calling a stub in host language that indirectly calls the guest language foreign function.
+2. In the worst case, when N languages are calling each other via MetaFFI, the calling graph between all languages forms a star (graph (b)), meaning, it requires an XLLR language implementer to use FFI to/from C.
+To add support for Java, the implementer doesn't need to know anything about other MetaFFI supported languages. In total, for N languages, only 2N links to the XLLR are required. Notice that an MetaFFI user uses all different links to all other languages by calling a stub in host language that indirectly calls the guest language foreign function.
 
 ### Parameters Serialization
-One of the complex challenges of calling a foreign function is modelling the data types of a foreign language into the host language. OpenFFI takes a different approach by serializing the parameters and the result values into a stream of bytes, which both languages can deserialize into their native data types. In other words, OpenFFI aims to create an ideal "common data types" by leveraging well-known serialization, such as Google Protobuf.
+One of the complex challenges of calling a foreign function is modelling the data types of a foreign language into the host language. MetaFFI takes a different approach by serializing the parameters and the result values into a stream of bytes, which both languages can deserialize into their native data types. In other words, MetaFFI aims to create an ideal "common data types" by leveraging well-known serialization, such as Google Protobuf.
 
 As there is no real "common data types" (unfortunately) that are native in many languages, the serialization that uses native data types are used to *convert* from host language data types to guest language data types and vice-versa.
 
-### Generated Files By OpenFFI Compiler
-OpenFFI compiler plugins generate files to support the OpenFFI XLLR runtime to perform the successful cross-language call.
+### Generated Files By MetaFFI Compiler
+MetaFFI compiler plugins generate files to support the MetaFFI XLLR runtime to perform the successful cross-language call.
 
 * Code in host language with the following goals:
     * Stubs in the host language with data types of the host language
@@ -295,11 +295,11 @@ OpenFFI compiler plugins generate files to support the OpenFFI XLLR runtime to p
 ### Examples
 Detailed examples can be found in [examples](../Tests/examples/README.md) directory.
 
-### Add New Language Support (Implement OpenFFI plugin)
+### Add New Language Support (Implement MetaFFI plugin)
 Every plugin is built out of 2 components:
 1. XLLR - implements `xllr_plugin_interface`
 2. Compiler - implements `compiler_plugin_interface`
 
-The *example* plugin ([example XLLR](XLLR/example/README.md) & [example Compiler](CLI/example/README.md)) written in C++, contains the least amount of code for plugin implementation and can be used as a template for implementers. The README.md details what is required to build OpenFFI plugin.
+The *example* plugin ([example XLLR](XLLR/example/README.md) & [example Compiler](CLI/example/README.md)) written in C++, contains the least amount of code for plugin implementation and can be used as a template for implementers. The README.md details what is required to build MetaFFI plugin.
 
 The *Python3* plugin ([python3 XLLR](XLLR/python3/README.md) & [python3 Compiler](CLI/python3/README.md)) and *Go* plugin ([go XLLR](../plugin-go/runtime/README.md) & [go Compiler](../plugin-go/compiler/README.md)) contain details about their implementations and can be used as a basis for new plugin.

@@ -11,7 +11,7 @@ private:
 	
 	std::vector<std::string> _host_languages;
 	std::string _idl_source;
-	std::string _openffi_idl;
+	std::string _metaffi_idl;
 
 public:
 	compiler(const std::string& idl_path, const std::string& output_path);
