@@ -60,7 +60,7 @@ function build([String] $buildtype, [String] $local_cmake_toolchain_file)
 
 	if( ! $? )
 	{
-		Write-Host "OpenFFI CMake build failed!"
+		Write-Host "MetaFFI CMake build failed!"
 		Exit(1)
 	}
 
@@ -69,7 +69,7 @@ function build([String] $buildtype, [String] $local_cmake_toolchain_file)
 	nmake /nologo all
 	if( ! $? )
 	{
-		Write-Host "OpenFFI build failed!"
+		Write-Host "MetaFFI build failed!"
 		Exit(1)
 	}
 
@@ -123,45 +123,45 @@ function build_installer_package([String] $version)
 	Copy-Item $global:output_dir/xllr.dll output/
 	if( ! $? )
 	{
-		Write-Host "Failed to copy OpenFFI files to $global:output_dir"
+		Write-Host "Failed to copy MetaFFI files to $global:output_dir"
 		Exit(1)
 	}
 
-	## xllr plugins to output/ - deprecated after "openffi -install" command becomes available
+	## xllr plugins to output/ - deprecated after "metaffi -install" command becomes available
 	Copy-Item $global:output_dir/xllr.go.dll output/
 	if( ! $? )
 	{
-		Write-Host "Failed to copy OpenFFI files to $global:output_dir"
+		Write-Host "Failed to copy MetaFFI files to $global:output_dir"
 		Exit(1)
 	}
 
 	Copy-Item $global:output_dir/xllr.python3.dll output/
 	if( ! $? )
 	{
-		Write-Host "Failed to copy OpenFFI files to $global:output_dir"
+		Write-Host "Failed to copy MetaFFI files to $global:output_dir"
 		Exit(1)
 	}
 
-	## openffi executable output/
-	Copy-Item $global:output_dir/openffi.exe output/
+	## metaffi executable output/
+	Copy-Item $global:output_dir/metaffi.exe output/
 	if( ! $? )
 	{
-		Write-Host "Failed to copy OpenFFI files to $global:output_dir"
+		Write-Host "Failed to copy MetaFFI files to $global:output_dir"
 		Exit(1)
 	}
 
-	## compiler plugins output/plugins/ - deprecated after "openffi -install" command becomes available
-	Copy-Item $global:output_dir/openffi.compiler.go.dll output/
+	## compiler plugins output/plugins/ - deprecated after "metaffi -install" command becomes available
+	Copy-Item $global:output_dir/metaffi.compiler.go.dll output/
 	if( ! $? )
 	{
-		Write-Host "Failed to copy OpenFFI files to $global:output_dir"
+		Write-Host "Failed to copy MetaFFI files to $global:output_dir"
 		Exit(1)
 	}
 
-	Copy-Item $global:output_dir/openffi.compiler.python3.dll output/
+	Copy-Item $global:output_dir/metaffi.compiler.python3.dll output/
 	if( ! $? )
 	{
-		Write-Host "Failed to copy OpenFFI files to $global:output_dir"
+		Write-Host "Failed to copy MetaFFI files to $global:output_dir"
 		Exit(1)
 	}
 
@@ -169,37 +169,37 @@ function build_installer_package([String] $version)
 	Copy-Item install.bat output/
 	if( ! $? )
 	{
-		Write-Host "Failed to copy OpenFFI files to $global:output_dir"
+		Write-Host "Failed to copy MetaFFI files to $global:output_dir"
 		Exit(1)
 	}
 
 	Copy-Item uninstall.bat output/
 	if( ! $? )
 	{
-		Write-Host "Failed to copy OpenFFI files to $global:output_dir"
+		Write-Host "Failed to copy MetaFFI files to $global:output_dir"
 		Exit(1)
 	}
 
 	Copy-Item scripts.ps1 output/
 	if( ! $? )
 	{
-		Write-Host "Failed to copy OpenFFI files to $global:output_dir"
+		Write-Host "Failed to copy MetaFFI files to $global:output_dir"
 		Exit(1)
 	}
 
 	Write-Output "---=== Compressing installation path ===---"
 
 	# zip output directory
-	compress-archive -f -path "output/*" -destinationpath "openffi-$version.zip" -compressionlevel optimal
+	compress-archive -f -path "output/*" -destinationpath "metaffi-$version.zip" -compressionlevel optimal
 	if( ! $? )
 	{
-		Write-Host "Failed to compress OpenFFI installation files"
+		Write-Host "Failed to compress MetaFFI installation files"
 		Exit(1)
 	}
 
 	Remove-Item -Recurse -Force output
 
-	Write-Output "Done. Version is ready in openffi-$version.zip"
+	Write-Output "Done. Version is ready in metaffi-$version.zip"
 }
 
 function install([String] $install_path)
@@ -210,17 +210,17 @@ function install([String] $install_path)
 	$user = [Security.Principal.WindowsIdentity]::GetCurrent();
 	if (! (New-Object Security.Principal.WindowsPrincipal $user).IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator))
 	{
-		Write-Host "Installing OpenFFI requires administrative rights. Please run as administrator."
+		Write-Host "Installing MetaFFI requires administrative rights. Please run as administrator."
 		Exit(1)
 	}
 
 
 
 	# $1 (optional) - install path.
-	# If not set, using %ProgramFiles%\OpenFFI
+	# If not set, using %ProgramFiles%\MetaFFI
 	if ( !$install_path )
 	{
-		$install_path="$env:ProgramFiles/OpenFFI"
+		$install_path="$env:ProgramFiles/MetaFFI"
 	}
 
 	if( ! (Test-Path $install_path) )
@@ -230,7 +230,7 @@ function install([String] $install_path)
 
 	# copy binaries to $install_path
 	Copy-Item *.dll $install_path
-	Copy-Item openffi.exe $install_path
+	Copy-Item metaffi.exe $install_path
 	Copy-Item uninstall.bat $install_path
 	Copy-Item scripts.ps1 $install_path
 
@@ -249,7 +249,7 @@ function install([String] $install_path)
 		[Environment]::SetEnvironmentVariable("Path", $syspath, "Machine")
 	}
 
-	Write-Host OpenFFI installed successfully!
+	Write-Host MetaFFI installed successfully!
 
 }
 
@@ -259,17 +259,17 @@ function uninstall()
 	$user = [Security.Principal.WindowsIdentity]::GetCurrent();
 	if (! (New-Object Security.Principal.WindowsPrincipal $user).IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator))
 	{
-		Write-Host "Installing OpenFFI requires administrative rights. Please run as administrator."
+		Write-Host "Installing MetaFFI requires administrative rights. Please run as administrator."
 		Exit(1)
 	}
 
 	$ErrorActionPreference = "Stop"
 
 	# get install path
-	$install_path=(Split-Path -Path (Get-Command openffi.exe).Path)
+	$install_path=(Split-Path -Path (Get-Command metaffi.exe).Path)
 	if (!$install_path) # Make sure install path is not empty to prevent any accidents :-)
 	{
-		Write-Host "Failed to get openffi installation path"
+		Write-Host "Failed to get metaffi installation path"
 		Exit(1)
 	}
 
@@ -284,7 +284,7 @@ function uninstall()
 	$syspath = $syspath.Replace(";$install_path", "")
 	[Environment]::SetEnvironmentVariable("Path", $syspath, "Machine")
 
-	Remove-Item $install_path\xllr.*.dll, $install_path\openffi.compiler.*.dll, $install_path\xllr.dll, $install_path\openffi.exe, $install_path\uninstall.bat, $install_path\scripts.ps1
+	Remove-Item $install_path\xllr.*.dll, $install_path\metaffi.compiler.*.dll, $install_path\xllr.dll, $install_path\metaffi.exe, $install_path\uninstall.bat, $install_path\scripts.ps1
 
 	cd $env:ProgramFiles
 
@@ -294,7 +294,7 @@ function uninstall()
 		rmdir $install_path
 	}
 
-	Write-Host OpenFFI uninstalled successfully!
+	Write-Host MetaFFI uninstalled successfully!
 
 	Exit(0)
 }
