@@ -9,7 +9,7 @@ class language_plugin_interface_wrapper : public language_plugin_interface
 {
 private:
 	std::shared_ptr<boost::dll::detail::import_type<void(void)>::type> pinit;
-	std::shared_ptr<boost::dll::detail::import_type<void(const char*, uint32_t, const char*, uint32_t, char**, uint32_t*)>::type> pcompile_to_guest;
+	std::shared_ptr<boost::dll::detail::import_type<void(const char*, uint32_t, const char*, uint32_t, const char*, uint32_t, const char*, uint32_t, char**, uint32_t*)>::type> pcompile_to_guest;
 	std::shared_ptr<boost::dll::detail::import_type<void(const char*, uint32_t, const char*, uint32_t, const char*, uint32_t, char**, uint32_t*)>::type> pcompile_from_host;
 
 public:
@@ -22,6 +22,8 @@ public:
 	 */ 
 	void compile_to_guest(const char* idl_def_json, uint32_t idl_def_json_length,
 	                      const char* output_path, uint32_t output_path_length,
+						  const char* block_name, uint32_t block_name_length,
+						  const char* block_code, uint32_t block_code_length,
 	                      char** out_err, uint32_t* out_err_len) override;
 
 	/**

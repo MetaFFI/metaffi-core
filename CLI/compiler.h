@@ -1,20 +1,23 @@
 #pragma once
 #include <string>
+#include <utility>
 #include <vector>
 #include <memory>
+#include "idl_block.h"
+
 
 class compiler
 {
 private:
-	std::string _idl_path;
+	std::string _input_file_path;
 	std::string _output_path;
 	
 	std::vector<std::string> _host_languages;
-	std::string _idl_source;
-	std::string _metaffi_idl;
+	std::string _input_file_code;
+	std::vector<idl_block> _idl_blocks;
 
 public:
-	compiler(const std::string& idl_path, const std::string& output_path);
+	compiler(const std::string& idl_path, std::string output_path, const std::string& embedded_name_or_pattern, bool is_pattern);
 	~compiler() = default;
 	compiler(const compiler&) = delete;
 	compiler(const compiler&&) = delete;
@@ -25,5 +28,6 @@ public:
 
 private:
 	void compile_from_host(const std::string& lang, const std::string& host_options);
-	std::string get_target_language();
+	void compile_to_idl_blocks(const std::string& embedded_name_or_pattern, bool is_pattern);
+	void extract_idl_blocks(const std::string& embedded_name_or_pattern, bool is_pattern);
 };

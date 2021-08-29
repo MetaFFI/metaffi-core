@@ -20,8 +20,10 @@ cli_executor::cli_executor(int argc, char** argv) :
 		("help", "Display this help page");
 
 	_compile_options.add_options()
-		("idl", po::value<std::string>() , "IDL containing functions defitions (i.e. foreign functions)")
-		("print-idl", "Prints MetaFFI IDL used")
+		("idl", po::value<std::string>() , "Functions definitions (IDL or source code)")
+		("block-name,n", po::value<std::string>(), "Name of embedded code block")
+		("block-pattern,p", po::value<std::string>(), "Regular expression pattern of embedded code blocks names")
+		("print-idl", "Prints MetaFFI IDL")
 		("guest-lang,g", "Language the functions are implemented as stated in the IDL (i.e. guest language)")
 		("host-langs,h", po::value<std::vector<std::string>>()->multitoken() , "List of languages the functions are called from (i.e. host languages)")
 		("output,o", po::value<std::string>()->default_value(boost::filesystem::current_path().generic_string()) , "Directory to generate the files (Default: current directory)")
@@ -87,7 +89,29 @@ bool cli_executor::compile()
 		return false;
 	}
 	
-	compiler cmp(vm["idl"].as<std::string>(), vm["output"].as<std::string>());
+	std::string embedded_name;
+	bool is_pattern = false;
+	if(vm.count("block-name") || vm.count("block-pattern"))
+	{
+		if(vm.count("block-name") && vm.count("block-pattern"))
+		{
+			std::cout << "block-name and block-pattern cannot be used together. Choose one of them" << std::endl;
+			_compile_options.print(std::cout);
+			return false;
+		}
+		
+		if(vm.count("block-name"))
+		{
+			embedded_name = vm["block-name"].as<std::string>();
+		}
+		else
+		{
+			embedded_name = vm["block-pattern"].as<std::string>();
+			is_pattern = true;
+		}
+	}
+	
+	compiler cmp(vm["idl"].as<std::string>(), vm["output"].as<std::string>(), embedded_name, is_pattern);
 	
 	if(vm.count("print-idl"))
 	{

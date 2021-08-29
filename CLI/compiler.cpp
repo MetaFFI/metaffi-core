@@ -1,16 +1,18 @@
 #include "compiler.h"
 #include "language_plugin_interface_wrapper.h"
 #include "idl_plugin_interface_wrapper.h"
+#include "idl_block.h"
 #include <boost/filesystem.hpp>
 #include <utils/scope_guard.hpp>
 #include <regex>
+#include <utility>
 
 using namespace metaffi::utils;
 
 //--------------------------------------------------------------------
-compiler::compiler(const std::string& idl_path, const std::string& output_path):
-	_idl_path(idl_path),
-	_output_path(output_path)
+compiler::compiler(const std::string& idl_path, std::string  output_path, const std::string& embedded_name_or_pattern, bool is_pattern):
+		_input_file_path(idl_path),
+		_output_path(std::move(output_path))
 {
 	if(!boost::filesystem::exists(idl_path))
 	{
@@ -19,104 +21,48 @@ compiler::compiler(const std::string& idl_path, const std::string& output_path):
 		throw std::runtime_error(ss.str().c_str());
 	}
 	
-	std::ifstream ifs(_idl_path);
-	_idl_source = std::string(std::istreambuf_iterator<char>(ifs),
-	                 std::istreambuf_iterator<char>());
+	// read IDL file
+	std::ifstream ifs(_input_file_path);
+	_input_file_code = std::string(std::istreambuf_iterator<char>(ifs),
+	                               std::istreambuf_iterator<char>());
 	ifs.close();
 	
-	boost::filesystem::path idl_fs_path(_idl_path);
+	this->compile_to_idl_blocks(embedded_name_or_pattern, is_pattern);
 	
-	std::string extension = idl_fs_path.extension().string();
-	std::transform(extension.begin(), extension.end(), extension.begin(), [](unsigned char c){ return std::tolower(c); });
-	
-	if(extension == ".json") // if not metaffi IDL - load relevant plugin to compile metaffi IDL
-	{
-		_metaffi_idl = _idl_source;
-		return;
-	}
-	
-	// get idl data
-	std::unique_ptr<idl_plugin_interface_wrapper> idl = std::make_unique<idl_plugin_interface_wrapper>(idl_fs_path.extension().string());
-	idl->init();
-	
-	char* err = nullptr;
-	uint32_t err_len = 0;
-	char* out_idl_def_json;
-	uint32_t out_idl_def_json_length;
-	idl->parse_idl(idl_fs_path.filename().c_str(), idl_fs_path.filename().string().length(),
-	               _idl_source.c_str(), _idl_source.length(),
-	               &out_idl_def_json, &out_idl_def_json_length,
-	               &err, &err_len);
-	if(err){
-		throw std::runtime_error(std::string(err, err_len));
-	}
-	
-	_metaffi_idl = std::string(out_idl_def_json, out_idl_def_json_length);
-	free(out_idl_def_json);
-	
-}
-//--------------------------------------------------------------------
-std::string compiler::get_target_language()
-{
-	// get target language
-	std::regex target_lang_regex(R"(target_language"[ ]*:[ ]*"([^\"]+))");
-	std::smatch matches;
-	if(!std::regex_search(_metaffi_idl, matches, target_lang_regex))
-	{
-		throw std::runtime_error("MetaFFI IDL does not contains metaffi_target_language tag");
-	}
-	
-	if(matches.size() < 2)
-	{
-		throw std::runtime_error("metaffi_target_language tag does not contain target language");
-	}
-	
-	return matches[1].str();
 }
 //--------------------------------------------------------------------
 void compiler::compile_to_guest()
 {
-	// generate serialization code
-	boost::filesystem::path idl_fs_path(_idl_path);
-	std::stringstream serializer_plugin_name;
-	
-	std::string target_language = this->get_target_language();
-	
-	char* err = nullptr;
-	uint32_t err_len = 0;
-	scope_guard sg([&](){
-		if(err){
-			free(err);
+	for(idl_block& b : this->_idl_blocks)
+	{
+		// load compiler
+		std::stringstream compiler_plugin_name;
+		compiler_plugin_name << "metaffi.compiler.lang." << b.get_target_language();
+		
+		// load plugin
+		std::unique_ptr<language_plugin_interface_wrapper> loaded_plugin = std::make_unique<language_plugin_interface_wrapper>(compiler_plugin_name.str());
+		loaded_plugin->init();
+		
+		char* err = nullptr;
+		uint32_t err_len = 0;
+		scope_guard sg([&](){
+			if(err){
+				free(err);
+			}
+		});
+		
+		// call compile_to_guest with IDL path and output path
+		loaded_plugin->compile_to_guest(b._metaffi_json_idl.c_str(), b._metaffi_json_idl.size(),
+		                                this->_output_path.c_str(), this->_output_path.size(),
+										b._block_name.c_str(), b._block_name.size(),
+										b._file_code.c_str(), b._file_code.size(),
+		                                &err, &err_len);
+		
+		if(err)
+		{
+			throw std::runtime_error(std::string(err, err_len));
 		}
-	});
-	
-	if(err)
-	{
-		throw std::runtime_error(std::string(err, err_len));
 	}
-	
-	// load compiler
-	std::stringstream compiler_plugin_name;
-	compiler_plugin_name << "metaffi.compiler.lang." << target_language;
-
-	// load plugin
-	std::unique_ptr<language_plugin_interface_wrapper> loaded_plugin = std::make_unique<language_plugin_interface_wrapper>(compiler_plugin_name.str());
-	loaded_plugin->init();
-	
-	err = nullptr;
-	err_len = 0;
-	
-	
-	// call compile_to_guest with IDL path and output path
-	loaded_plugin->compile_to_guest(this->_metaffi_idl.c_str(), this->_metaffi_idl.size(),
-									this->_output_path.c_str(), this->_output_path.size(),
-									&err, &err_len);
-
-	if(err)
-	{
-		throw std::runtime_error(std::string(err, err_len));
-	}
-
 }
 //--------------------------------------------------------------------
 void compiler::compile_from_host(const std::vector<std::string>& langs, const std::string& host_options)
@@ -128,50 +74,92 @@ void compiler::compile_from_host(const std::vector<std::string>& langs, const st
 //--------------------------------------------------------------------
 void compiler::compile_from_host(const std::string& lang, const std::string& host_options)
 {
-	// generate serialization code
-	boost::filesystem::path idl_fs_path(_idl_path);
-	
-	char* err = nullptr;
-	uint32_t err_len = 0;
-	scope_guard sg([&](){
-		if(err){
-			free(err);
+	for(idl_block& b : this->_idl_blocks)
+	{
+		// load compiler
+		std::stringstream compiler_plugin_name;
+		compiler_plugin_name << "metaffi.compiler.lang." << lang;
+		
+		// load plugin
+		std::unique_ptr<language_plugin_interface_wrapper> loaded_plugin = std::make_unique<language_plugin_interface_wrapper>(compiler_plugin_name.str());
+		loaded_plugin->init();
+		
+		char* err = nullptr;
+		uint32_t err_len = 0;
+		scope_guard sg([&]()
+		               {
+			               if (err)
+			               {
+				               free(err);
+			               }
+		               });
+		
+		// call compile_to_guest with IDL path and output path
+		loaded_plugin->compile_from_host(b._metaffi_json_idl.c_str(), b._metaffi_json_idl.size(),
+		                                 this->_output_path.c_str(), this->_output_path.size(),
+		                                 host_options.c_str(), host_options.length(),
+		                                 &err, &err_len);
+		
+		if (err)
+		{
+			throw std::runtime_error(std::string(err, err_len));
 		}
-	});
-	
-	if(err)
-	{
-		throw std::runtime_error(std::string(err, err_len));
-	}
-	
-	std::string plugin_filename("metaffi.compiler.");
-	plugin_filename += lang;
-	
-	// load compiler
-	std::stringstream compiler_plugin_name;
-	compiler_plugin_name << "metaffi.compiler.lang." << lang;
-	
-	// load plugin
-	std::unique_ptr<language_plugin_interface_wrapper> loaded_plugin = std::make_unique<language_plugin_interface_wrapper>(compiler_plugin_name.str());
-	loaded_plugin->init();
-	
-	err = nullptr;
-	err_len = 0;
-	
-	// call compile_to_guest with IDL path and output path
-	loaded_plugin->compile_from_host(this->_metaffi_idl.c_str(), this->_metaffi_idl.size(),
-	                                 this->_output_path.c_str(), this->_output_path.size(),
-	                                 host_options.c_str(), host_options.length(),
-	                                 &err, &err_len);
-
-	if(err)
-	{
-		throw std::runtime_error(std::string(err, err_len));
 	}
 }
 //--------------------------------------------------------------------
 void compiler::print_idl()
 {
-	std::cout << this->_metaffi_idl << std::endl;
+	for(idl_block& b : this->_idl_blocks)
+	{
+		if(!b._block_name.empty())
+		{
+			std::cout << b._block_name << std::endl;
+		}
+		
+		std::cout << b._metaffi_json_idl << std::endl;
+	}
+}
+//--------------------------------------------------------------------
+void compiler::compile_to_idl_blocks(const std::string& embedded_name_or_pattern, bool is_pattern)
+{
+	this->extract_idl_blocks(embedded_name_or_pattern, is_pattern);
+	
+	for(idl_block& block : _idl_blocks)
+	{
+		block.compile_metaffi_idl();
+	}
+}
+//--------------------------------------------------------------------
+void compiler::extract_idl_blocks(const std::string& embedded_name_or_pattern, bool is_pattern)
+{
+	if(embedded_name_or_pattern.empty()) // fill only input file
+	{
+		boost::filesystem::path idl_fs_path(_input_file_path);
+		
+		// extract extension
+		std::string extension = idl_fs_path.extension().string();
+		std::transform(extension.begin(), extension.end(), extension.begin(), [](unsigned char c){ return std::tolower(c); });
+		
+		idl_block b(extension, this->_input_file_code, this->_input_file_path);
+		this->_idl_blocks.push_back(b);
+	}
+	else // extract source blocks
+	{
+		std::string re = "[^\\n]*" MXSTR(METAFFI_BLOCK_START) "[\\w\\W]+" MXSTR(METAFFI_BLOCK_END);
+		std::regex blocks_regex(re);
+		std::smatch found_blocks;
+		if(!std::regex_search(_input_file_code, found_blocks, blocks_regex))
+		{
+			std::cout << "No blocks were found" << std::endl;
+			return;
+		}
+		
+		for(auto& found_block : found_blocks)
+		{
+			std::string block = found_block.str();
+			idl_block b = idl_block::parse_block(block, _input_file_path);
+			this->_idl_blocks.push_back(b);
+		}
+	}
 }
 //--------------------------------------------------------------------
