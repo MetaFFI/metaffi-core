@@ -9,13 +9,13 @@ int64_t foreign_function::id() const
 	return this->_id;
 }
 //--------------------------------------------------------------------
-void foreign_function::call(
+void foreign_function::xcall(
 		cdt* parameters, uint64_t parameters_len,
 		cdt* return_values, uint64_t return_values_len,
 		char** out_err, uint64_t* out_err_len
 	)
 {
-	this->_plugin->call(this->_id,
+	this->_plugin->xcall(this->_id,
 	                    parameters, parameters_len,
 	                    return_values, return_values_len,
 	                    out_err, out_err_len);

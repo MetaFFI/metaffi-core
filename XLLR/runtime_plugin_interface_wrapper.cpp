@@ -22,7 +22,7 @@ runtime_plugin_interface_wrapper::runtime_plugin_interface_wrapper(const std::st
 	this->pcall = load_func<void(int64_t,
 	                             cdt*, uint64_t,
 	                             cdt*, uint64_t,
-	                             char**, uint64_t*)>(*plugin_dll, "call");
+	                             char**, uint64_t*)>(*plugin_dll, "xcall");
 }
 //--------------------------------------------------------------------
 void runtime_plugin_interface_wrapper::load_runtime(char** err, uint32_t* err_len)
@@ -53,7 +53,7 @@ void runtime_plugin_interface_wrapper::free_function(int64_t function_id, char**
 	(*this->pfree_function)(function_id, err, err_len);
 }
 //--------------------------------------------------------------------
-void runtime_plugin_interface_wrapper::call(
+void runtime_plugin_interface_wrapper::xcall(
 	int64_t function_id,
 	cdt* parameters, uint64_t parameters_len,
 	cdt* return_values, uint64_t return_values_len,

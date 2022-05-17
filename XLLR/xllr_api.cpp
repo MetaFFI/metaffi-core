@@ -103,7 +103,7 @@ void free_function(const char* runtime_plugin_name, uint32_t runtime_plugin_len,
     handle_err(err, err_len,);
 }
 //--------------------------------------------------------------------
-void call(
+[[maybe_unused]] void xcall(
 		const char* runtime_plugin_name, uint32_t runtime_plugin_name_len,
 		int64_t function_id,
 		cdt* parameters, uint64_t parameters_len,
@@ -128,7 +128,7 @@ void call(
 			throw std::runtime_error("foreign function has not been loaded");
 		}
 		
-		f->call(
+		f->xcall(
 				parameters, parameters_len,
 				return_values, return_values_len,
 				out_err, out_err_len

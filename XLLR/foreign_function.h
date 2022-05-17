@@ -19,7 +19,7 @@ public:
 	
 	[[nodiscard]] int64_t id() const;
 
-	void call(
+	void xcall(
 		// error string
 		cdt* parameters, uint64_t parameters_len,
 		cdt* return_values, uint64_t return_values_len,

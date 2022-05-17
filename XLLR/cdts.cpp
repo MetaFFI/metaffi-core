@@ -1,20 +1,16 @@
 #include <cdts.h>
 #include <cstring>
+#include "../plugin-sdk/runtime/cdts_alloc.h"
 
 /************************************************
 *   Allocations
 *************************************************/
 
-
 cdt* alloc_cdts_buffer(metaffi_size cdt_count)
 {
-	if(cdt_count <= 0){
-		return nullptr;
-	}
-	
-	return (cdt*)calloc(sizeof(cdt), cdt_count);
-	//return (cdt*)alloca(sizeof(cdt)*cdt_count);
+	return metaffi::runtime::alloc_cdts_buffer(cdt_count);
 }
+
 
 #define alloc_numeric_on_heap_impl(type) \
 type* alloc_##type##_on_heap(type val)\
