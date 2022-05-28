@@ -1,12 +1,15 @@
 cmake_minimum_required(VERSION 3.17.3)
 project(metaffi VERSION 0.0.1)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
+set(Boost_NO_WARN_NEW_VERSIONS 1)
 
 # To allow CMake to find boost on windows these environment variables must be set:
-# BOOST_INCLUDEDIR    [path to boost]
-# BOOST_LIBRARYDIR    [path to boost]\lib64-msvc-[version]
-# BOOST_ROOT          [path to boost]\boost
+if(WIN32)
+	set(BOOST_INCLUDEDIR    $ENV{Boost_INCLUDE_DIR})
+	set(BOOST_LIBRARYDIR    string(CONCAT $ENV{Boost_INCLUDE_DIR} lib64-msvc-[version]))
+	set(BOOST_ROOT          string($ENV{Boost_INCLUDE_DIR} boost))
+endif()
 
 # Include SDK
 include(${CMAKE_CURRENT_LIST_DIR}/../plugin-sdk/CMakeLists.txt)
