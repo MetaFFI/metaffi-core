@@ -18,9 +18,8 @@ include_directories(${Boost_INCLUDE_DIRS} ${CMAKE_CURRENT_LIST_DIR})
 
 target_sources(metaffi_cli PUBLIC ${sources})
 
-target_link_libraries(metaffi_cli Boost::program_options Boost::filesystem)
-
 if(NOT WIN32)
-	target_link_libraries(metaffi_cli dl)
+	target_link_libraries(metaffi_cli Boost::program_options Boost::filesystem dl)
+else()
+	target_link_libraries(metaffi_cli Boost::program_options Boost::filesystem Boost::dynamic_linking)
 endif()
-

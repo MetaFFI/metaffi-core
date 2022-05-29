@@ -17,9 +17,10 @@ set_property(TARGET xllr PROPERTY POSITION_INDEPENDENT_CODE ON)
 SET_TARGET_PROPERTIES(xllr PROPERTIES PREFIX "")
 target_sources(xllr PUBLIC ${sources})
 
-target_link_libraries(xllr Boost::thread Boost::filesystem)
 if(NOT WIN32)
-	target_link_libraries(xllr pthread dl)
+	target_link_libraries(xllr Boost::thread Boost::filesystem pthread dl)
+else()
+	target_link_libraries(xllr Boost::thread Boost::filesystem Boost::dynamic_linking)
 endif()
 
 # Copy metaffi_primitives.h to metaffi directory

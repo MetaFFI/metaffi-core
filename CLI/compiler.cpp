@@ -6,6 +6,7 @@
 #include <utils/scope_guard.hpp>
 #include <regex>
 #include <utility>
+#include <sstream>
 
 using namespace metaffi::utils;
 
