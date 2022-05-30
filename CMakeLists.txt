@@ -7,8 +7,8 @@ set(Boost_NO_WARN_NEW_VERSIONS 1)
 # To allow CMake to find boost on windows these environment variables must be set:
 if(WIN32)
 	set(BOOST_INCLUDEDIR    $ENV{Boost_INCLUDE_DIR})
-	set(BOOST_LIBRARYDIR    string(CONCAT $ENV{Boost_INCLUDE_DIR} /lib64-msvc-14.3))
-	set(BOOST_ROOT          string(CONCAT $ENV{Boost_INCLUDE_DIR} /boost))
+	set(BOOST_LIBRARYDIR    $ENV{Boost_INCLUDE_DIR}/lib64-msvc-14.3)
+	set(BOOST_ROOT          $ENV{Boost_INCLUDE_DIR}/boost)
 endif()
 
 # Include SDK
