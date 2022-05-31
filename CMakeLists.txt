@@ -1,7 +1,8 @@
-cmake_minimum_required(VERSION 3.17.3)
+cmake_minimum_required(VERSION 3.16.3)
 project(metaffi VERSION 0.0.1)
 
 set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_C_STANDARD 11)
 set(Boost_NO_WARN_NEW_VERSIONS 1)
 
 # To allow CMake to find boost on windows these environment variables must be set:

@@ -17,10 +17,15 @@ target_include_directories(metaffi_cli PUBLIC ${CMAKE_CURRENT_LIST_DIR} ${Boost_
 include_directories(${Boost_INCLUDE_DIRS} ${CMAKE_CURRENT_LIST_DIR})
 
 target_sources(metaffi_cli PUBLIC ${sources})
-target_link_directories(metaffi_cli PUBLIC ${BOOST_LIBRARYDIR})
+
+if(WIN32)
+	target_link_directories(metaffi_cli PUBLIC ${BOOST_LIBRARYDIR})
+else()
+	target_link_libraries(metaffi_cli ${Boost_LIBRARIES})
+endif()
 
 if(NOT WIN32)
 	target_link_libraries(metaffi_cli dl)
-else()
-
 endif()
+
+
