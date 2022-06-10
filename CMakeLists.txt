@@ -10,6 +10,8 @@ if(WIN32)
 	set(BOOST_INCLUDEDIR    $ENV{Boost_INCLUDE_DIR})
 	set(BOOST_LIBRARYDIR    $ENV{Boost_INCLUDE_DIR}/lib64-msvc-14.3)
 	set(BOOST_ROOT          $ENV{Boost_INCLUDE_DIR}/boost)
+else()
+	set(BOOST_LIBRARYDIR    /usr/lib)
 endif()
 
 # Include SDK
