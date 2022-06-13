@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.16.3)
-project(metaffi VERSION 0.0.1)
+
+# Include SDK
+include(${CMAKE_CURRENT_LIST_DIR}/../plugin-sdk/CMakeLists.txt)
+
+project(metaffi-core VERSION 0.0.1)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_C_STANDARD 11)
@@ -14,11 +18,8 @@ else()
 	set(BOOST_LIBRARYDIR    /usr/lib)
 endif()
 
-# Include SDK
-include(${CMAKE_CURRENT_LIST_DIR}/../plugin-sdk/CMakeLists.txt)
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/XLLR/CMakeLists.txt)
-
 include(${CMAKE_CURRENT_SOURCE_DIR}/CLI/CMakeLists.txt)
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
