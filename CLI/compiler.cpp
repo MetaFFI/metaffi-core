@@ -46,11 +46,12 @@ void compiler::compile_to_guest()
 		
 		char* err = nullptr;
 		uint32_t err_len = 0;
-		scope_guard sg([&](){
-			if(err){
-				free(err);
-			}
-		});
+		
+		if(err)
+		{
+			printf("ERROR: %s\n", err);
+			throw std::runtime_error(std::string(err, err_len));
+		}
 		
 		// call compile_to_guest with IDL path and output path
 		loaded_plugin->compile_to_guest(b._metaffi_json_idl.c_str(), b._metaffi_json_idl.size(),

@@ -80,17 +80,7 @@ idl_block idl_block::parse_block(std::string block, std::string filename)
 	}
 	
 	// place source in idl_block
-	std::stringstream ssource;
-	for(auto it = lines.begin()+1 ; it != lines.end()-1 ; it++)
-	{
-		ssource << *it;
-		if(it+1 != lines.end()+1){
-			ssource << std::endl;
-		}
-	}
-	
-	b._file_code = ssource.str();
-	
+	b._file_code = boost::algorithm::join(lines, "\n");
 	return b;
 }
 //--------------------------------------------------------------------
