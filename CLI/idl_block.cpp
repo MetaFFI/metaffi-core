@@ -79,8 +79,14 @@ idl_block idl_block::parse_block(std::string block, std::string filename)
 		}
 	}
 	
+	// remove first and last line
+	lines.erase(lines.begin(), lines.begin()+1);
+	lines.erase(lines.end()-1, lines.end());
+	
 	// place source in idl_block
 	b._file_code = boost::algorithm::join(lines, "\n");
+	
+	
 	return b;
 }
 //--------------------------------------------------------------------

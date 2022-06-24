@@ -19,8 +19,8 @@ else()
 endif()
 
 
-include(${CMAKE_CURRENT_SOURCE_DIR}/XLLR/CMakeLists.txt)
-include(${CMAKE_CURRENT_SOURCE_DIR}/CLI/CMakeLists.txt)
+include(${CMAKE_CURRENT_LIST_DIR}/XLLR/CMakeLists.txt)
+include(${CMAKE_CURRENT_LIST_DIR}/CLI/CMakeLists.txt)
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})

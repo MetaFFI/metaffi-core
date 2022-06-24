@@ -14,7 +14,7 @@ private:
 public:
 	explicit idl_plugin_interface_wrapper(const std::string& idl_extension);
 
-	void init();
+	void init() override;
 	
 	/**
 	 * Compile IDL to code called from XLLR to the foreign function
