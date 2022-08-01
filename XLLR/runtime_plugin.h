@@ -30,7 +30,7 @@ public:
 	void load_runtime();
 	void free_runtime();
 	
-	std::shared_ptr<foreign_function> load_function(const std::string& function_path, int64_t function_id);
+	std::shared_ptr<foreign_function> load_function(const std::string& function_path, int64_t function_id, int8_t params_count, int8_t retval_count);
 	void free_function(int64_t function_id);
 	std::shared_ptr<foreign_function> get_function(int64_t function_id) const;
 	

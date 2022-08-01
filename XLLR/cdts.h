@@ -20,8 +20,6 @@ extern "C"
 *   Allocations
 *************************************************/
 
-extern "C" cdt* alloc_cdts_buffer(metaffi_size cdt_count);
-
 // Declarations
 #define alloc_numeric_on_heap_decl(type) \
 type* alloc_##type##_on_heap(type val);  \

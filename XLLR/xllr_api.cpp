@@ -1,5 +1,6 @@
 #include "runtime/xllr_api.h"
 #include "runtime_plugin_repository.h"
+#include "foreign_function.h"
 #include <shared_mutex>
 #include <iostream>
 #include <cstring>
@@ -74,7 +75,7 @@ void free_runtime_plugin(const char* runtime_plugin, uint32_t runtime_plugin_len
     handle_err(err, err_len,);
 }
 //--------------------------------------------------------------------
-int64_t load_function(const char* runtime_plugin_name, uint32_t runtime_plugin_name_len, const char* function_path, uint32_t function_path_len, int64_t function_id, char** err, uint32_t* err_len)
+int64_t load_function(const char* runtime_plugin_name, uint32_t runtime_plugin_name_len, const char* function_path, uint32_t function_path_len, int64_t function_id, int8_t params_count, int8_t retval_count, char** err, uint32_t* err_len)
 {
 	try
     {
@@ -85,8 +86,13 @@ int64_t load_function(const char* runtime_plugin_name, uint32_t runtime_plugin_n
 		{
 			p = g_runtime_plugins.load(runtime_plugin_name_str);
 		}
-	
+
+#ifdef _DEBUG
+		// in debug
 	    return p->load_function(std::string(function_path, function_path_len), function_id)->id();
+#else
+		return (int64_t)p->load_function(std::string(function_path, function_path_len), function_id, params_count, retval_count).get();
+#endif
     }
     handle_err(err, err_len,);
 	
@@ -103,11 +109,9 @@ void free_function(const char* runtime_plugin_name, uint32_t runtime_plugin_len,
     handle_err(err, err_len,);
 }
 //--------------------------------------------------------------------
-[[maybe_unused]] void xcall(
-		const char* runtime_plugin_name, uint32_t runtime_plugin_name_len,
+[[maybe_unused]] void xcall_params_ret(
 		int64_t function_id,
-		cdt* parameters, uint64_t parameters_len,
-		cdt* return_values, uint64_t return_values_len,
+		cdts params_ret[2],
 		char** out_err, uint64_t* out_err_len
 )
 {
@@ -115,22 +119,65 @@ void free_function(const char* runtime_plugin_name, uint32_t runtime_plugin_len,
 	{
 		*out_err_len = 0;
 		
-		// check if module is loaded, if not - lazy load it.
-		std::shared_ptr<runtime_plugin> p = g_runtime_plugins.get(std::string(runtime_plugin_name, runtime_plugin_name_len));
-		if(!p)
-		{
-			throw std::runtime_error("runtime plugin has not been loaded");
-		}
+		auto* f = (foreign_function*)function_id;
+		f->xcall_params_ret(
+				params_ret,
+				out_err, out_err_len
+		);
+	}
+	handle_err((char**)out_err, out_err_len,);
+}
+//--------------------------------------------------------------------
+[[maybe_unused]] void xcall_no_params_ret(
+		int64_t function_id,
+		cdts return_values[1],
+		char** out_err, uint64_t* out_err_len
+)
+{
+	try
+	{
+		*out_err_len = 0;
 		
-		std::shared_ptr<foreign_function> f = p->get_function(function_id);
-		if(!f)
-		{
-			throw std::runtime_error("foreign function has not been loaded");
-		}
 		
-		f->xcall(
-				parameters, parameters_len,
-				return_values, return_values_len,
+		auto* f = (foreign_function*)function_id;
+		f->xcall_no_params_ret(
+				return_values,
+				out_err, out_err_len
+		);
+	}
+	handle_err((char**)out_err, out_err_len,);
+}
+//--------------------------------------------------------------------
+[[maybe_unused]] void xcall_params_no_ret(
+		int64_t function_id,
+		cdts parameters[1],
+		char** out_err, uint64_t* out_err_len
+)
+{
+	try
+	{
+		printf("++++ xcall_params_no_ret 1\n");
+		*out_err_len = 0;
+		
+		auto* f = (foreign_function*)function_id;
+		f->xcall_params_no_ret(
+				parameters,
+				out_err, out_err_len
+		);
+	}
+	handle_err((char**)out_err, out_err_len,);
+}
+//--------------------------------------------------------------------
+[[maybe_unused]] void xcall_no_params_no_ret(
+		int64_t function_id,
+		char** out_err, uint64_t* out_err_len
+)
+{
+	try
+	{
+		*out_err_len = 0;
+		auto* f = (foreign_function*)function_id;
+		f->xcall_no_params_no_ret(
 				out_err, out_err_len
 		);
 	}

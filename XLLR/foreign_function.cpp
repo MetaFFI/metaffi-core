@@ -9,15 +9,41 @@ int64_t foreign_function::id() const
 	return this->_id;
 }
 //--------------------------------------------------------------------
-void foreign_function::xcall(
-		cdt* parameters, uint64_t parameters_len,
-		cdt* return_values, uint64_t return_values_len,
+void foreign_function::xcall_params_ret(
+		cdts params_ret[2],
 		char** out_err, uint64_t* out_err_len
 	)
 {
-	this->_plugin->xcall(this->_id,
-	                    parameters, parameters_len,
-	                    return_values, return_values_len,
-	                    out_err, out_err_len);
+	this->_plugin->xcall_params_ret(this->_id,
+			                        params_ret,
+				                    out_err, out_err_len);
+}
+//--------------------------------------------------------------------
+void foreign_function::xcall_no_params_ret(
+		cdts return_values[1],
+		char** out_err, uint64_t* out_err_len
+)
+{
+	this->_plugin->xcall_no_params_ret(this->_id,
+	                     return_values,
+	                     out_err, out_err_len);
+}
+//--------------------------------------------------------------------
+void foreign_function::xcall_params_no_ret(
+		cdts parameters[1],
+		char** out_err, uint64_t* out_err_len
+)
+{
+	this->_plugin->xcall_params_no_ret(this->_id,
+	                     parameters,
+	                     out_err, out_err_len);
+}
+//--------------------------------------------------------------------
+void foreign_function::xcall_no_params_no_ret(
+		char** out_err, uint64_t* out_err_len
+)
+{
+	this->_plugin->xcall_no_params_no_ret(this->_id,
+	                     out_err, out_err_len);
 }
 //--------------------------------------------------------------------

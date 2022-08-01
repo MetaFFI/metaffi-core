@@ -19,11 +19,27 @@ public:
 	
 	[[nodiscard]] int64_t id() const;
 
-	void xcall(
+	void xcall_params_ret(
 		// error string
-		cdt* parameters, uint64_t parameters_len,
-		cdt* return_values, uint64_t return_values_len,
+		cdts params_ret[2],
 		char** out_err, uint64_t* out_err_len
+	);
+	
+	void xcall_no_params_ret(
+			// error string
+			cdts return_values[1],
+			char** out_err, uint64_t* out_err_len
+	);
+	
+	void xcall_params_no_ret(
+			// error string
+			cdts parameters[1],
+			char** out_err, uint64_t* out_err_len
+	);
+	
+	void xcall_no_params_no_ret(
+			// error string
+			char** out_err, uint64_t* out_err_len
 	);
 };
 //--------------------------------------------------------------------

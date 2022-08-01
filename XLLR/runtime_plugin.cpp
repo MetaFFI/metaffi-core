@@ -113,7 +113,7 @@ std::shared_ptr<foreign_function> runtime_plugin::get_function(int64_t function_
 	return it->second;
 }
 //--------------------------------------------------------------------
-std::shared_ptr<foreign_function> runtime_plugin::load_function(const std::string& function_path, int64_t function_id)
+std::shared_ptr<foreign_function> runtime_plugin::load_function(const std::string& function_path, int64_t function_id, int8_t params_count, int8_t retval_count)
 {
 	this->load_runtime(); // verify that runtime has been loaded
 
@@ -125,7 +125,7 @@ std::shared_ptr<foreign_function> runtime_plugin::load_function(const std::strin
 
     char* err = nullptr;
 	uint32_t err_len = 0;
-    int64_t id = this->_loaded_plugin->load_function(function_path.c_str(), function_path.length(), &err, &err_len);
+    int64_t id = this->_loaded_plugin->load_function(function_path.c_str(), function_path.length(), params_count, retval_count, &err, &err_len);
 
 	if(err != nullptr)
 	{
