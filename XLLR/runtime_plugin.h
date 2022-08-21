@@ -15,7 +15,7 @@ class runtime_plugin
 {
 private:
 	std::string _plugin_filename;
-	std::unordered_map<int64_t, std::shared_ptr<foreign_function>> _loaded_functions;
+	std::unordered_map<void*, std::shared_ptr<foreign_function>> _loaded_functions;
 	std::shared_ptr<runtime_plugin_interface_wrapper> _loaded_plugin;
 	bool _is_runtime_loaded = false;
 	mutable boost::shared_mutex _mutex;
@@ -30,9 +30,9 @@ public:
 	void load_runtime();
 	void free_runtime();
 	
-	std::shared_ptr<foreign_function> load_function(const std::string& function_path, int64_t function_id, int8_t params_count, int8_t retval_count);
-	void free_function(int64_t function_id);
-	std::shared_ptr<foreign_function> get_function(int64_t function_id) const;
+	std::shared_ptr<foreign_function> load_function(const std::string& function_path, void* pff, int8_t params_count, int8_t retval_count);
+	void free_function(void* pff);
+	std::shared_ptr<foreign_function> get_function(void* pff) const;
 	
 };
 //--------------------------------------------------------------------

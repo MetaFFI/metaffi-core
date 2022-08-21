@@ -68,7 +68,7 @@ void runtime_plugin::load_runtime()
 void runtime_plugin::free_runtime() 
 {
 	// free all functions first
-	std::vector<int64_t> keys(this->_loaded_functions.size());
+	std::vector<void*> keys(this->_loaded_functions.size());
 	for(auto& cur_mod : this->_loaded_functions){
 		keys.push_back(cur_mod.first);
 	}
@@ -100,12 +100,12 @@ void runtime_plugin::free_runtime()
 	_is_runtime_loaded = false;
 }
 //--------------------------------------------------------------------
-std::shared_ptr<foreign_function> runtime_plugin::get_function(int64_t function_id) const
+std::shared_ptr<foreign_function> runtime_plugin::get_function(void* pff) const
 {
 	boost::upgrade_lock<boost::shared_mutex> read_lock(this->_mutex); // read lock
 
 	// check if module already been loaded
-	auto it = _loaded_functions.find(function_id);
+	auto it = _loaded_functions.find(pff);
 	if(it == _loaded_functions.end()){
 		return nullptr;
 	}
@@ -113,11 +113,11 @@ std::shared_ptr<foreign_function> runtime_plugin::get_function(int64_t function_
 	return it->second;
 }
 //--------------------------------------------------------------------
-std::shared_ptr<foreign_function> runtime_plugin::load_function(const std::string& function_path, int64_t function_id, int8_t params_count, int8_t retval_count)
+std::shared_ptr<foreign_function> runtime_plugin::load_function(const std::string& function_path, void* pff, int8_t params_count, int8_t retval_count)
 {
 	this->load_runtime(); // verify that runtime has been loaded
 
-	if(auto f = _loaded_functions.find(function_id); f != _loaded_functions.end()){
+	if(auto f = _loaded_functions.find(pff); f != _loaded_functions.end()){
 		return f->second;
 	}
 	
@@ -125,7 +125,7 @@ std::shared_ptr<foreign_function> runtime_plugin::load_function(const std::strin
 
     char* err = nullptr;
 	uint32_t err_len = 0;
-    int64_t id = this->_loaded_plugin->load_function(function_path.c_str(), function_path.length(), params_count, retval_count, &err, &err_len);
+    void* pforeign_function = this->_loaded_plugin->load_function(function_path.c_str(), function_path.length(), params_count, retval_count, &err, &err_len);
 
 	if(err != nullptr)
 	{
@@ -134,18 +134,18 @@ std::shared_ptr<foreign_function> runtime_plugin::load_function(const std::strin
 	}
 
 	// insert sorted (because of binary search)
-	auto fmod = std::make_shared<foreign_function>(this->_loaded_plugin, id);
-	this->_loaded_functions[fmod->id()] = fmod;
+	auto fmod = std::make_shared<foreign_function>(this->_loaded_plugin, pforeign_function);
+	this->_loaded_functions[fmod->pforeign_function()] = fmod;
 	return fmod;
 
 }
 //--------------------------------------------------------------------
-void runtime_plugin::free_function(int64_t function_id)
+void runtime_plugin::free_function(void* pff)
 {
 	boost::upgrade_lock<boost::shared_mutex> read_lock(this->_mutex); // read lock
 
 	// check if function is not loaded
-	auto it = _loaded_functions.find(function_id);
+	auto it = _loaded_functions.find(pff);
 	if(it == _loaded_functions.end()){
 		return;
 	}
@@ -153,7 +153,7 @@ void runtime_plugin::free_function(int64_t function_id)
 	boost::upgrade_to_unique_lock<boost::shared_mutex> exclusive_lock(read_lock); // upgrade to writer
     char* err = nullptr;
 	uint32_t err_len = 0;
-    this->_loaded_plugin->free_function(function_id, &err, &err_len);
+    this->_loaded_plugin->free_function(pff, &err, &err_len);
 
 	if(err != nullptr)
 	{

@@ -10,14 +10,14 @@
 class foreign_function
 {
 private:
-	int64_t _id;
+	void* _pforeign_function;
 	std::shared_ptr<runtime_plugin_interface_wrapper> _plugin;
 
 public:
-	foreign_function(std::shared_ptr<runtime_plugin_interface_wrapper> plugin, int64_t id);
+	foreign_function(std::shared_ptr<runtime_plugin_interface_wrapper> plugin, void* pff);
 	~foreign_function() = default;
 	
-	[[nodiscard]] int64_t id() const;
+	[[nodiscard]] void* pforeign_function() const;
 
 	void xcall_params_ret(
 		// error string

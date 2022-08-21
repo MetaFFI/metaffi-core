@@ -1,12 +1,14 @@
 #include "foreign_function.h"
 
+#include <utility>
+#include "../../plugin-sdk/utils/foreign_function.h"
 
 //--------------------------------------------------------------------
-foreign_function::foreign_function(std::shared_ptr<runtime_plugin_interface_wrapper> plugin, int64_t id):_plugin(plugin), _id(id){}
+foreign_function::foreign_function(std::shared_ptr<runtime_plugin_interface_wrapper> plugin, void* pff):_plugin(std::move(plugin)), _pforeign_function(pff){}
 //--------------------------------------------------------------------
-int64_t foreign_function::id() const
+void* foreign_function::pforeign_function() const
 {
-	return this->_id;
+	return this->_pforeign_function;
 }
 //--------------------------------------------------------------------
 void foreign_function::xcall_params_ret(
@@ -14,9 +16,7 @@ void foreign_function::xcall_params_ret(
 		char** out_err, uint64_t* out_err_len
 	)
 {
-	this->_plugin->xcall_params_ret(this->_id,
-			                        params_ret,
-				                    out_err, out_err_len);
+	((pforeign_function_entrypoint_signature_params_ret)this->_pforeign_function)(params_ret, out_err, out_err_len);
 }
 //--------------------------------------------------------------------
 void foreign_function::xcall_no_params_ret(
@@ -24,9 +24,7 @@ void foreign_function::xcall_no_params_ret(
 		char** out_err, uint64_t* out_err_len
 )
 {
-	this->_plugin->xcall_no_params_ret(this->_id,
-	                     return_values,
-	                     out_err, out_err_len);
+	((pforeign_function_entrypoint_signature_no_params_ret)this->_pforeign_function)(return_values, out_err, out_err_len);
 }
 //--------------------------------------------------------------------
 void foreign_function::xcall_params_no_ret(
@@ -34,16 +32,13 @@ void foreign_function::xcall_params_no_ret(
 		char** out_err, uint64_t* out_err_len
 )
 {
-	this->_plugin->xcall_params_no_ret(this->_id,
-	                     parameters,
-	                     out_err, out_err_len);
+	((pforeign_function_entrypoint_signature_params_no_ret)this->_pforeign_function)(parameters, out_err, out_err_len);
 }
 //--------------------------------------------------------------------
 void foreign_function::xcall_no_params_no_ret(
 		char** out_err, uint64_t* out_err_len
 )
 {
-	this->_plugin->xcall_no_params_no_ret(this->_id,
-	                     out_err, out_err_len);
+	((pforeign_function_entrypoint_signature_no_params_no_ret)this->_pforeign_function)(out_err, out_err_len);
 }
 //--------------------------------------------------------------------
