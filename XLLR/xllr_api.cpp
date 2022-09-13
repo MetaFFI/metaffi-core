@@ -106,7 +106,6 @@ void* load_function(const char* runtime_plugin_name, uint32_t runtime_plugin_nam
 			ss << "Failed to load function with function path" << std::string(function_path, function_path_len);
 			throw std::runtime_error(ss.str());
 		}
-		printf("Returning: %p\n", *(void**)res.get());
 		return *(void**)res.get();
 		//return *(void**)p->load_function(std::string(function_path, function_path_len), pff, params_count, retval_count).get();
 #endif
