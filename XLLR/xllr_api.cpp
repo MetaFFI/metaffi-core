@@ -134,7 +134,6 @@ void free_function(const char* runtime_plugin_name, uint32_t runtime_plugin_len,
 	try
 	{
 		*out_err_len = 0;
-		
 		((pforeign_function_entrypoint_signature_params_ret)pff)(params_ret,out_err, out_err_len);
 	}
 	handle_err((char**)out_err, out_err_len,);
