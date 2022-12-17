@@ -85,14 +85,14 @@ void compiler::compile_from_host(const std::string& lang, const std::string& hos
 		// load plugin
 		std::unique_ptr<language_plugin_interface_wrapper> loaded_plugin = std::make_unique<language_plugin_interface_wrapper>(compiler_plugin_name.str());
 		loaded_plugin->init();
-		
 		char* err = nullptr;
 		uint32_t err_len = 0;
 		scope_guard sg([&]()
 		               {
 			               if (err)
 			               {
-				               free(err);
+							   // TODO: make sure "err" is *always* on the heap
+				               //free(err);
 			               }
 		               });
 		
@@ -102,7 +102,7 @@ void compiler::compile_from_host(const std::string& lang, const std::string& hos
 		                                 host_options.c_str(), host_options.length(),
 		                                 &err, &err_len);
 		
-		if (err)
+		if (err_len > 0)
 		{
 			throw std::runtime_error(std::string(err, err_len));
 		}

@@ -90,14 +90,14 @@ void* load_function(const char* runtime_plugin_name, uint32_t runtime_plugin_nam
 
 #ifdef _DEBUG
 		// in debug
-	    pff = p->load_function(std::string(function_path, function_path_len), pff);
-		if(!pff)
+		auto res = p->load_function(std::string(function_path, function_path_len), pff, params_count, retval_count);
+		if(!res)
 		{
 			std::stringstream ss;
 			ss << "Failed to load function with function path" << std::string(function_path, function_path_len);
 			throw std::runtime_error(ss.str());
 		}
-		return *(void**)pff.get();
+		return *(void**)res.get();
 #else
 		auto res = p->load_function(std::string(function_path, function_path_len), pff, params_count, retval_count);
 		if(!res)

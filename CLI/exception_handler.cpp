@@ -8,7 +8,15 @@ void handle_exception(const std::string& custom_msg)
 {
 	try
 	{
-		std::cout << custom_msg << std::endl;
+		if(custom_msg.empty())
+		{
+			std::cout << "Unknown error during compilation" << std::endl;
+		}
+		else
+		{
+			std::cout << custom_msg << std::endl;
+		}
+		
 		throw;
 	}
 	catch (std::exception& err)
