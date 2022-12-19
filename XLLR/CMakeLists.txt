@@ -25,7 +25,7 @@ else()
 	target_link_libraries(xllr Boost::thread Boost::filesystem Boost::dynamic_linking)
 endif()
 
-# Copy metaffi_primitives.h to metaffi directory
+# Copy "include" code to METAFFI_HOME
 add_custom_command(TARGET xllr POST_BUILD
 		COMMAND "${CMAKE_COMMAND}" -E copy
 		"${CMAKE_CURRENT_LIST_DIR}/../../plugin-sdk/runtime/metaffi_primitives.h"
@@ -49,3 +49,12 @@ add_custom_command(TARGET xllr POST_BUILD
 		"${CMAKE_CURRENT_LIST_DIR}/../../plugin-sdk/runtime/cdt_capi_loader.c"
 		"$ENV{METAFFI_HOME}/include/cdt_capi_loader.c"
 		COMMENT "Copy ${CMAKE_CURRENT_LIST_DIR}/../../plugin-sdk/runtime/cdt_capi_loader.c -> $ENV{METAFFI_HOME}/include/cdt_capi_loader.c")
+
+# install
+install(TARGETS xllr)
+
+install(FILES   ${CMAKE_CURRENT_LIST_DIR}/../../plugin-sdk/runtime/metaffi_primitives.h
+				${CMAKE_CURRENT_LIST_DIR}/../../plugin-sdk/runtime/cdt_structs.h
+				${CMAKE_CURRENT_LIST_DIR}/../../plugin-sdk/runtime/cdt_capi_loader.h
+				${CMAKE_CURRENT_LIST_DIR}/../../plugin-sdk/runtime/cdt_capi_loader.c
+		DESTINATION include)

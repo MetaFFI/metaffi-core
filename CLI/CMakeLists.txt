@@ -29,3 +29,6 @@ if(NOT WIN32)
 endif()
 
 
+# install
+install(TARGETS metaffi_cli)
+
