@@ -15,7 +15,7 @@ runtime_plugin_interface_wrapper::runtime_plugin_interface_wrapper(const std::st
 	
 	this->pfree_runtime = load_func<void(char**,uint32_t*)>(*plugin_dll, "free_runtime");
 	
-	this->pload_function = load_func<void*(const char*, uint32_t, int8_t, int8_t, char**,uint32_t*)>(*plugin_dll, "load_function");
+	this->pload_function = load_func<void*(const char*, uint32_t, const char*, uint32_t, int8_t, int8_t, char**,uint32_t*)>(*plugin_dll, "load_function");
 	
 	this->pfree_function = load_func<void(void*, char**, uint32_t*)>(*plugin_dll, "free_function");
 	
@@ -35,11 +35,11 @@ void runtime_plugin_interface_wrapper::free_runtime(char** err, uint32_t* err_le
 	(*this->pfree_runtime)(err, err_len);
 }
 //--------------------------------------------------------------------
-void* runtime_plugin_interface_wrapper::load_function(const char* function_path, uint32_t function_path_len, int8_t params_count, int8_t retval_count, char** err, uint32_t* err_len)
+void* runtime_plugin_interface_wrapper::load_function(const char* module_path, uint32_t module_path_len, const char* function_path, uint32_t function_path_len, int8_t params_count, int8_t retval_count, char** err, uint32_t* err_len)
 {
 	*err = nullptr;
 	*err_len = 0;
-	return (*this->pload_function)(function_path, function_path_len, params_count, retval_count, err, err_len);
+	return (*this->pload_function)(module_path, module_path_len, function_path, function_path_len, params_count, retval_count, err, err_len);
 }
 //--------------------------------------------------------------------
 void runtime_plugin_interface_wrapper::free_function(void* pff, char** err, uint32_t* err_len)

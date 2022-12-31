@@ -76,7 +76,7 @@ void free_runtime_plugin(const char* runtime_plugin, uint32_t runtime_plugin_len
     handle_err(err, err_len,);
 }
 //--------------------------------------------------------------------
-void* load_function(const char* runtime_plugin_name, uint32_t runtime_plugin_name_len, const char* function_path, uint32_t function_path_len, void* pff, int8_t params_count, int8_t retval_count, char** err, uint32_t* err_len)
+void* load_function(const char* runtime_plugin_name, uint32_t runtime_plugin_name_len, const char* module_path, uint32_t module_path_len, const char* function_path, uint32_t function_path_len, void* pff, int8_t params_count, int8_t retval_count, char** err, uint32_t* err_len)
 {
 	try
     {
@@ -87,10 +87,8 @@ void* load_function(const char* runtime_plugin_name, uint32_t runtime_plugin_nam
 		{
 			p = g_runtime_plugins.load(runtime_plugin_name_str);
 		}
-
-#ifdef _DEBUG
-		// in debug
-		auto res = p->load_function(std::string(function_path, function_path_len), pff, params_count, retval_count);
+		
+		auto res = p->load_function(std::string(module_path, module_path_len), std::string(function_path, function_path_len), pff, params_count, retval_count);
 		if(!res)
 		{
 			std::stringstream ss;
@@ -98,17 +96,6 @@ void* load_function(const char* runtime_plugin_name, uint32_t runtime_plugin_nam
 			throw std::runtime_error(ss.str());
 		}
 		return *(void**)res.get();
-#else
-		auto res = p->load_function(std::string(function_path, function_path_len), pff, params_count, retval_count);
-		if(!res)
-		{
-			std::stringstream ss;
-			ss << "Failed to load function with function path" << std::string(function_path, function_path_len);
-			throw std::runtime_error(ss.str());
-		}
-		return *(void**)res.get();
-		//return *(void**)p->load_function(std::string(function_path, function_path_len), pff, params_count, retval_count).get();
-#endif
     }
     handle_err(err, err_len,);
 	

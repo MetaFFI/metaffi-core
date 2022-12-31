@@ -30,5 +30,22 @@ endif()
 
 
 # install
-install(TARGETS metaffi_cli)
+install(TARGETS metaffi_cli DESTINATION .)
 
+if(${CMAKE_SYSTEM_NAME} MATCHES Linux)
+	ADD_DEB_DEPENDS(${CMAKE_BINARY_DIR} "metaffi" "python|boost|expat|jvm" INSTALL_FILES INSTALL_RESOLVED_FILES INSTALL_FILES_ERROR)
+
+	if (${INSTALL_FILES_ERROR})
+		message( FATAL_ERROR "Dependencies files resolution failed: " ${INSTALL_FILES_ERROR} )
+	endif (${INSTALL_FILES_ERROR})
+
+	if(INSTALL_FILES)
+		install(FILES ${INSTALL_FILES} # Copy all libraries and symlinks pointing to real paths
+				DESTINATION .)
+	endif()
+
+	if(INSTALL_RESOLVED_FILES)
+		install(FILES ${INSTALL_RESOLVED_FILES} # Copy all libraries real paths
+				DESTINATION .)
+	endif()
+endif()
