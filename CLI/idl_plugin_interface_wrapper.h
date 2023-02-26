@@ -8,6 +8,7 @@
 class idl_plugin_interface_wrapper : public idl_plugin_interface
 {
 private:
+	std::shared_ptr<boost::dll::shared_library> mod;
 	std::shared_ptr<boost::dll::detail::import_type<void(const char*, uint32_t, const char*, uint32_t, char**, uint32_t*, char**, uint32_t*)>::type> pparse_idl;
 	std::shared_ptr<boost::dll::detail::import_type<void(void)>::type> pinit_plugin;
 

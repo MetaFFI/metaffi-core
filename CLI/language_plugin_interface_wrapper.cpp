@@ -1,6 +1,5 @@
 #include "language_plugin_interface_wrapper.h"
 #include <utils/scope_guard.hpp>
-#include <boost/filesystem.hpp>
 #include <utils/function_loader.hpp>
 #include <utils/plugin_loader.hpp>
 
@@ -14,6 +13,7 @@ language_plugin_interface_wrapper::language_plugin_interface_wrapper(const std::
 	this->pinit = load_func<void(void)>(*mod, "init_plugin");
 	this->pcompile_to_guest = load_func<void(const char*, uint32_t, const char*, uint32_t, const char*, uint32_t, const char*, uint32_t, char**, uint32_t*)>(*mod, "compile_to_guest");
 	this->pcompile_from_host = load_func<void(const char*, uint32_t, const char*, uint32_t, const char*, uint32_t, char**, uint32_t*)>(*mod, "compile_from_host");
+	
 }
 //--------------------------------------------------------------------
 void language_plugin_interface_wrapper::init()

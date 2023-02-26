@@ -1,5 +1,6 @@
 #include <cdts.h>
 #include <cstring>
+#include <cstdio>
 #include "cdts_alloc.h"
 
 /************************************************

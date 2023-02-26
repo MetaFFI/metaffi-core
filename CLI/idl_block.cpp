@@ -6,9 +6,13 @@
 #include <regex>
 #include <iostream>
 #include <string>
+#include <utility>
+#include <unordered_map>
+
+std::unordered_map<std::string, std::shared_ptr<idl_plugin_interface_wrapper>> idl_plugins;
 
 //--------------------------------------------------------------------
-idl_block::idl_block(std::string code_extension, std::string file_code, std::string filename):_file_code(std::move(file_code)), _filename(filename)
+idl_block::idl_block(std::string code_extension, std::string file_code, std::string filename):_file_code(std::move(file_code)), _filename(std::move(filename))
 {
 	boost::to_lower(code_extension);
 	this->_code_extension = code_extension;
@@ -17,17 +21,26 @@ idl_block::idl_block(std::string code_extension, std::string file_code, std::str
 void idl_block::compile_metaffi_idl()
 {
 	// if .JSON file, it is a metaffi IDL
-	if(this->_code_extension == ".json") // if not metaffi IDL - load relevant plugin to compile metaffi IDL
+	if (this->_code_extension == ".json") // if not metaffi IDL - load relevant plugin to compile metaffi IDL
 	{
 		this->_metaffi_json_idl = _file_code;
 		return;
 	}
 	
-	// Use IDL plugin to compile MetaFFI IDL
+	std::shared_ptr<idl_plugin_interface_wrapper> idl;
+	auto idl_plugin_it = idl_plugins.find(this->_code_extension);
+	if(idl_plugin_it == idl_plugins.end())
+	{
+		idl = std::make_shared<idl_plugin_interface_wrapper>(this->_code_extension);
+		idl->init();
+		idl_plugins[this->_code_extension] = idl;
+	}
+	else
+	{
+		idl = idl_plugin_it->second;
+	}
 	
-	// get idl data
-	std::unique_ptr<idl_plugin_interface_wrapper> idl = std::make_unique<idl_plugin_interface_wrapper>(this->_code_extension);
-	idl->init();
+	// Use IDL plugin to compile MetaFFI IDL
 	
 	char* err = nullptr;
 	uint32_t err_len = 0;
@@ -40,7 +53,8 @@ void idl_block::compile_metaffi_idl()
 	               this->_file_code.c_str(), this->_file_code.length(),
 	               &out_idl_def_json, &out_idl_def_json_length,
 	               &err, &err_len);
-	if(err){
+	if (err)
+	{
 		throw std::runtime_error(std::string(err, err_len));
 	}
 	

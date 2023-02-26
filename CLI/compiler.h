@@ -4,6 +4,7 @@
 #include <vector>
 #include <memory>
 #include "idl_block.h"
+#include "language_plugin_interface_wrapper.h"
 
 
 class compiler
@@ -17,7 +18,7 @@ private:
 	std::vector<idl_block> _idl_blocks;
 
 public:
-	compiler(const std::string& idl_path, std::string output_path, const std::string& embedded_name_or_pattern, bool is_pattern);
+	compiler(const std::string& idl_path, const std::string& output_path, const std::string& embedded_name_or_pattern, bool is_pattern);
 	~compiler() = default;
 	compiler(const compiler&) = delete;
 	compiler(const compiler&&) = delete;
@@ -30,4 +31,5 @@ private:
 	void compile_from_host(const std::string& lang, const std::string& host_options);
 	void compile_to_idl_blocks(const std::string& embedded_name_or_pattern, bool is_pattern);
 	void extract_idl_blocks(const std::string& embedded_name_or_pattern, bool is_pattern);
+	std::shared_ptr<language_plugin_interface_wrapper> load_plugin(const std::string& lang);
 };

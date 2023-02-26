@@ -1,24 +1,28 @@
 #include "compiler.h"
 #include "language_plugin_interface_wrapper.h"
-#include "idl_plugin_interface_wrapper.h"
 #include "idl_block.h"
 #include <boost/filesystem.hpp>
 #include <utils/scope_guard.hpp>
 #include <regex>
 #include <utility>
 #include <sstream>
+#include <unordered_map>
+#include <utils/expand_env.h>
 
 using namespace metaffi::utils;
 
+std::unordered_map<std::string,std::shared_ptr<language_plugin_interface_wrapper>> compiler_plugins;
+
 //--------------------------------------------------------------------
-compiler::compiler(const std::string& idl_path, std::string  output_path, const std::string& embedded_name_or_pattern, bool is_pattern):
-		_input_file_path(idl_path),
-		_output_path(std::move(output_path))
+compiler::compiler(const std::string& idl_path, const std::string& output_path, const std::string& embedded_name_or_pattern, bool is_pattern)
 {
-	if(!boost::filesystem::exists(idl_path))
+	_input_file_path = expand_env(idl_path);
+	_output_path = expand_env(output_path);
+	
+	if(!boost::filesystem::exists(_output_path))
 	{
 		std::stringstream ss;
-		ss << "Error: " << idl_path << " was not found";
+		ss << "IDL/Source file \"" << _output_path << "\" was not found";
 		throw std::runtime_error(ss.str().c_str());
 	}
 	
@@ -37,12 +41,7 @@ void compiler::compile_to_guest()
 	for(idl_block& b : this->_idl_blocks)
 	{
 		// load compiler
-		std::stringstream compiler_plugin_name;
-		compiler_plugin_name << "metaffi.compiler.lang." << b.get_target_language();
-		
-		// load plugin
-		std::unique_ptr<language_plugin_interface_wrapper> loaded_plugin = std::make_unique<language_plugin_interface_wrapper>(compiler_plugin_name.str());
-		loaded_plugin->init();
+		std::shared_ptr<language_plugin_interface_wrapper> loaded_plugin = this->load_plugin(b.get_target_language());
 		
 		char* err = nullptr;
 		uint32_t err_len = 0;
@@ -79,12 +78,9 @@ void compiler::compile_from_host(const std::string& lang, const std::string& hos
 	for(idl_block& b : this->_idl_blocks)
 	{
 		// load compiler
-		std::stringstream compiler_plugin_name;
-		compiler_plugin_name << "metaffi.compiler.lang." << lang;
+		std::shared_ptr<language_plugin_interface_wrapper> loaded_plugin = this->load_plugin(lang);
 		
 		// load plugin
-		std::unique_ptr<language_plugin_interface_wrapper> loaded_plugin = std::make_unique<language_plugin_interface_wrapper>(compiler_plugin_name.str());
-		loaded_plugin->init();
 		char* err = nullptr;
 		uint32_t err_len = 0;
 		scope_guard sg([&]()
@@ -163,5 +159,27 @@ void compiler::extract_idl_blocks(const std::string& embedded_name_or_pattern, b
 			this->_idl_blocks.push_back(b);
 		}
 	}
+}
+//--------------------------------------------------------------------
+std::shared_ptr<language_plugin_interface_wrapper> compiler::load_plugin(const std::string& lang)
+{
+	std::stringstream compiler_plugin_name;
+	compiler_plugin_name << "metaffi.compiler.lang." << lang;
+	
+	std::shared_ptr<language_plugin_interface_wrapper> loaded_plugin;
+	auto compiler_plugin_iter = compiler_plugins.find(compiler_plugin_name.str());
+	if(compiler_plugin_iter == compiler_plugins.end())
+	{
+		loaded_plugin = std::make_shared<language_plugin_interface_wrapper>(compiler_plugin_name.str());
+		loaded_plugin->init();
+		
+		compiler_plugins[compiler_plugin_name.str()] = loaded_plugin;
+	}
+	else
+	{
+		loaded_plugin = compiler_plugin_iter->second;
+	}
+	
+	return loaded_plugin;
 }
 //--------------------------------------------------------------------

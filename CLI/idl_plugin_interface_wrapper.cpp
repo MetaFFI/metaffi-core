@@ -1,6 +1,5 @@
 #include "idl_plugin_interface_wrapper.h"
 #include <utils/scope_guard.hpp>
-#include <boost/filesystem.hpp>
 #include <utils/function_loader.hpp>
 #include <utils/plugin_loader.hpp>
 
@@ -9,7 +8,7 @@ using namespace metaffi::utils;
 //--------------------------------------------------------------------
 idl_plugin_interface_wrapper::idl_plugin_interface_wrapper(const std::string& idl_extension)
 {
-	std::shared_ptr<boost::dll::shared_library> mod = load_plugin(std::string("metaffi.idl")+idl_extension);
+	mod = load_plugin(std::string("metaffi.idl")+idl_extension);
 	this->pinit_plugin = load_func<void(void)>(*mod, "init_plugin");
 	this->pparse_idl = load_func<void(const char*, uint32_t, const char*, uint32_t, char**, uint32_t*, char**, uint32_t*)>(*mod, "parse_idl");
 }

@@ -91,6 +91,7 @@ bool cli_executor::compile()
 	
 	std::string embedded_name;
 	bool is_pattern = false;
+	
 	if(vm.count("block-name") || vm.count("block-pattern"))
 	{
 		if(vm.count("block-name") && vm.count("block-pattern"))
