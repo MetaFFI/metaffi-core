@@ -9,6 +9,8 @@ build/
 cmake-build*
 output*
 
+out/*
+
 # ------------ Python -------------
 *__pycache__*
 

@@ -1,7 +1,7 @@
 #include "foreign_function.h"
 
 #include <utility>
-#include "../../plugin-sdk/utils/foreign_function.h"
+#include <utils/foreign_function.h> // In MetaFFI SDK
 
 //--------------------------------------------------------------------
 foreign_function::foreign_function(std::shared_ptr<runtime_plugin_interface_wrapper> plugin, void* pff):_plugin(std::move(plugin)), _pforeign_function(pff){}

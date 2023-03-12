@@ -1,0 +1,9 @@
+#!/bin/sh
+
+rm /etc/profile.d/metaffi.sh
+
+rm /usr/bin/metaffi
+
+# TODO: remove only if links to MetaFFI directory
+rm /usr/lib/libboost_filesystem.so.1.79.0
+rm /usr/lib/libboost_thread.so.1.79.0
