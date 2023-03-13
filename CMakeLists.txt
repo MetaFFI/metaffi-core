@@ -49,10 +49,13 @@ add_go_test("MetaFFI IDL Definition" WORKING_DIRECTORY ${METAFFI_SDK}/compiler/g
 
 install(CODE "set(ENV{METAFFI_HOME}, ${CMAKE_BINARY_DIR})")
 
+# cmake install directory (not cpack)
+set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR})
+set(CMAKE_SKIP_INSTALL_RPATH ON)
+
 #-----------------------------------------------------------------------------------------------
 
 # build installer
-set(CMAKE_SKIP_INSTALL_RPATH ON)
 set(CPACK_PACKAGE_NAME "MetaFFI")
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.txt")
 set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
@@ -62,7 +65,6 @@ set(CPACK_PACKAGE_NAME ${PROJECT_NAME} CACHE STRING "MetaFFI")
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "metaffi")
 set(CPACK_PACKAGE_HOMEPAGE_URL "https://github.com/MetaFFI/")
 
-set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR})
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "metaffi")
 
 if(${CMAKE_SYSTEM_NAME} MATCHES Linux)
@@ -71,9 +73,6 @@ if(${CMAKE_SYSTEM_NAME} MATCHES Linux)
 	set(CPACK_PACKAGING_INSTALL_PREFIX "/opt/metaffi/")
 	set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Tsvi Cherny-Shahar")
 
-	# sudo apt install software-properties-common && sudo add-apt-repository ppa:deadsnakes/ppa - libpython3.8-dev
-	# export GOROOT=/usr/lib/go
-	set(CPACK_DEBIAN_PACKAGE_DEPENDS "gcc,g++,golang-go,git,openjdk-11-jdk,libjna-jni")
 	set(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA "${CMAKE_CURRENT_LIST_DIR}/installer/postinst;${CMAKE_CURRENT_LIST_DIR}/installer/prerm")
 
 elseif(WIN32)
