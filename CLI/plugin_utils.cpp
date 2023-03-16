@@ -1,14 +1,15 @@
 #include "plugin_utils.h"
 #include <algorithm>
 #include <boost/filesystem.hpp>
+#include <filesystem>
 #include <boost/dll.hpp>
+#include <boost/algorithm/string.hpp>
 #include <regex>
 #include <sstream>
-#include <algorithm>
-#include <boost/format.hpp>
-#include "httplib.h"
 #include "uri.h"
 #include <utils/scope_guard.hpp>
+#include <filesystem>
+#include "zip_file.hpp"
 
 using namespace metaffi::utils;
 
@@ -26,28 +27,31 @@ std::vector<std::string> plugin_utils::list()
 	// get all plugin files and extract the names
 	boost::filesystem::directory_iterator end_di;
 	
-	std::stringstream pattern;
-	pattern << R"(metaffi\.compiler\.([a-zA-Z0-9_]+)\)" << boost::dll::shared_library::suffix().generic_string();
-	std::regex plugin_name_pattern(pattern.str());
-	
 	for(boost::filesystem::directory_iterator di(get_install_path()) ; di != end_di ; di++)
 	{
-		if( !boost::filesystem::is_regular_file(di->status())){
-			continue;
-		}
-		
-		std::string path = di->path().generic_string();
-		std::sregex_iterator matches(path.begin(), path.end(), plugin_name_pattern); // match and extract plugin name
-		if(matches->begin() != matches->end() && matches->size() > 1) // make sure subgroup got matched
+		std::string name;
+		plugin_type t;
+		if(extract_plugin_name_and_type(di->path(), name, t))
 		{
-			res.push_back( (*matches)[1].str() );
+			if(t == plugin_type::runtime_plugin)
+			{
+				res.push_back( name+" runtime" );
+			}
+			else if(t == plugin_type::compiler_plugin)
+			{
+				res.push_back( name+" compiler" );
+			}
+			else
+			{
+				res.push_back( name+" IDL" );
+			}
 		}
 	}
 	
 	return res;
 }
 //--------------------------------------------------------------------
-void plugin_utils::install(const std::string& url_or_path, bool force)
+void plugin_utils::install(const std::string& url_or_path)
 {
 	// download (if url)
 	std::string lowered_url_or_path = url_or_path;
@@ -75,28 +79,32 @@ void plugin_utils::install(const std::string& url_or_path, bool force)
 		}
 	}
 	
-	std::vector<std::string> new_files = decompress(compressed_plugin_path, force);
-	if(new_files.size() != 2)
+	auto decompressed_plugin_path = decompress(compressed_plugin_path);
+	validate_plugin(decompressed_plugin_path);
+	
+	boost::filesystem::path install_message_file = decompressed_plugin_path;
+	install_message_file.append("notes.txt");
+	std::string msg;
+	if(boost::filesystem::exists(install_message_file))
 	{
-		throw std::runtime_error("Plugin package must contains 2 files");
+		std::ifstream file;
+		file.open(install_message_file.generic_string(), std::ios_base::binary);
+		const boost::uintmax_t sz = boost::filesystem::file_size(install_message_file);
+		msg.resize(static_cast< std::size_t >(sz), '\0');
+		if (sz > 0u)
+		{
+			file.read(&msg[0], static_cast< std::streamsize >(sz));
+		}
 	}
 	
-#ifndef _WIN32
-	std::cout << "linking..." << std::endl;
-	std::string install_path = get_install_path();
-
-	#ifdef __linux__
-		boost::filesystem::create_symlink(install_path+"/"+new_files[0], (boost::format("/user/lib/%1%") % new_files[0]).str() );
-		boost::filesystem::create_symlink(install_path+"/"+new_files[1], (boost::format("/user/lib/%1%") % new_files[1]).str() );
-
-	#elif __apple__
-		boost::filesystem::create_symlink(install_path+"/"+new_files[0], (boost::format("/user/local/lib/%1%") % new_files[0]).str() );
-		boost::filesystem::create_symlink(install_path+"/"+new_files[1], (boost::format("/user/local/lib/%1%") % new_files[1]).str() );
-
-	#endif
-#endif
+	copy_plugin_package(decompressed_plugin_path);
 	
-	std::cout << "Done installing package" << compressed_plugin_path << std::endl;
+	// print install message, if one exists
+	if(!msg.empty()){
+		std::cout << "Installation Notes:" << std::endl << msg << std::endl;
+	}
+	
+	std::cout << "Installation completed" << std::endl;
 }
 //--------------------------------------------------------------------
 void plugin_utils::remove(const std::string& name)
@@ -149,13 +157,13 @@ void plugin_utils::remove(const std::string& name)
 //--------------------------------------------------------------------
 std::string plugin_utils::get_install_path()
 {
-	boost::filesystem::path location = boost::dll::program_location();
-	if(boost::filesystem::is_symlink(location))
+	const char* pmetaffi_home = std::getenv("METAFFI_HOME");
+	if(!pmetaffi_home)
 	{
-		location = boost::filesystem::read_symlink(location);
+		throw std::runtime_error("METAFFI_HOME is not set");
 	}
 	
-	return location.parent_path().generic_string();
+	return pmetaffi_home;
 }
 //--------------------------------------------------------------------
 boost::filesystem::path plugin_utils::download(const std::string& url)
@@ -165,7 +173,6 @@ boost::filesystem::path plugin_utils::download(const std::string& url)
 	
 	std::stringstream ss_download_cmds;
 	
-
 #ifdef _WIN32
 	ss_download_cmds << R"(powershell -ExecutionPolicy ByPass -command "wget )" << url << R"( -OutFile ')" << compressed_plugin_path.generic_string() << "'";
 #else
@@ -179,86 +186,166 @@ boost::filesystem::path plugin_utils::download(const std::string& url)
 	}
 	
 	return compressed_plugin_path;
-	
-	/* // TODO: Replace "wget" cmd. The code below crashes!
-	
-	std::stringstream ss;
-	ss << link.get_scheme() << "://" << link.get_host();
-	if(link.get_port() != 0){ ss << ":" << link.get_port(); }
-	
-	std::cout << "connecting to " << ss.str() << std::endl;
-	httplib::Client cli(ss.str().c_str());
-	
-	ss = std::stringstream();
-	ss << "/" << link.get_path() << link.get_query();
-	std::cout << "downloading path " << ss.str() << std::endl;
-	httplib::Result res = cli.Get(ss.str().c_str(),
-							
-							{ { "Accept-Encoding", "text/plain" } },
-							
-								  [](uint64_t len, uint64_t total) { // print progress
-									  printf("Downloading %lu bytes: %d%% complete\n",
-											 total,
-											 (int)(len*100/total));
-									  return true; // return 'false' if you want to cancel the request.
-								  }
-							);
-	
-	
-	
-	
-	std::cout << "writing file to " << compressed_plugin_path << std::endl;
-	
-	std::ofstream out(compressed_plugin_path);
-	out << res->body;
-	out.close();
-	*/
 }
 //--------------------------------------------------------------------
-std::vector<std::string> plugin_utils::decompress(const boost::filesystem::path &compressed_file, bool force)
+boost::filesystem::path plugin_utils::decompress(const boost::filesystem::path& compressed_file)
 {
-	// unzip/untar - TODO: Must be replaced with actual code. I'm just getting lazy here.
+	// unzip/untar to temp directory.
 	
-	std::stringstream decompress_cmd;
-#ifdef _WIN32
-	decompress_cmd << R"(powershell -ExecutionPolicy ByPass -command "Expand-Archive -Path )" << compressed_file << R"( -DestinationPath ")" << get_install_path() << "\"";
-	if(force)
+	boost::filesystem::path temp_dir = boost::filesystem::temp_directory_path();
+	std::string plugin_path(compressed_file.filename().generic_string());
+	boost::replace_all(plugin_path, compressed_file.extension().generic_string(), "");
+	temp_dir.append(plugin_path);
+	boost::filesystem::remove_all(temp_dir); // make sure dir is clear
+	boost::filesystem::create_directories(temp_dir);
+	
+	miniz_cpp::zip_file file(compressed_file.generic_string());
+	file.extractall(temp_dir.generic_string());
+	
+	return temp_dir;
+}
+//--------------------------------------------------------------------
+void plugin_utils::validate_plugin(const boost::filesystem::path& decompressed_plugin_path)
+{
+	// make sure at least one compiler/runtime/idl plugin exists
+	boost::filesystem::recursive_directory_iterator rdi(decompressed_plugin_path);
+	boost::filesystem::recursive_directory_iterator end_rdi;
+	
+	bool is_exist_plugin = false;
+	
+	for (; rdi != end_rdi; rdi++)
 	{
-		decompress_cmd << " -Force";
+		if(is_regular_file(rdi->path()))
+		{
+			std::string filename = rdi->path().filename().generic_string();
+			transform(filename.begin(), filename.end(), filename.begin(), ::tolower);
+			if( filename.find("xllr.") != std::string::npos ||
+					filename.find("metaffi.compiler.") != std::string::npos ||
+					filename.find("metaffi.idl.") != std::string::npos)
+			{
+				is_exist_plugin = true;
+				break;
+			}
+		}
 	}
-#else
-	decompress_cmd << "tar -C " << get_install_path() << " -zx" << (force? "f " : " ") << compressed_file;
-#endif
 	
-	std::vector<std::string> list_before_install = list();
-	
-	std::cout << "Decompressing: " << compressed_file << std::endl;
-	
-	int exit_code = system(decompress_cmd.str().c_str());
-	if(exit_code != 0) // failure
-	{
-		throw std::runtime_error("Failed to decompress plugin package");
+	if(!is_exist_plugin){
+		throw std::runtime_error("Package does not contain at least one plugin (runtime, compiler, IDL)");
 	}
 	
-	std::vector<std::string> list_after_install = list();
+}
+//--------------------------------------------------------------------
+void plugin_utils::copy_plugin_package(const boost::filesystem::path& decompressed_plugin_path)
+{
+	std::string target_path = get_install_path()+"/"+decompressed_plugin_path.filename().generic_string();
+	std::filesystem::copy(decompressed_plugin_path.generic_string(), target_path, std::filesystem::copy_options::recursive | std::filesystem::copy_options::overwrite_existing);
+	boost::filesystem::remove_all(decompressed_plugin_path);
 	
-	std::sort(list_before_install.begin(), list_before_install.end());
-	std::sort(list_after_install.begin(), list_after_install.end());
-	
-	std::vector<std::string> new_plugin;
-	std::set_difference(list_before_install.begin(), list_before_install.end(), list_after_install.begin(), list_after_install.end(), std::back_inserter(new_plugin));
-	
-	if(new_plugin.empty())
+	// move plugin files to METAFFI_HOME
+	boost::filesystem::recursive_directory_iterator rdi(target_path);
+	boost::filesystem::recursive_directory_iterator end_rdi;
+	for (; rdi != end_rdi; rdi++)
 	{
-		throw std::runtime_error("Something went wrong... No new files were found!");
+		if(is_regular_file(rdi->path()))
+		{
+			std::string filename = rdi->path().filename().generic_string();
+			transform(filename.begin(), filename.end(), filename.begin(), ::tolower);
+			if( filename.find("xllr.") != std::string::npos ||
+			    filename.find("metaffi.compiler.") != std::string::npos ||
+			    filename.find("metaffi.idl.") != std::string::npos)
+			{
+				auto src = rdi->path();
+				auto dst = rdi->path().parent_path().parent_path().append(rdi->path().filename());
+				boost::filesystem::copy_file(src, dst, boost::filesystem::copy_option::overwrite_if_exists);
+				boost::filesystem::remove(rdi->path());
+			}
+		}
 	}
 	
-	std::vector<std::string> new_files
+	// if target_path is empty, remove it
+	if(boost::filesystem::is_empty(target_path))
 	{
-		{ (boost::format("xllr.%1%%2%") % new_plugin[0] % boost::dll::shared_library::suffix().generic_string()).str() },
-		{ (boost::format("metaffi.compiler.%1%%2%") % new_plugin[0] % boost::dll::shared_library::suffix().generic_string()).str() }
-	};
+		boost::filesystem::remove(target_path);
+	}
+}
+//--------------------------------------------------------------------
+void plugin_utils::pack(const std::vector<std::string>& files_and_dirs, const std::string& root)
+{
+	// compress directory
+	miniz_cpp::zip_file file;
+	std::string name;
+	plugin_type t;
+	for(auto& file_or_dir : files_and_dirs)
+	{
+		boost::filesystem::path p(root);
+		p.append(file_or_dir);
+		
+		if(!exists(p))
+		{
+			std::stringstream ss;
+			ss << p.generic_string() << " cannot be found";
+			throw std::runtime_error(ss.str());
+		}
+		
+		if(p.filename_is_dot() || p.filename_is_dot_dot()){
+			continue;
+		}
+		
+		file.write(absolute(p).generic_string(), file_or_dir);
+		
+		if(name.empty())
+		{
+			std::string temp;
+			if(extract_plugin_name_and_type(p, temp, t)){
+				name = temp;
+			}
+		}
+	}
 	
-	return new_files;
+	if(name.empty())
+	{
+		throw std::runtime_error("Did not find any MetaFFI plugin file");
+	}
+	
+	file.save(name+".mffipack");
+}
+//--------------------------------------------------------------------
+bool plugin_utils::extract_plugin_name_and_type(const boost::filesystem::path& path, std::string& out_name, plugin_type& out_type)
+{
+	if(path.filename_is_dot() || path.filename_is_dot_dot() || is_directory(path)){
+		return false;
+	}
+	
+	std::string filename = path.filename().generic_string();
+	
+	std::stringstream pattern;
+	pattern << R"(metaffi\.compiler\.([a-zA-Z0-9_]+)\)" << boost::dll::shared_library::suffix().generic_string();
+	pattern << R"(|xllr\.([a-zA-Z0-9_]+)\)" << boost::dll::shared_library::suffix().generic_string();
+	pattern << R"(|metaffi\.idl\.([a-zA-Z0-9_]+)\)" << boost::dll::shared_library::suffix().generic_string();
+	std::regex plugin_name_pattern(pattern.str(), std::regex::icase);
+	
+	std::sregex_iterator matches_begin(filename.begin(), filename.end(), plugin_name_pattern); // match and extract plugin name
+	if(matches_begin != std::sregex_iterator() && matches_begin->size() > 1) // make sure subgroup got matched
+	{
+		out_name = (*matches_begin)[1].str();
+		
+		std::transform(filename.begin(), filename.end(), filename.begin(), ::tolower);
+		if(filename.find("metaffi.compiler.") != std::string::npos)
+		{
+			out_type = plugin_type::compiler_plugin;
+		}
+		else if(filename.find("xllr.") != std::string::npos)
+		{
+			out_type = plugin_type::runtime_plugin;
+		}
+		else
+		{
+			out_type = plugin_type::idl_plugin;
+		}
+		
+		return true;
+	}
+	
+	return false;
 }
 //--------------------------------------------------------------------

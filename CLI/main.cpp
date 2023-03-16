@@ -12,7 +12,6 @@ int main(int argc, char** argv)
 		cli_executor cexec(argc, argv);
 		if(!cexec.parse())
 		{
-			printf("MetaFFI operation failed\n");
 			return 2;
 		}
 

@@ -16,6 +16,10 @@ idl_block::idl_block(std::string code_extension, std::string file_code, std::str
 {
 	boost::to_lower(code_extension);
 	this->_code_extension = code_extension;
+	
+	if(_file_code.empty()){
+		throw std::runtime_error("Given IDL is empty!");
+	}
 }
 //--------------------------------------------------------------------
 void idl_block::compile_metaffi_idl()
@@ -174,7 +178,9 @@ std::string idl_block::get_target_language() const
 	std::smatch matches;
 	if(!std::regex_search(this->_metaffi_json_idl, matches, target_lang_regex))
 	{
-		throw std::runtime_error("MetaFFI IDL does not contains metaffi_target_language tag");
+		std::stringstream ss;
+		ss << "MetaFFI IDL does not contains metaffi_target_language tag:" << std::endl << this->_metaffi_json_idl << std::endl;
+		throw std::runtime_error(ss.str());
 	}
 	
 	if(matches.size() < 2)

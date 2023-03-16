@@ -164,7 +164,7 @@ void compiler::extract_idl_blocks(const std::string& embedded_name_or_pattern, b
 std::shared_ptr<language_plugin_interface_wrapper> compiler::load_plugin(const std::string& lang)
 {
 	std::stringstream compiler_plugin_name;
-	compiler_plugin_name << "metaffi.compiler.lang." << lang;
+	compiler_plugin_name << "metaffi.compiler." << lang;
 	
 	std::shared_ptr<language_plugin_interface_wrapper> loaded_plugin;
 	auto compiler_plugin_iter = compiler_plugins.find(compiler_plugin_name.str());
