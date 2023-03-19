@@ -13,9 +13,7 @@ target_sources(metaffi_cli PRIVATE ${metaffi_cli_sources} ${METAFFI_SDK}/utils/e
 target_link_libraries(metaffi_cli PRIVATE ${CMAKE_DL_LIBS} Boost::filesystem Boost::program_options)
 link_to_dl_for_non_windows(metaffi_cli)
 
-#if(NOT WIN32) # add rpath
-#set_property(TARGET metaffi_cli APPEND PROPERTY BUILD_RPATH "$<TARGET_FILE_DIR:metaffi_cli>;$<TARGET_FILE_DIR:metaffi_cli>/lib")
-#endif()
+set_property(TARGET metaffi_cli APPEND PROPERTY BUILD_RPATH "$ORIGIN;$ORIGIN/lib")
 
 #copy_file_from_project_binary_to_metaffi_home(metaffi_cli metaffi${CMAKE_EXECUTABLE_SUFFIX})
 

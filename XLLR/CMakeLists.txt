@@ -12,7 +12,7 @@ target_link_libraries(xllr PRIVATE ${CMAKE_DL_LIBS} Boost::filesystem Boost::thr
 set_target_properties(xllr PROPERTIES PREFIX "" POSITION_INDEPENDENT_CODE ON)
 link_to_pthread_for_non_windows(xllr)
 
-#set_property(TARGET xllr APPEND PROPERTY INSTALL_RPATH "$<TARGET_FILE_DIR:xllr>;$<TARGET_FILE_DIR:xllr>/lib")
+set_property(TARGET xllr APPEND PROPERTY INSTALL_RPATH "$ORIGIN;$ORIGIN/lib")
 #copy_file_from_project_binary_to_metaffi_home(xllr "xllr${CMAKE_SHARED_LIBRARY_SUFFIX}")
 
 

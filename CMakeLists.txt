@@ -32,7 +32,11 @@ add_ctest_and_catch2_packages()
 # set RPATH
 set(CMAKE_MACOSX_RPATH 1) # tell MacOS RPATH is in use
 list(APPEND CMAKE_INSTALL_RPATH "$ORIGIN")
-list(APPEND CMAKE_INSTALL_RPATH "$ORIGIN/lib")
+
+# target directory
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 # add targets
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/XLLR/)
@@ -51,7 +55,7 @@ install(CODE "set(ENV{METAFFI_HOME}, ${CMAKE_BINARY_DIR})")
 
 # cmake install directory (not cpack)
 set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR})
-set(CMAKE_SKIP_INSTALL_RPATH ON)
+set(CMAKE_SKIP_INSTALL_RPATH OFF)
 
 #-----------------------------------------------------------------------------------------------
 
