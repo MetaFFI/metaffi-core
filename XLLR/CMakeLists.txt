@@ -10,7 +10,6 @@ target_sources(xllr PRIVATE ${sources})
 target_include_directories(xllr PRIVATE ${CMAKE_CURRENT_LIST_DIR} ${Boost_INCLUDE_DIRS} ${METAFFI_SDK})
 target_link_libraries(xllr PRIVATE ${CMAKE_DL_LIBS} Boost::filesystem Boost::thread)
 set_target_properties(xllr PROPERTIES PREFIX "" POSITION_INDEPENDENT_CODE ON)
-link_to_pthread_for_non_windows(xllr)
 
 set_property(TARGET xllr APPEND PROPERTY INSTALL_RPATH "$ORIGIN;$ORIGIN/lib")
 #copy_file_from_project_binary_to_metaffi_home(xllr "xllr${CMAKE_SHARED_LIBRARY_SUFFIX}")

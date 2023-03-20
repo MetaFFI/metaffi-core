@@ -130,27 +130,6 @@ void plugin_utils::remove(const std::string& name)
 		std::cout << "Deleting: " << xllr_path.str() << std::endl;
 		boost::filesystem::remove(xllr_path.str());
 	}
-
-#ifndef _WIN32
-	std::cout << "unlinking..." << std::endl;
-	std::string install_path = get_install_path();
-	
-	std::vector<std::string> to_remove_files
-	{
-			{ (boost::format("xllr.%1%%2%") % name % boost::dll::shared_library::suffix().generic_string()).str() },
-			{ (boost::format("metaffi.compiler.%1%%2%") % name % boost::dll::shared_library::suffix().generic_string()).str() }
-	};
-	
-	#ifdef __linux__
-		boost::filesystem::remove((boost::format("/user/lib/%1%") % to_remove_files[0]).str() );
-		boost::filesystem::remove((boost::format("/user/lib/%1%") % to_remove_files[1]).str() );
-	
-	#elif __apple__
-		boost::filesystem::remove((boost::format("/user/local/lib/%1%") % to_remove_files[0]).str() );
-		boost::filesystem::remove((boost::format("/user/local/lib/%1%") % to_remove_files[1]).str() );
-		
-	#endif
-#endif
 	
 	std::cout << "Done removing" << name << std::endl;
 }
