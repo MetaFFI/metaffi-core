@@ -216,42 +216,43 @@ void plugin_utils::validate_plugin(const boost::filesystem::path& decompressed_p
 //--------------------------------------------------------------------
 void plugin_utils::copy_plugin_package(const boost::filesystem::path& decompressed_plugin_path)
 {
-	std::string target_path = get_install_path()+"/"+decompressed_plugin_path.filename().generic_string();
+	std::string target_path = get_install_path();
 	std::filesystem::copy(decompressed_plugin_path.generic_string(), target_path, std::filesystem::copy_options::recursive | std::filesystem::copy_options::overwrite_existing);
 	boost::filesystem::remove_all(decompressed_plugin_path);
 	
-	// move plugin files to METAFFI_HOME
-	boost::filesystem::recursive_directory_iterator rdi(target_path);
-	boost::filesystem::recursive_directory_iterator end_rdi;
-	for (; rdi != end_rdi; rdi++)
-	{
-		if(is_regular_file(rdi->path()))
-		{
-			std::string filename = rdi->path().filename().generic_string();
-			transform(filename.begin(), filename.end(), filename.begin(), ::tolower);
-			if( filename.find("xllr.") != std::string::npos ||
-			    filename.find("metaffi.compiler.") != std::string::npos ||
-			    filename.find("metaffi.idl.") != std::string::npos)
-			{
-				auto src = rdi->path();
-				auto dst = rdi->path().parent_path().parent_path().append(rdi->path().filename());
-				boost::filesystem::copy_file(src, dst, boost::filesystem::copy_option::overwrite_if_exists);
-				boost::filesystem::remove(rdi->path());
-			}
-		}
-	}
-	
-	// if target_path is empty, remove it
-	if(boost::filesystem::is_empty(target_path))
-	{
-		boost::filesystem::remove(target_path);
-	}
+//	// move plugin files to METAFFI_HOME
+//	boost::filesystem::recursive_directory_iterator rdi(target_path);
+//	boost::filesystem::recursive_directory_iterator end_rdi;
+//	for (; rdi != end_rdi; rdi++)
+//	{
+//		if(is_regular_file(rdi->path()))
+//		{
+//			std::string filename = rdi->path().filename().generic_string();
+//			transform(filename.begin(), filename.end(), filename.begin(), ::tolower);
+//			if( filename.find("xllr.") != std::string::npos ||
+//			    filename.find("metaffi.compiler.") != std::string::npos ||
+//			    filename.find("metaffi.idl.") != std::string::npos)
+//			{
+//				auto src = rdi->path();
+//				auto dst = rdi->path().parent_path().parent_path().append(rdi->path().filename());
+//				boost::filesystem::copy_file(src, dst, boost::filesystem::copy_option::overwrite_if_exists);
+//				boost::filesystem::remove(rdi->path());
+//			}
+//		}
+//	}
+//
+//	// if target_path is empty, remove it
+//	if(boost::filesystem::is_empty(target_path))
+//	{
+//		boost::filesystem::remove(target_path);
+//	}
 }
 //--------------------------------------------------------------------
 void plugin_utils::pack(const std::vector<std::string>& files_and_dirs, const std::string& root)
 {
 	// compress directory
 	miniz_cpp::zip_file file;
+	std::string candidate;
 	std::string name;
 	plugin_type t;
 	for(auto& file_or_dir : files_and_dirs)
@@ -275,15 +276,26 @@ void plugin_utils::pack(const std::vector<std::string>& files_and_dirs, const st
 		if(name.empty())
 		{
 			std::string temp;
-			if(extract_plugin_name_and_type(p, temp, t)){
-				name = temp;
+			if(extract_plugin_name_and_type(p, temp, t))
+			{
+				if(t == idl_plugin){ // if IDL plugin - use as name only if there's no other plugin type
+					candidate = temp;
+				}
+				else {
+					name = temp;
+				}
+				
 			}
 		}
 	}
 	
-	if(name.empty())
+	if(name.empty() && !candidate.empty())
 	{
-		throw std::runtime_error("Did not find any MetaFFI plugin file");
+		name = candidate;
+	}
+	else if(name.empty())
+	{
+		throw std::runtime_error("Did not detect \"MetaFFI plugin\" within given files");
 	}
 	
 	file.save(name+".mffipack");
@@ -306,7 +318,15 @@ bool plugin_utils::extract_plugin_name_and_type(const boost::filesystem::path& p
 	std::sregex_iterator matches_begin(filename.begin(), filename.end(), plugin_name_pattern); // match and extract plugin name
 	if(matches_begin != std::sregex_iterator() && matches_begin->size() > 1) // make sure subgroup got matched
 	{
-		out_name = (*matches_begin)[1].str();
+		if((*matches_begin)[1].matched){
+			out_name = (*matches_begin)[1].str();
+		}
+		else if((*matches_begin)[2].matched){
+			out_name = (*matches_begin)[2].str();
+		}
+		else{
+			out_name = (*matches_begin)[3].str();
+		}
 		
 		std::transform(filename.begin(), filename.end(), filename.begin(), ::tolower);
 		if(filename.find("metaffi.compiler.") != std::string::npos)

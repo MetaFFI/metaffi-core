@@ -39,7 +39,7 @@ cli_executor::cli_executor(int argc, char** argv) :
 		("list", "List installed MetaFFI plugins");
 	
 	_pack_options.add_options()
-		("files", po::value<std::vector<std::string>>(), "Files to pack relative to the root directory")
+		("files", po::value<std::vector<std::string>>()->multitoken(), "Files to pack relative to the root directory")
 		("root", po::value<std::string>(), "Root directory of files to pack");
 	
 	_plugin_options.add(_pack_options);
@@ -144,7 +144,7 @@ bool cli_executor::compile()
 bool cli_executor::plugin()
 {
 	// compile menu
-	po::store(po::command_line_parser(this->_argc, this->_argv).options(_plugin_options).options(_pack_options).allow_unregistered().run(), vm);
+	po::store(po::command_line_parser(this->_argc, this->_argv).options(_plugin_options).allow_unregistered().run(), vm);
 	po::notify(vm);
 	
 	if(vm.count("install") > 0 && vm.count("remove") > 0)
@@ -185,11 +185,13 @@ bool cli_executor::plugin()
 	}
 	else if(vm.count("pack"))
 	{
+		po::store(po::command_line_parser(this->_argc, this->_argv).options(_pack_options).allow_unregistered().run(), vm);
+		po::notify(vm);
 		if(vm.count("root") == 0){
-			throw std::runtime_error("Please specify package name");
+			throw std::runtime_error("Please specify root path of files to pack");
 		}
 		
-		if(vm.count("root") == 0){
+		if(vm.count("files") == 0){
 			throw std::runtime_error("Please specify files to pack");
 		}
 		
@@ -209,7 +211,7 @@ bool cli_executor::plugin()
 		else
 		{
 			std::cout << "No plugins installed :-(" << std::endl;
-			std::cout << "Start installing using \"metaffi plugin -install [URL or local path]\" command!" << std::endl;
+			std::cout << "Start installing using \"metaffi --plugin --install [URL or local path]\" command!" << std::endl;
 		}
 	}
 	else
