@@ -217,6 +217,11 @@ void plugin_utils::validate_plugin(const boost::filesystem::path& decompressed_p
 void plugin_utils::copy_plugin_package(const boost::filesystem::path& decompressed_plugin_path)
 {
 	std::string target_path = get_install_path();
+	if(std::filesystem::exists(decompressed_plugin_path.generic_string()+"/notes.txt")) // remove installation notes
+	{
+		std::filesystem::remove(decompressed_plugin_path.generic_string()+"/notes.txt");
+	}
+	
 	std::filesystem::copy(decompressed_plugin_path.generic_string(), target_path, std::filesystem::copy_options::recursive | std::filesystem::copy_options::overwrite_existing);
 	boost::filesystem::remove_all(decompressed_plugin_path);
 	
