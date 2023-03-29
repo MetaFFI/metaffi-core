@@ -101,7 +101,7 @@ void plugin_utils::install(const std::string& url_or_path)
 	
 	// print install message, if one exists
 	if(!msg.empty()){
-		std::cout << "Installation Notes:" << std::endl << msg << std::endl;
+		std::cout << "Installation Notes:" << std::endl << "-------------------" << std::endl << msg << std::endl;
 	}
 	
 	std::cout << "Installation completed" << std::endl;
