@@ -7,6 +7,9 @@
 //--------------------------------------------------------------------
 class language_plugin_interface_wrapper : public language_plugin_interface
 {
+public:
+	static std::shared_ptr<language_plugin_interface_wrapper> load(const std::string& lang);
+	
 private:
 	std::shared_ptr<boost::dll::detail::import_type<void(void)>::type> pinit;
 	std::shared_ptr<boost::dll::detail::import_type<void(const char*, uint32_t, const char*, uint32_t, const char*, uint32_t, const char*, uint32_t, char**, uint32_t*)>::type> pcompile_to_guest;

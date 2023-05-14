@@ -8,13 +8,14 @@ namespace po = boost::program_options;
 int main(int argc, char** argv)
 {
 	try
-	{	
+	{
 		cli_executor cexec(argc, argv);
+		
 		if(!cexec.parse())
 		{
 			return 2;
 		}
-
+		
 	}
 	catch(std::exception& err)
 	{
@@ -26,7 +27,7 @@ int main(int argc, char** argv)
 		handle_exception();
 		return 1;
 	}
-
+	
 	return 0;
 }
 //--------------------------------------------------------------------

@@ -4,6 +4,7 @@
 #include <utils/plugin_loader.hpp>
 
 using namespace metaffi::utils;
+std::unordered_map<std::string,std::shared_ptr<language_plugin_interface_wrapper>> compiler_plugins;
 
 //--------------------------------------------------------------------
 language_plugin_interface_wrapper::language_plugin_interface_wrapper(const std::string& plugin_filename_without_extension)
@@ -43,5 +44,27 @@ void language_plugin_interface_wrapper::compile_from_host(const char* idl_def_js
 								output_path, output_path_length,
 								host_options, host_options_length,
 								out_err, out_err_len);
+}
+//--------------------------------------------------------------------
+std::shared_ptr<language_plugin_interface_wrapper> language_plugin_interface_wrapper::load(const std::string& lang)
+{
+	std::stringstream compiler_plugin_name;
+	compiler_plugin_name << "metaffi.compiler." << lang;
+	
+	std::shared_ptr<language_plugin_interface_wrapper> loaded_plugin;
+	auto compiler_plugin_iter = compiler_plugins.find(compiler_plugin_name.str());
+	if(compiler_plugin_iter == compiler_plugins.end())
+	{
+		loaded_plugin = std::make_shared<language_plugin_interface_wrapper>(compiler_plugin_name.str());
+		loaded_plugin->init();
+		
+		compiler_plugins[compiler_plugin_name.str()] = loaded_plugin;
+	}
+	else
+	{
+		loaded_plugin = compiler_plugin_iter->second;
+	}
+	
+	return loaded_plugin;
 }
 //--------------------------------------------------------------------

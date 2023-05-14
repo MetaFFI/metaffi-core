@@ -1,6 +1,5 @@
 #include "runtime_plugin_interface_wrapper.h"
 #include <utils/scope_guard.hpp>
-#include <boost/filesystem.hpp>
 #include <utils/function_loader.hpp>
 #include <utils/plugin_loader.hpp>
 

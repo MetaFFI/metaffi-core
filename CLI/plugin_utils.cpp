@@ -1,7 +1,5 @@
 #include "plugin_utils.h"
 #include <algorithm>
-#include <boost/filesystem.hpp>
-#include <filesystem>
 #include <boost/dll.hpp>
 #include <boost/algorithm/string.hpp>
 #include <regex>
@@ -25,9 +23,9 @@ std::vector<std::string> plugin_utils::list()
 	std::vector<std::string> res;
 	
 	// get all plugin files and extract the names
-	boost::filesystem::directory_iterator end_di;
+	std::filesystem::directory_iterator end_di;
 	
-	for(boost::filesystem::directory_iterator di(get_install_path()) ; di != end_di ; di++)
+	for(std::filesystem::directory_iterator di(get_install_path()) ; di != end_di ; di++)
 	{
 		std::string name;
 		plugin_type t;
@@ -57,12 +55,12 @@ void plugin_utils::install(const std::string& url_or_path)
 	std::string lowered_url_or_path = url_or_path;
 	std::transform(lowered_url_or_path.begin(), lowered_url_or_path.end(), lowered_url_or_path.begin(), [](unsigned char c){ return std::tolower(c); });
 	
-	boost::filesystem::path compressed_plugin_path;
+	std::filesystem::path compressed_plugin_path;
 	bool is_delete_file = false;
 	scope_guard sg([&]()
 	{
-		if(is_delete_file && boost::filesystem::exists(compressed_plugin_path)){
-			boost::filesystem::remove(compressed_plugin_path);
+		if(is_delete_file && std::filesystem::exists(compressed_plugin_path)){
+			std::filesystem::remove(compressed_plugin_path);
 		}
 	});
 	
@@ -74,7 +72,7 @@ void plugin_utils::install(const std::string& url_or_path)
 	else
 	{
 		compressed_plugin_path = url_or_path;
-		if(!boost::filesystem::exists(compressed_plugin_path)){
+		if(!std::filesystem::exists(compressed_plugin_path)){
 			throw std::runtime_error("Plugin path doesn't exist");
 		}
 	}
@@ -82,14 +80,14 @@ void plugin_utils::install(const std::string& url_or_path)
 	auto decompressed_plugin_path = decompress(compressed_plugin_path);
 	validate_plugin(decompressed_plugin_path);
 	
-	boost::filesystem::path install_message_file = decompressed_plugin_path;
+	std::filesystem::path install_message_file = decompressed_plugin_path;
 	install_message_file.append("notes.txt");
 	std::string msg;
-	if(boost::filesystem::exists(install_message_file))
+	if(std::filesystem::exists(install_message_file))
 	{
 		std::ifstream file;
 		file.open(install_message_file.generic_string(), std::ios_base::binary);
-		const boost::uintmax_t sz = boost::filesystem::file_size(install_message_file);
+		const boost::uintmax_t sz = std::filesystem::file_size(install_message_file);
 		msg.resize(static_cast< std::size_t >(sz), '\0');
 		if (sz > 0u)
 		{
@@ -119,16 +117,16 @@ void plugin_utils::remove(const std::string& name)
 	std::stringstream xllr_path;
 	xllr_path << get_install_path() << "/xllr." << name << boost::dll::shared_library::suffix().generic_string();
 	
-	if(boost::filesystem::exists(compiler_path.str()))
+	if(std::filesystem::exists(compiler_path.str()))
 	{
 		std::cout << "Deleting: " << compiler_path.str() << std::endl;
-		boost::filesystem::remove(compiler_path.str());
+		std::filesystem::remove(compiler_path.str());
 	}
 	
-	if(boost::filesystem::exists(xllr_path.str()))
+	if(std::filesystem::exists(xllr_path.str()))
 	{
 		std::cout << "Deleting: " << xllr_path.str() << std::endl;
-		boost::filesystem::remove(xllr_path.str());
+		std::filesystem::remove(xllr_path.str());
 	}
 	
 	std::cout << "Done removing" << name << std::endl;
@@ -145,10 +143,10 @@ std::string plugin_utils::get_install_path()
 	return pmetaffi_home;
 }
 //--------------------------------------------------------------------
-boost::filesystem::path plugin_utils::download(const std::string& url)
+std::filesystem::path plugin_utils::download(const std::string& url)
 {
 	uri link(url);
-	boost::filesystem::path compressed_plugin_path = link.get_path().substr( link.get_path().rfind('/')+1 );
+	std::filesystem::path compressed_plugin_path = link.get_path().substr( link.get_path().rfind('/')+1 );
 	
 	std::stringstream ss_download_cmds;
 	
@@ -167,16 +165,16 @@ boost::filesystem::path plugin_utils::download(const std::string& url)
 	return compressed_plugin_path;
 }
 //--------------------------------------------------------------------
-boost::filesystem::path plugin_utils::decompress(const boost::filesystem::path& compressed_file)
+std::filesystem::path plugin_utils::decompress(const std::filesystem::path& compressed_file)
 {
 	// unzip/untar to temp directory.
 	
-	boost::filesystem::path temp_dir = boost::filesystem::temp_directory_path();
+	std::filesystem::path temp_dir = std::filesystem::temp_directory_path();
 	std::string plugin_path(compressed_file.filename().generic_string());
 	boost::replace_all(plugin_path, compressed_file.extension().generic_string(), "");
 	temp_dir.append(plugin_path);
-	boost::filesystem::remove_all(temp_dir); // make sure dir is clear
-	boost::filesystem::create_directories(temp_dir);
+	std::filesystem::remove_all(temp_dir); // make sure dir is clear
+	std::filesystem::create_directories(temp_dir);
 	
 	miniz_cpp::zip_file file(compressed_file.generic_string());
 	file.extractall(temp_dir.generic_string());
@@ -184,11 +182,11 @@ boost::filesystem::path plugin_utils::decompress(const boost::filesystem::path& 
 	return temp_dir;
 }
 //--------------------------------------------------------------------
-void plugin_utils::validate_plugin(const boost::filesystem::path& decompressed_plugin_path)
+void plugin_utils::validate_plugin(const std::filesystem::path& decompressed_plugin_path)
 {
 	// make sure at least one compiler/runtime/idl plugin exists
-	boost::filesystem::recursive_directory_iterator rdi(decompressed_plugin_path);
-	boost::filesystem::recursive_directory_iterator end_rdi;
+	std::filesystem::recursive_directory_iterator rdi(decompressed_plugin_path);
+	std::filesystem::recursive_directory_iterator end_rdi;
 	
 	bool is_exist_plugin = false;
 	
@@ -214,7 +212,7 @@ void plugin_utils::validate_plugin(const boost::filesystem::path& decompressed_p
 	
 }
 //--------------------------------------------------------------------
-void plugin_utils::copy_plugin_package(const boost::filesystem::path& decompressed_plugin_path)
+void plugin_utils::copy_plugin_package(const std::filesystem::path& decompressed_plugin_path)
 {
 	std::string target_path = get_install_path();
 	if(std::filesystem::exists(decompressed_plugin_path.generic_string()+"/notes.txt")) // remove installation notes
@@ -223,11 +221,11 @@ void plugin_utils::copy_plugin_package(const boost::filesystem::path& decompress
 	}
 	
 	std::filesystem::copy(decompressed_plugin_path.generic_string(), target_path, std::filesystem::copy_options::recursive | std::filesystem::copy_options::overwrite_existing);
-	boost::filesystem::remove_all(decompressed_plugin_path);
+	std::filesystem::remove_all(decompressed_plugin_path);
 	
 //	// move plugin files to METAFFI_HOME
-//	boost::filesystem::recursive_directory_iterator rdi(target_path);
-//	boost::filesystem::recursive_directory_iterator end_rdi;
+//	std::filesystem::recursive_directory_iterator rdi(target_path);
+//	std::filesystem::recursive_directory_iterator end_rdi;
 //	for (; rdi != end_rdi; rdi++)
 //	{
 //		if(is_regular_file(rdi->path()))
@@ -240,16 +238,16 @@ void plugin_utils::copy_plugin_package(const boost::filesystem::path& decompress
 //			{
 //				auto src = rdi->path();
 //				auto dst = rdi->path().parent_path().parent_path().append(rdi->path().filename());
-//				boost::filesystem::copy_file(src, dst, boost::filesystem::copy_option::overwrite_if_exists);
-//				boost::filesystem::remove(rdi->path());
+//				std::filesystem::copy_file(src, dst, std::filesystem::copy_option::overwrite_if_exists);
+//				std::filesystem::remove(rdi->path());
 //			}
 //		}
 //	}
 //
 //	// if target_path is empty, remove it
-//	if(boost::filesystem::is_empty(target_path))
+//	if(std::filesystem::is_empty(target_path))
 //	{
-//		boost::filesystem::remove(target_path);
+//		std::filesystem::remove(target_path);
 //	}
 }
 //--------------------------------------------------------------------
@@ -262,7 +260,7 @@ void plugin_utils::pack(const std::vector<std::string>& files_and_dirs, const st
 	plugin_type t;
 	for(auto& file_or_dir : files_and_dirs)
 	{
-		boost::filesystem::path p(root);
+		std::filesystem::path p(root);
 		p.append(file_or_dir);
 		
 		if(!exists(p))
@@ -272,7 +270,7 @@ void plugin_utils::pack(const std::vector<std::string>& files_and_dirs, const st
 			throw std::runtime_error(ss.str());
 		}
 		
-		if(p.filename_is_dot() || p.filename_is_dot_dot()){
+		if(p.filename().string() == "." || p.filename().string() == ".."){
 			continue;
 		}
 		
@@ -306,9 +304,9 @@ void plugin_utils::pack(const std::vector<std::string>& files_and_dirs, const st
 	file.save(name+".mffipack");
 }
 //--------------------------------------------------------------------
-bool plugin_utils::extract_plugin_name_and_type(const boost::filesystem::path& path, std::string& out_name, plugin_type& out_type)
+bool plugin_utils::extract_plugin_name_and_type(const std::filesystem::path& path, std::string& out_name, plugin_type& out_type)
 {
-	if(path.filename_is_dot() || path.filename_is_dot_dot() || is_directory(path)){
+	if(path.filename().string() == "." || path.filename().string() == ".." || std::filesystem::is_directory(path)){
 		return false;
 	}
 	

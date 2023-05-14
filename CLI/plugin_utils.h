@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <vector>
-#include <boost/filesystem.hpp>
+#include <filesystem>
 
 enum plugin_type
 {
@@ -26,10 +26,10 @@ public:
 
 private:
 	static std::string get_install_path();
-	static boost::filesystem::path download(const std::string& url);
-	static boost::filesystem::path decompress(const boost::filesystem::path& compressed_file);
+	static std::filesystem::path download(const std::string& url);
+	static std::filesystem::path decompress(const std::filesystem::path& compressed_file);
 	
-	static void validate_plugin(const boost::filesystem::path& decompressed_plugin_path);
-	static void copy_plugin_package(const boost::filesystem::path& decompressed_plugin_path);
-	static bool extract_plugin_name_and_type(const boost::filesystem::path& path, std::string& out_name, plugin_type& out_type);
+	static void validate_plugin(const std::filesystem::path& decompressed_plugin_path);
+	static void copy_plugin_package(const std::filesystem::path& decompressed_plugin_path);
+	static bool extract_plugin_name_and_type(const std::filesystem::path& path, std::string& out_name, plugin_type& out_type);
 };

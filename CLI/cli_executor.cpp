@@ -1,8 +1,10 @@
 #include "cli_executor.h"
 #include <iostream>
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include "plugin_utils.h"
 #include "compiler.h"
+#include "idl_plugin_interface_wrapper.h"
+
 
 namespace po = boost::program_options;
 
@@ -21,13 +23,12 @@ cli_executor::cli_executor(int argc, char** argv) :
 		("help", "Display this help page");
 
 	_compile_options.add_options()
-		("idl", po::value<std::string>() , "Functions definitions (IDL or source code)")
-		("block-name,n", po::value<std::string>(), "Name of embedded code block")
-		("block-pattern", po::value<std::string>(), "Regular expression pattern of embedded code blocks names")
+		("idl", po::value<std::string>() , "Functions definitions (IDL, source code or supported IDL plugin target)")
+		("idl-plugin", po::value<std::string>()->default_value(std::string()), "IDL plugin to parse target")
 		("print-idl", "Prints MetaFFI IDL")
 		("guest-lang,g", "Language the functions are implemented as stated in the IDL (i.e. guest language)")
 		("host-langs,h", po::value<std::vector<std::string>>()->multitoken() , "List of languages the functions are called from (i.e. host languages)")
-		("output,o", po::value<std::string>()->default_value(boost::filesystem::current_path().generic_string()) , "Directory to generate the files (Default: current directory)")
+		("output,o", po::value<std::string>()->default_value(std::filesystem::current_path().generic_string()) , "Directory to generate the files (Default: current directory)")
 		("host-options", po::value<std::string>()->default_value(std::string()) , "Options to the host language plugin (format: key1=val1,key2=val2...)");
 
 	_plugin_options.add_options()
@@ -98,44 +99,24 @@ bool cli_executor::compile()
 		return false;
 	}
 	
-	std::string embedded_name;
-	bool is_pattern = false;
-	
-	if(vm.count("block-name") || vm.count("block-pattern"))
-	{
-		if(vm.count("block-name") && vm.count("block-pattern"))
-		{
-			std::cout << "block-name and block-pattern cannot be used together. Choose one of them" << std::endl;
-			_compile_options.print(std::cout);
-			return false;
-		}
-		
-		if(vm.count("block-name"))
-		{
-			embedded_name = vm["block-name"].as<std::string>();
-		}
-		else
-		{
-			embedded_name = vm["block-pattern"].as<std::string>();
-			is_pattern = true;
-		}
-	}
-	
-	compiler cmp(vm["idl"].as<std::string>(), vm["output"].as<std::string>(), embedded_name, is_pattern);
-	
+	// extract JSON IDL
+	std::string extracted_idl = idl_extractor::extract(vm["idl"].as<std::string>(), vm["idl-plugin"].as<std::string>());
 	if(vm.count("print-idl"))
 	{
-		cmp.print_idl();
+		std::cout << extracted_idl << std::endl;
 	}
 	
-	if(vm.count("guest-lang"))
+	
+	compiler cmp(extracted_idl, vm["output"].as<std::string>());
+	
+	if(vm.count("guest-lang")) // compile guest code
 	{
-		cmp.compile_to_guest();
+		cmp.compile_guest();
 	}
 	
-	if(vm.count("host-langs"))
+	if(vm.count("host-langs")) // compile host code
 	{
-		cmp.compile_from_host(vm["host-langs"].as<std::vector<std::string>>(), vm["host-options"].as<std::string>());
+		cmp.compile_host(vm["host-langs"].as<std::vector<std::string>>(), vm["host-options"].as<std::string>());
 	}
 	
 	return true;
