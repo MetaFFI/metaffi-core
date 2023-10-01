@@ -22,7 +22,7 @@ compiler::compiler(const std::string& idl_json, const std::string& output_path)
 	}
 }
 //--------------------------------------------------------------------
-void compiler::compile_guest()
+void compiler::compile_guest(const std::string& guest_options)
 {
 	// load compiler
 	std::shared_ptr<language_plugin_interface_wrapper> loaded_plugin = language_plugin_interface_wrapper::load(this->get_guest_language() );
@@ -33,8 +33,7 @@ void compiler::compile_guest()
 	// call compile_to_guest with IDL path and output path
 	loaded_plugin->compile_to_guest(_idl_json.c_str(), _idl_json.size(),
 	                                _output_path.c_str(), _output_path.size(),
-	                                nullptr, 0,
-	                                nullptr, 0,
+	                                guest_options.c_str(), guest_options.size(),
 	                                &err, &err_len);
 	
 	if(err)
@@ -78,12 +77,13 @@ std::string compiler::get_guest_language() const
 	std::smatch matches;
 	if(!std::regex_search(_idl_json, matches, target_lang_regex))
 	{
-		throw std::runtime_error("MetaFFI IDL does not contains \"metaffi_target_language\" tag");
+		printf("+++ IDL JSON: %s\n", _idl_json.c_str());
+		throw std::runtime_error("MetaFFI IDL does not contains \"target_language\" tag");
 	}
 	
 	if(matches.size() < 2)
 	{
-		throw std::runtime_error("metaffi_target_language tag does not contain target language");
+		throw std::runtime_error("target_language tag does not contain target language");
 	}
 	
 	return matches[1].str();

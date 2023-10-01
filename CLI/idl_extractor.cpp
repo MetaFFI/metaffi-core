@@ -9,6 +9,7 @@
 //--------------------------------------------------------------------
 std::string idl_extractor::extract(const std::string& idl_path, const std::string& user_selected_idl_plugin)
 {
+    printf("++++++++++++++++ idl_path=%s\n", idl_path.c_str());
 	std::string expanded_idl_path = metaffi::utils::expand_env(idl_path);
 	std::filesystem::path fs_idl_path = std::filesystem::path(expanded_idl_path);
 	
@@ -44,18 +45,8 @@ std::string idl_extractor::extract(const std::string& idl_path, const std::strin
 	// otherwise, place in "idl" full path name.
 	std::string idl_json;
 	std::string err;
-	if(std::filesystem::is_directory(fs_idl_path))
-	{
-		pidl_plugin->parse_idl(fs_idl_path.string(), expanded_idl_path, idl_json, err);
-	}
-	else
-	{
-		std::ifstream ifs(expanded_idl_path);
-		std::string file_contents = std::string(std::istreambuf_iterator<char>(ifs), std::istreambuf_iterator<char>());
-		ifs.close();
-		
-		pidl_plugin->parse_idl(fs_idl_path.string(), file_contents, idl_json, err);
-	}
+	printf("++++++++++++++++ expanded_idl_path=%s\n", expanded_idl_path.c_str());
+    pidl_plugin->parse_idl("", expanded_idl_path, idl_json, err);
 	
 	if(!err.empty())
 	{

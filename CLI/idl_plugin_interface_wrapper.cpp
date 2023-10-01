@@ -21,14 +21,14 @@ void idl_plugin_interface_wrapper::init()
 	(*this->pinit_plugin)();
 }
 //--------------------------------------------------------------------
-void idl_plugin_interface_wrapper::parse_idl(const char* idl_name, uint32_t idl_name_length,
-                                                               const char* idl, uint32_t idl_length,
-                                                               char** out_idl_def_json, uint32_t* out_idl_def_json_length,
-                                                               char** out_err, uint32_t* out_err_len)
+void idl_plugin_interface_wrapper::parse_idl(const char* source_code, uint32_t source_code_length,
+                                           const char* file_or_dir_path, uint32_t file_or_dir_path_length,
+                                           char** out_idl_def_json, uint32_t* out_idl_def_json_length,
+                                           char** out_err, uint32_t* out_err_len)
 {
 	*out_err = nullptr;
 	*out_err_len = 0;
-	(*this->pparse_idl)(idl_name, idl_name_length, idl, idl_length, out_idl_def_json, out_idl_def_json_length, out_err, out_err_len);
+	(*this->pparse_idl)(source_code, source_code_length, file_or_dir_path, file_or_dir_path_length, out_idl_def_json, out_idl_def_json_length, out_err, out_err_len);
 }
 //--------------------------------------------------------------------
 std::shared_ptr<idl_plugin_interface_wrapper> idl_plugin_interface_wrapper::load(const std::string& idl_name)
@@ -49,7 +49,7 @@ std::shared_ptr<idl_plugin_interface_wrapper> idl_plugin_interface_wrapper::load
 	return idl;
 }
 //--------------------------------------------------------------------
-void idl_plugin_interface_wrapper::parse_idl(const std::string& idl_name, const std::string& idl, std::string& out_idl_def_json, std::string& out_err)
+void idl_plugin_interface_wrapper::parse_idl(const std::string& source_code, const std::string& file_or_dir_path, std::string& out_idl_def_json, std::string& out_err)
 {
 	{
 		char* err = nullptr;
@@ -57,8 +57,8 @@ void idl_plugin_interface_wrapper::parse_idl(const std::string& idl_name, const 
 		char* idl_def_json = nullptr;
 		uint32_t idl_def_json_length = 0;
 		
-		this->parse_idl(idl_name.c_str(), idl_name.length(),
-		                idl.c_str(), idl.length(),
+		this->parse_idl(source_code.c_str(), source_code.length(),
+                        file_or_dir_path.c_str(), file_or_dir_path.length(),
 		                &idl_def_json, &idl_def_json_length,
 		                &err, &err_len);
 		

@@ -29,7 +29,8 @@ cli_executor::cli_executor(int argc, char** argv) :
 		("guest-lang,g", "Language the functions are implemented as stated in the IDL (i.e. guest language)")
 		("host-langs,h", po::value<std::vector<std::string>>()->multitoken() , "List of languages the functions are called from (i.e. host languages)")
 		("output,o", po::value<std::string>()->default_value(std::filesystem::current_path().generic_string()) , "Directory to generate the files (Default: current directory)")
-		("host-options", po::value<std::string>()->default_value(std::string()) , "Options to the host language plugin (format: key1=val1,key2=val2...)");
+		("host-options", po::value<std::string>()->default_value(std::string()) , "Options to the host language plugin (format: key1=val1,key2=val2...)")
+		("guest-options", po::value<std::string>()->default_value(std::string()) , "Options to the guest language plugin (format: key1=val1,key2=val2...)");
 
 	_plugin_options.add_options()
 		("install,i", po::value<std::string>(), "Download & install MetaFFI plugin from given URL or local path")
@@ -111,7 +112,7 @@ bool cli_executor::compile()
 	
 	if(vm.count("guest-lang")) // compile guest code
 	{
-		cmp.compile_guest();
+		cmp.compile_guest(vm["guest-options"].as<std::string>());
 	}
 	
 	if(vm.count("host-langs")) // compile host code

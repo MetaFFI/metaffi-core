@@ -20,7 +20,7 @@ public:
 	compiler(const compiler&) = delete;
 	compiler(const compiler&&) = delete;
 
-	void compile_guest();
+	void compile_guest(const std::string& guest_options);
 	void compile_host(const std::vector<std::string>& langs, const std::string& host_options);
 
 private:

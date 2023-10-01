@@ -24,16 +24,16 @@ public:
 
 	void init() override;
 
-	virtual void parse_idl(const std::string& idl_name,
-	               const std::string& idl,
+	virtual void parse_idl(const std::string& source_code,
+	               const std::string& file_or_dir_path,
 	               std::string& out_idl_def_json,
 	               std::string& out_err);
 	
 	/**
 	 * Compile IDL to code called from XLLR to the foreign function
 	 */
-	void parse_idl(const char* idl_name, uint32_t idl_name_length,
-	               const char* idl, uint32_t idl_length,
+	void parse_idl(const char* source_code, uint32_t source_code_length,
+	               const char* file_or_dir_path, uint32_t file_or_dir_path_length,
 	               char** out_idl_def_json, uint32_t* out_idl_def_json_length,
 	               char** out_err, uint32_t* out_err_len) override;
 };
@@ -44,24 +44,51 @@ public:
 	explicit json_idl_plugin() = default;
 	void init() override{}
 	
-	void parse_idl(const std::string& idl_name,
-	               const std::string& idl,
+	void parse_idl(const std::string& source_code,
+	               const std::string& file_or_dir_path,
 	               std::string& out_idl_def_json,
 	               std::string& out_err) override
 	{
-		out_idl_def_json = idl;
-		out_err.clear();
+		if(!source_code.empty())
+		{
+			out_idl_def_json = source_code;
+			out_err.clear();
+		}
+		else
+		{
+			std::ifstream file(file_or_dir_path);
+			out_idl_def_json = std::string((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+			out_err.clear();
+		}
 	}
 	
-	void parse_idl(const char* idl_name, uint32_t idl_name_length,
-	               const char* idl, uint32_t idl_length,
+	void parse_idl(const char* source_code, uint32_t source_code_length,
+	               const char* file_or_dir_path, uint32_t file_or_dir_path_length,
 	               char** out_idl_def_json, uint32_t* out_idl_def_json_length,
 	               char** out_err, uint32_t* out_err_len) override
 	{
-		*out_idl_def_json = const_cast<char*>(idl);
-		*out_idl_def_json_length = idl_length;
-		*out_err = nullptr;
-		*out_err_len = 0;
+		std::string idl_def_json;
+		std::string err;
+
+		parse_idl(std::string(source_code, source_code_length),
+		          std::string(file_or_dir_path, file_or_dir_path_length),
+		          idl_def_json,
+		          err);
+
+		if(!err.empty())
+		{
+			*out_err = (char*)calloc(1, err.length()+1);
+			err.copy(*out_err, err.length());
+			*out_err_len = err.length();
+			*out_idl_def_json_length = 0;
+		}
+		else
+		{
+			*out_idl_def_json = (char*)calloc(1, idl_def_json.length()+1);
+			idl_def_json.copy(*out_idl_def_json, idl_def_json.length());
+			*out_idl_def_json_length = idl_def_json.length();
+			*out_err_len = 0;
+		}
 	}
 };
 //--------------------------------------------------------------------
