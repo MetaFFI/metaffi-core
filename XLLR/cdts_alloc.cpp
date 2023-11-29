@@ -2,7 +2,7 @@
 #include "runtime/cdt_structs.h"
 #include <cstdlib>
 
-thread_local cdt cdt_cache[50];
+thread_local cdt cdt_cache[cdts_cache_size];
 thread_local cdts cdts_cache[2];
 
 //--------------------------------------------------------------------
