@@ -14,7 +14,7 @@ runtime_plugin_interface_wrapper::runtime_plugin_interface_wrapper(const std::st
 	
 	this->pfree_runtime = load_func<void(char**,uint32_t*)>(*plugin_dll, "free_runtime");
 	
-	this->pload_function = load_func<void**(const char*, uint32_t, const char*, uint32_t, metaffi_types_ptr, metaffi_types_ptr, int8_t, int8_t, char**,uint32_t*)>(*plugin_dll, "load_function");
+	this->pload_function = load_func<void**(const char*, uint32_t, const char*, uint32_t, metaffi_types_with_alias_ptr, metaffi_types_with_alias_ptr, int8_t, int8_t, char**,uint32_t*)>(*plugin_dll, "load_function");
 	
 	this->pfree_function = load_func<void(void*, char**, uint32_t*)>(*plugin_dll, "free_function");
 	
@@ -34,7 +34,7 @@ void runtime_plugin_interface_wrapper::free_runtime(char** err, uint32_t* err_le
 	(*this->pfree_runtime)(err, err_len);
 }
 //--------------------------------------------------------------------
-void** runtime_plugin_interface_wrapper::load_function(const char* module_path, uint32_t module_path_len, const char* function_path, uint32_t function_path_len, metaffi_types_ptr params_types, metaffi_types_ptr retvals_types, uint8_t params_count, uint8_t retval_count, char** err, uint32_t* err_len)
+void** runtime_plugin_interface_wrapper::load_function(const char* module_path, uint32_t module_path_len, const char* function_path, uint32_t function_path_len, metaffi_types_with_alias_ptr params_types, metaffi_types_with_alias_ptr retvals_types, uint8_t params_count, uint8_t retval_count, char** err, uint32_t* err_len)
 {
 	*err = nullptr;
 	*err_len = 0;

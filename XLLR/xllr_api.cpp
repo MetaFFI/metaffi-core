@@ -76,7 +76,7 @@ void free_runtime_plugin(const char* runtime_plugin, uint32_t runtime_plugin_len
     handle_err(err, err_len,);
 }
 //--------------------------------------------------------------------
-void** load_function(const char* runtime_plugin_name, uint32_t runtime_plugin_name_len, const char* module_path, uint32_t module_path_len, const char* function_path, uint32_t function_path_len, metaffi_types_ptr params_types, metaffi_types_ptr retval_types, uint8_t params_count, uint8_t retval_count, char** err, uint32_t* err_len)
+void** load_function(const char* runtime_plugin_name, uint32_t runtime_plugin_name_len, const char* module_path, uint32_t module_path_len, const char* function_path, uint32_t function_path_len, metaffi_types_with_alias_ptr params_types, metaffi_types_with_alias_ptr retval_types, uint8_t params_count, uint8_t retval_count, char** err, uint32_t* err_len)
 {
 	try
     {
@@ -88,14 +88,14 @@ void** load_function(const char* runtime_plugin_name, uint32_t runtime_plugin_na
 			p = g_runtime_plugins.load(runtime_plugin_name_str);
 		}
 		
-	    std::vector<uint64_t> params;
+	    std::vector<metaffi_type_with_alias> params;
 		if(params_types != nullptr){
-			params = std::vector<uint64_t>(params_types, params_types+params_count);
+			params = std::vector<metaffi_type_with_alias>(params_types, params_types+params_count);
 		}
 		
-	    std::vector<uint64_t> retvals;
+	    std::vector<metaffi_type_with_alias> retvals;
 		if(retval_types != nullptr){
-			retvals = std::vector<uint64_t>(retval_types, retval_types+retval_count);
+			retvals = std::vector<metaffi_type_with_alias>(retval_types, retval_types+retval_count);
 		}
 		
 	    auto res = p->load_function(std::string(module_path, module_path_len), std::string(function_path, function_path_len), params, retvals);
