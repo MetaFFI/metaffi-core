@@ -6,7 +6,7 @@ thread_local cdt cdt_cache[cdts_cache_size];
 thread_local cdts cdts_cache[2];
 
 //--------------------------------------------------------------------
-extern "C" cdts* alloc_cdts_buffer(metaffi_size params_count, metaffi_types ret_count)
+extern "C" cdts* alloc_cdts_buffer(metaffi_size params_count, metaffi_size ret_count)
 {
 	if(params_count == 0 && ret_count == 0){
 		return nullptr;
