@@ -46,7 +46,15 @@ alloc_numeric_on_heap_impl(metaffi_uint8);
 alloc_numeric_on_heap_impl(metaffi_size);
 alloc_numeric_on_heap_impl(metaffi_bool);
 alloc_numeric_on_heap_impl(metaffi_type);
-alloc_numeric_on_heap_impl(metaffi_handle);
+struct cdt_metaffi_handle *alloc_metaffi_handle_on_heap(metaffi_handle val, uint64_t runtime_id)
+{
+	auto res = (struct cdt_metaffi_handle *) malloc(sizeof(struct cdt_metaffi_handle));
+	res->val = val;
+	res->runtime_id = runtime_id;
+	return res;
+}
+struct cdt_metaffi_handle *alloc_metaffi_handle_array_on_heap(metaffi_size length)
+{ return (struct cdt_metaffi_handle *) calloc(length, sizeof(struct cdt_metaffi_handle)); }
 alloc_string_on_heap_impl(metaffi_string8, char);
 alloc_string_on_heap_impl(metaffi_string16, char16_t);
 alloc_string_on_heap_impl(metaffi_string32, char32_t);
@@ -101,7 +109,8 @@ get_numeric_element_impl(metaffi_uint16);
 get_numeric_element_impl(metaffi_uint8);
 get_numeric_element_impl(metaffi_size);
 get_numeric_element_impl(metaffi_bool);
-get_numeric_element_impl(metaffi_handle);
+struct cdt_metaffi_handle get_metaffi_handle_element(struct cdt_metaffi_handle *arr, int index)
+{ return arr[index]; }
 get_string_element_impl(metaffi_string8);
 get_string_element_impl(metaffi_string16);
 get_string_element_impl(metaffi_string32);
@@ -136,7 +145,8 @@ set_numeric_element_impl(metaffi_uint16);
 set_numeric_element_impl(metaffi_uint8);
 set_numeric_element_impl(metaffi_bool);
 set_numeric_element_impl(metaffi_size);
-set_numeric_element_impl(metaffi_handle);
+void set_metaffi_handle_element(struct cdt_metaffi_handle *arr, int index, metaffi_handle val, uint64_t runtime_id)
+{ arr[index].val = val; arr[index].runtime_id = runtime_id; }
 set_string_element_impl(metaffi_string8);
 set_string_element_impl(metaffi_string16);
 set_string_element_impl(metaffi_string32);
