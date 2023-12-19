@@ -140,6 +140,31 @@ std::shared_ptr<foreign_function> runtime_plugin::load_function(const std::strin
 
 }
 //--------------------------------------------------------------------
+std::shared_ptr<foreign_function> runtime_plugin::load_callable(void* load_callable_context, const std::vector<metaffi_type_with_alias>& params_types, const std::vector<metaffi_type_with_alias>& retval_types)
+{
+	// no need to load runtime, this can be called only from the target runtime
+
+	boost::unique_lock<boost::shared_mutex> exclusive_lock(this->_mutex);
+
+	char* err = nullptr;
+	uint32_t err_len = 0;
+	void** pxcall_and_context = this->_loaded_plugin->load_callable(load_callable_context,
+												!params_types.empty() ? (metaffi_types_with_alias_ptr)&params_types[0] : nullptr,
+												!retval_types.empty() ? (metaffi_types_with_alias_ptr)&retval_types[0] : nullptr,
+												params_types.size(), retval_types.size(), &err, &err_len);
+
+	if(err != nullptr)
+	{
+		scope_guard sg([&](){ free(err); });
+		throw std::runtime_error(std::string(err, err_len));
+	}
+
+	// insert sorted (because of binary search)
+	auto fmod = std::make_shared<foreign_function>(this->_loaded_plugin, pxcall_and_context);
+	this->_loaded_functions[pxcall_and_context] = fmod;
+	return fmod;
+}
+//--------------------------------------------------------------------
 void runtime_plugin::free_function(void** pff)
 {
 	boost::upgrade_lock<boost::shared_mutex> read_lock(this->_mutex); // read lock

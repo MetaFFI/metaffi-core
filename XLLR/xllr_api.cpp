@@ -113,6 +113,43 @@ void** load_function(const char* runtime_plugin_name, uint32_t runtime_plugin_na
 	return nullptr;
 }
 //--------------------------------------------------------------------
+void** load_callable(const char* runtime_plugin_name, uint32_t runtime_plugin_name_len, void* load_callable_context, metaffi_types_with_alias_ptr params_types, metaffi_types_with_alias_ptr retval_types, uint8_t params_count, uint8_t retval_count, char** err, uint32_t* err_len)
+{
+	try
+	{
+		std::string runtime_plugin_name_str(runtime_plugin_name, runtime_plugin_name_len);
+		std::shared_ptr<runtime_plugin> p = g_runtime_plugins.get(runtime_plugin_name_str);
+
+		if(!p) // if plugin not loaded - lazy load plugin
+		{
+			p = g_runtime_plugins.load(runtime_plugin_name_str);
+		}
+
+		std::vector<metaffi_type_with_alias> params;
+		if(params_types != nullptr){
+			params = std::vector<metaffi_type_with_alias>(params_types, params_types+params_count);
+		}
+
+		std::vector<metaffi_type_with_alias> retvals;
+		if(retval_types != nullptr){
+			retvals = std::vector<metaffi_type_with_alias>(retval_types, retval_types+retval_count);
+		}
+
+		auto res = p->load_callable(load_callable_context, params, retvals);
+		if(!res)
+		{
+			std::stringstream ss;
+			ss << "Failed to load callable from runtime plugin " << runtime_plugin_name_str;
+			throw std::runtime_error(ss.str());
+		}
+
+		return (void**)res.get();
+	}
+	handle_err(err, err_len,);
+
+	return nullptr;
+}
+//--------------------------------------------------------------------
 void free_function(const char* runtime_plugin_name, uint32_t runtime_plugin_len, void** pff, char** err, uint32_t* err_len)
 {
     try
