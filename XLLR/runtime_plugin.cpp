@@ -140,7 +140,7 @@ std::shared_ptr<foreign_function> runtime_plugin::load_function(const std::strin
 
 }
 //--------------------------------------------------------------------
-std::shared_ptr<foreign_function> runtime_plugin::load_callable(void* load_callable_context, const std::vector<metaffi_type_with_alias>& params_types, const std::vector<metaffi_type_with_alias>& retval_types)
+std::shared_ptr<foreign_function> runtime_plugin::make_callable(void* make_callable_context, const std::vector<metaffi_type_with_alias>& params_types, const std::vector<metaffi_type_with_alias>& retval_types)
 {
 	// no need to load runtime, this can be called only from the target runtime
 
@@ -148,7 +148,7 @@ std::shared_ptr<foreign_function> runtime_plugin::load_callable(void* load_calla
 
 	char* err = nullptr;
 	uint32_t err_len = 0;
-	void** pxcall_and_context = this->_loaded_plugin->load_callable(load_callable_context,
+	void** pxcall_and_context = this->_loaded_plugin->make_callable(make_callable_context,
 												!params_types.empty() ? (metaffi_types_with_alias_ptr)&params_types[0] : nullptr,
 												!retval_types.empty() ? (metaffi_types_with_alias_ptr)&retval_types[0] : nullptr,
 												params_types.size(), retval_types.size(), &err, &err_len);

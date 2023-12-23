@@ -113,7 +113,7 @@ void** load_function(const char* runtime_plugin_name, uint32_t runtime_plugin_na
 	return nullptr;
 }
 //--------------------------------------------------------------------
-void** load_callable(const char* runtime_plugin_name, uint32_t runtime_plugin_name_len, void* load_callable_context, metaffi_types_with_alias_ptr params_types, metaffi_types_with_alias_ptr retval_types, uint8_t params_count, uint8_t retval_count, char** err, uint32_t* err_len)
+void** make_callable(const char* runtime_plugin_name, uint32_t runtime_plugin_name_len, void* make_callable_context, metaffi_types_with_alias_ptr params_types, metaffi_types_with_alias_ptr retval_types, uint8_t params_count, uint8_t retval_count, char** err, uint32_t* err_len)
 {
 	try
 	{
@@ -135,7 +135,7 @@ void** load_callable(const char* runtime_plugin_name, uint32_t runtime_plugin_na
 			retvals = std::vector<metaffi_type_with_alias>(retval_types, retval_types+retval_count);
 		}
 
-		auto res = p->load_callable(load_callable_context, params, retvals);
+		auto res = p->make_callable(make_callable_context, params, retvals);
 		if(!res)
 		{
 			std::stringstream ss;
