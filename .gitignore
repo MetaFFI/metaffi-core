@@ -65,3 +65,6 @@ go.sum
 vendor/
 
 installer/install_metaffi.py
+installer/metaffi_installer.exe
+installer/metaffi_installer
+installer/metaffi_installer.py

@@ -77,7 +77,6 @@ std::string compiler::get_guest_language() const
 	std::smatch matches;
 	if(!std::regex_search(_idl_json, matches, target_lang_regex))
 	{
-		printf("+++ IDL JSON: %s\n", _idl_json.c_str());
 		throw std::runtime_error("MetaFFI IDL does not contains \"target_language\" tag");
 	}
 	
