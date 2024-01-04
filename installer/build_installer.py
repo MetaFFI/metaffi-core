@@ -18,18 +18,20 @@ def zip_installer_files(files: List[str], root: str):
 	# Use the highest compression level
 	with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED, compresslevel=9) as zf:
 		for file in files:
-			
+			the_root = root
 			arcname = file
-			is_sanity_test_file = 'lang-plugin-go/api/tests/sanity' in arcname
-			if 'lang-plugin-go/api/tests/sanity' in arcname:
-				arcname = arcname.replace('../../lang-plugin-go/api/tests/sanity', 'tests/go/sanity')
+			is_specifies_arcname = False
+			if isinstance(file, tuple):
+				is_specifies_arcname = True
+				arcname = file[1]
+				file = file[0]
 			
 			# Read the file from the filename using the parameters and value "root+file"
 			# Write the file into the zip with the filename written in "file" value
-			if is_sanity_test_file:  # don't use root, as files are not in the METAFFI_HOME dir
+			if is_specifies_arcname:  # don't use root, as files are not in the METAFFI_HOME dir
 				zf.write(file, arcname=arcname)
 			else:
-				zf.write(root + file, arcname=arcname)
+				zf.write(the_root + file, arcname=arcname)
 	
 	# Get the byte array from the buffer
 	return buffer.getvalue()
@@ -68,15 +70,35 @@ def get_windows_metaffi_files():
 	files.extend(['xllr.go.dll', 'metaffi.compiler.go.dll'])
 	
 	# openjdk plugin
-	files.extend(['xllr.openjdk.dll', 'xllr.openjdk.bridge.jar', 'xllr.openjdk.jni.bridge.dll'])
+	files.extend(['xllr.openjdk.dll', 'xllr.openjdk.bridge.jar', 'xllr.openjdk.jni.bridge.dll', 'metaffi.api.jar'])
 	
-	# sanity tests
-	go_sanity = glob.glob('../../lang-plugin-go/api/tests/sanity/**', recursive=True)
-	if len(go_sanity) == 0:
-		raise Exception('failed to find Go plugin sanity tests')
 	
-	go_sanity = [path for path in go_sanity if os.path.isfile(path) and not path.endswith('.pyc')]
-	files.extend(go_sanity)
+	# Tests to run after installation
+	def add_dir_test_files(paths, arc_root, prefix_to_remove):
+		# sanity tests
+		test_files = []
+		for path in paths:
+			found = glob.glob(path, recursive=True)
+			if found is None or len(found) == 0:
+				raise Exception('failed to find files in '+path)
+			
+			test_files.extend(found)
+		
+		if len(test_files) == 0:
+			raise Exception('failed to find dir files plugin sanity tests')
+		
+		test_files = [path for path in test_files if os.path.isfile(path) and not path.endswith('.pyc')]
+		tmp = []
+		for f in test_files:
+			tmp.append((os.path.abspath(f), arc_root+f.replace(prefix_to_remove, '')))
+		test_files = tmp
+		files.extend(test_files)
+	
+	add_dir_test_files(['../../lang-plugin-go/api/tests/sanity/**'], 'tests/go/sanity/', '../../lang-plugin-go/api/tests/sanity')
+	add_dir_test_files(['../../lang-plugin-openjdk/api/tests/sanity/**'], 'tests/openjdk/sanity/', '../../lang-plugin-openjdk/api/tests/sanity')
+	files.append(tuple((os.path.abspath('../../lang-plugin-openjdk/api/tests/hamcrest-core-1.3.jar'), 'tests/openjdk/sanity/hamcrest-core-1.3.jar')))
+	files.append(tuple((os.path.abspath('../../lang-plugin-openjdk/api/tests/junit-platform-console-standalone-1.10.1.jar'), 'tests/openjdk/sanity/junit-platform-console-standalone-1.10.1.jar')))
+	add_dir_test_files(['../../lang-plugin-python3/api/tests/sanity/**'], 'tests/python3/sanity/', '../../lang-plugin-python3/api/tests/sanity')
 	
 	return files
 
@@ -94,7 +116,35 @@ def get_ubuntu_metaffi_files():
 	files.extend(['xllr.go.so', 'metaffi.compiler.go.so'])
 	
 	# openjdk plugin
-	files.extend(['xllr.openjdk.so', 'xllr.openjdk.bridge.jar', 'xllr.openjdk.jni.bridge.so'])
+	files.extend(['xllr.openjdk.so', 'xllr.openjdk.bridge.jar', 'xllr.openjdk.jni.bridge.so', 'metaffi.api.jar'])
+	
+	# Tests to run after installation
+	def add_dir_test_files(paths, arc_root, prefix_to_remove):
+		# sanity tests
+		test_files = []
+		for path in paths:
+			found = glob.glob(path, recursive=True)
+			if found is None or len(found) == 0:
+				raise Exception('failed to find files in '+path)
+			
+			test_files.extend(found)
+		
+		if len(test_files) == 0:
+			raise Exception('failed to find dir files plugin sanity tests')
+		
+		test_files = [path for path in test_files if os.path.isfile(path) and not path.endswith('.pyc')]
+		tmp = []
+		for f in test_files:
+			tmp.append((os.path.abspath(f), arc_root+f.replace(prefix_to_remove, '')))
+		test_files = tmp
+		files.extend(test_files)
+	
+	add_dir_test_files(['../../lang-plugin-openjdk/api/tests/sanity/**'], 'tests/openjdk/sanity/', '../../lang-plugin-openjdk/api/tests/sanity')
+	files.append(tuple((os.path.abspath('../../lang-plugin-openjdk/api/tests/hamcrest-core-1.3.jar'), 'tests/openjdk/sanity/hamcrest-core-1.3.jar')))
+	files.append(tuple((os.path.abspath('../../lang-plugin-openjdk/api/tests/junit-platform-console-standalone-1.10.1.jar'), 'tests/openjdk/sanity/junit-platform-console-standalone-1.10.1.jar')))
+	add_dir_test_files(['../../lang-plugin-python3/api/tests/sanity/**'], 'tests/python3/sanity/', '../../lang-plugin-python3/api/tests/sanity')
+	add_dir_test_files(['../../lang-plugin-go/api/tests/sanity/**'], 'tests/go/sanity/', '../../lang-plugin-go/api/tests/sanity')
+	
 	
 	return files
 
