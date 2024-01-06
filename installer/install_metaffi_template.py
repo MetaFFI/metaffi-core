@@ -140,7 +140,7 @@ def unpack_into_directory(base64_zip_file, target_directory):
 refresh_env: typing.Callable
 
 
-def run_command(command: str, raise_if_command_fail: bool = False):
+def run_command(command: str, raise_if_command_fail: bool = False, is_refresh_envvars: bool = True):
 	global refresh_env
 	
 	if is_windows():
@@ -149,7 +149,9 @@ def run_command(command: str, raise_if_command_fail: bool = False):
 		print(f'{os.getcwd()}$ {command}')
 		
 	# create a process object with the command line
-	refresh_env()
+	if is_refresh_envvars:
+		refresh_env()
+		
 	try:
 		command_split = shlex.split(os.path.expanduser(os.path.expandvars(command)))
 		output = subprocess.run(command_split, capture_output=True, text=True)
@@ -161,7 +163,7 @@ def run_command(command: str, raise_if_command_fail: bool = False):
 		return e.returncode, str(e.stdout), str(e.stderr)
 	except FileNotFoundError as e:
 		if raise_if_command_fail:
-			raise f'Failed running {command} with {e.strerror}.\nfile: {e.filename}'
+			raise Exception(f'Failed running {command} with {e.strerror}.\nfile: {e.filename}')
 		
 		return f'Failed running {command} with {e.strerror}.\nfile: {e.filename}', '', ''
 	
@@ -276,7 +278,7 @@ def add_metaffi_home_to_cgo_cflags(install_dir: str, set_system_env_var: typing.
 			raise Exception(f'Set -I"{install_dir}" to CGO_CFLAGS and try again')
 		
 		if cgo_cflags is not None and cgo_cflags != '':
-			new_cflags = f'{cgo_cflags} -I{install_dir}'
+			new_cflags = f'"{cgo_cflags} -I{install_dir}"'
 			set_system_env_var('CGO_CFLAGS', f'{new_cflags}')
 		else:
 			set_system_env_var('CGO_CFLAGS', f'-I{install_dir}')
@@ -327,6 +329,12 @@ def python_exe() -> str:
 
 # ========== unitests ==========
 
+def get_exe_format(execname):
+	if platform.system() == 'Windows':
+		return f'{execname}.exe'
+	else:
+		return f'./{execname}'
+
 
 def run_go_tests():
 	
@@ -347,10 +355,10 @@ def run_go_tests():
 			raise Exception(f'sanity failed in {path}.\n{stdout}{stderr}')
 	
 	print('Go --> Python3.11')
-	run(os.environ['METAFFI_HOME']+'/tests/go/sanity/python3', 'python3.exe')
+	run(os.environ['METAFFI_HOME']+'/tests/go/sanity/python3', get_exe_format('python3'))
 	
 	print('Go --> OpenJDK')
-	run(os.environ['METAFFI_HOME']+'/tests/go/sanity/openjdk', 'openjdk.exe')
+	run(os.environ['METAFFI_HOME']+'/tests/go/sanity/openjdk', get_exe_format('openjdk'))
 
 
 def run_openjdk_tests():
@@ -364,13 +372,16 @@ def run_openjdk_tests():
 		bridge = metaffi_home+'xllr.openjdk.bridge.jar'
 		junit = metaffi_home+'/tests/openjdk/sanity/junit-platform-console-standalone-1.10.1.jar'
 		hamcrest = metaffi_home+'/tests/openjdk/sanity/hamcrest-core-1.3.jar'
-		error_code, stdout, stderr = run_command(f'javac -cp "{openjdk_api};{bridge};{junit};{hamcrest}" {test_file}')
+		
+		
+		
+		error_code, stdout, stderr = run_command(f'javac -cp "{openjdk_api}{os.pathsep}{bridge}{os.pathsep}{junit}{os.pathsep}{hamcrest}" {test_file}')
 		
 		if error_code != 0:
 			raise Exception(f'Failed compiling openjdk test:\n{stdout}{stderr}')
 		
 		test_file = os.path.splitext(test_file)[0]
-		error_code, stdout, stderr = run_command(f'java -jar "{junit}" -cp ".;{openjdk_api};{bridge};{hamcrest}" -d. --select-class {test_file} --details=Verbose --fail-if-no-tests --disable-banner')
+		error_code, stdout, stderr = run_command(f'java -jar "{junit}" -cp ".{os.pathsep}{openjdk_api}{os.pathsep}{bridge}{os.pathsep}{hamcrest}" -d. --select-class {test_file} --details=Verbose --fail-if-no-tests --disable-banner')
 		
 		if error_code != 0:
 			raise Exception(f'Failed {test_file} with {error_code} openjdk sanity test:\n{stdout}{stderr}')
@@ -885,15 +896,17 @@ def get_ubuntu_machine_environment_variable(name: str) -> str | None:
 
 def set_ubuntu_environment_variable(file: str, name: str, value: str):
 	
-	existing_val = get_ubuntu_user_environment_variable(name)
+	existing_val = get_ubuntu_environment_variable(name, file)
 	
 	if existing_val is not None:  # env var exists
 		if existing_val == value:
 			return
 		
-		update_value = ask_user(f'Existing PYTHONHOME is {existing_val}, do you want me to update it to {value} in {file}?', 'y', ['y', 'n'])
+		update_value = ask_user(f'Existing {name} is {existing_val}, do you want me to update it to {value} in {file}?', 'y', ['y', 'n'])
 		if update_value == 'n':
-			raise Exception(f'PYTHONHOME must be {value} in order to continue. Make sure PYTHONHOME points to the required python and try again')
+			raise Exception(f'{name} must be {value} in order to continue. Make sure {name} points to the required python and try again')
+		
+		print(f'Updating environment variable {name}={value} in {file}')
 		
 		# update value
 		err_code, stdout, stderr = run_shell(f"sed -i 's/{name}={existing_val}/{name}={value}/g' {file}")
@@ -902,7 +915,7 @@ def set_ubuntu_environment_variable(file: str, name: str, value: str):
 		return
 		
 	else:  # var doesn't exist
-		
+		print(f'Adding environment variable {name}={value} in {file}')
 		err_code, stdout, stderr = run_shell(f"echo 'export {name}={value}' >> {file}")
 		if err_code != 0:
 			raise Exception(f"Failed to add {name} environment variable to {file}: {stdout}{stderr}")
@@ -915,7 +928,7 @@ def set_ubuntu_user_environment_variable(name: str, value: str):
 
 
 def set_ubuntu_machine_environment_variable(name: str, value: str):
-	set_ubuntu_environment_variable('/etc/environment', name, value)
+	set_ubuntu_system_environment_variable(name, value)
 	
 
 def check_python_ubuntu_installed(version: str):
@@ -934,11 +947,7 @@ def check_python_ubuntu_installed(version: str):
 			raise Exception(f"{exe_name} cannot be found. Please check your Python {version} is installed, and in PATH environment variable")
 		
 		# install python
-		exit_code, stdout, stderr = run_command('add-apt-repository ppa:deadsnakes/ppa')
-		if exit_code != 0:
-			raise Exception(f'Failed to add ppa:deadsnakes/paa. Output\n{stdout}{stderr}')
-		
-		exit_code, stdout, stderr = run_command(f'apt install {exe_name}')
+		exit_code, stdout, stderr = run_command(f'apt install {exe_name} -y')
 		if exit_code != 0:
 			raise Exception(f'Failed to install {exe_name}. Output\n{stdout}{stderr}')
 	
@@ -1055,41 +1064,25 @@ def check_ubuntu_java_jni_installed(version: str):
 			raise Exception(f'Although libjvm.so has been linked to /usr/lib/, I still cannot load it.\nError: {str(e)}')
 
 
-def verify_beautiful_soup_installed():
-	command = "pip show beautifulsoup4"
-	err_code, stdout, stderr = run_command(command)
+def verify_pip_packages_installed():
 	
-	if err_code == 0:
-		return
-	
-	reply = ask_user('BeautifulSoup python package is required for the installation, do you want me to install it?', 'y', ['y', 'n'])
-	if reply == 'n':
-		raise Exception('Cannot continue without BeautifulSoup, please install it and try again')
-	
-	command = f"{sys.executable} -m pip install beautifulsoup4"
-	err_code, stdout, stderr = run_command(command)
-	if err_code != 0:
-		raise Exception(f"Failed installing beautifulsoup with the command {command}. Error code {err_code}. Output:\n{stdout}{stderr}")
-		
 	command = "pip show python-dotenv"
-	err_code, stdout, stderr = run_command(command)
+	err_code, stdout, stderr = run_command(command, False, False)
 	
-	if err_code == 0:
-		return
-	
-	reply = ask_user('python-dotenv python package is required for the installation, do you want me to install it?', 'y', ['y', 'n'])
-	if reply == 'n':
-		raise Exception('Cannot continue without python-dotenv, please install it and try again')
-	
-	command = f"{sys.executable} -m pip install python-dotenv"
-	err_code, stdout, stderr = run_command(command)
 	if err_code != 0:
-		raise Exception(f"Failed installing python-dotenv with the command {command}. Error code {err_code}. Output:\n{stdout}{stderr}")
+		reply = ask_user('python-dotenv python package is required for the installation, do you want me to install it?', 'y', ['y', 'n'])
+		if reply == 'n':
+			raise Exception('Cannot continue without python-dotenv, please install it and try again')
+		
+		command = f"{sys.executable} -m pip install python-dotenv"
+		err_code, stdout, stderr = run_command(command, True, False)
+		if err_code != 0:
+			raise Exception(f"Failed installing python-dotenv with the command {command}. Error code {err_code}. Output:\n{stdout}{stderr}")
+	
 
 
 def install_ubuntu_go():
-	verify_beautiful_soup_installed()
-	from bs4 import BeautifulSoup
+	
 	import requests
 	
 	# Define the command to check if Go exists
@@ -1128,30 +1121,15 @@ def install_ubuntu_go():
 			
 	else:  # Go does not exist
 		
-		# Get the links from "https://go.dev/dl/"
-		response = requests.get("https://go.dev/dl/")
-		
-		# Parse the response using BeautifulSoup
-		soup = BeautifulSoup(response.text, "html.parser")
-		
-		# Find all the links that have the name "go1.{versionmajor}.{versionminor}.linux-amd64.tar.gz"
-		links = soup.find_all("a", href=lambda x: x and x.endswith(".linux-amd64.tar.gz"))
-		
-		# Extract the version numbers from the links
-		versions = [link["href"].split("/")[-1].replace("go", "").replace(".linux-amd64.tar.gz", "") for link in links]
-		
-		# Find the highest version number
-		highest_version = max(versions)
-		
-		# Find the link that corresponds to the highest version number
-		highest_link = f"https://golang.org{[link['href'] for link in links if highest_version in link['href']][0]}"
+		# install go 1.21.5
+		dl_link = f"https://go.dev/dl/go1.21.5.linux-amd64.tar.gz"
 		
 		with tempfile.TemporaryDirectory() as tempdir:
 			# Get the file name from the link
-			filename = highest_link.split("/")[-1]
+			filename = dl_link.split("/")[-1]
 			filepath = os.path.join(tempdir, filename)
 			
-			urllib.request.urlretrieve(highest_link, filepath)
+			urllib.request.urlretrieve(dl_link, filepath)
 			
 			# Extract the file to "/usr/local"
 			command = f"tar -C /usr/local -xzf {filepath}"
@@ -1193,9 +1171,13 @@ def check_ubuntu_gcc_installed():
 
 def check_pip_installed():
 	
-	err_code, stdout, stderr = run_command(f'{sys.executable} -m pip --version')
+	exit_code, stdout, stderr = run_command('add-apt-repository ppa:deadsnakes/ppa -y', False, False)
+	if exit_code != 0:
+		raise Exception(f'Failed to add ppa:deadsnakes/paa. Output\n{stdout}{stderr}')
+	
+	err_code, stdout, stderr = run_command(f'{sys.executable} -m pip --version', False, False)
 	if err_code != 0:
-		err_code, stdout, stderr = run_command(f'apt install python3-pip -y')
+		err_code, stdout, stderr = run_command(f'apt install python3-pip -y', False, False)
 		if err_code != 0:
 			raise Exception(f'Failed to install pip with error code: {err_code}. Output:\n{stdout}{stderr}')
 
@@ -1203,9 +1185,13 @@ def check_pip_installed():
 def check_ubuntu_prerequisites():
 	print('checking prerequisites...')
 	
+	check_pip_installed()
+	verify_pip_packages_installed()
+	
+	refresh_env()  # refresh environment variables, in case the environment is not up-to-date
+	
 	# python
 	check_python_ubuntu_installed('3.11')
-	check_pip_installed()
 	check_ubuntu_pythonhome('3.11')
 	
 	# openjdk
@@ -1261,8 +1247,6 @@ def install_ubuntu():
 	is_admin = os.getuid() == 0
 	if not is_admin:
 		raise Exception('Installer must run as sudo')
-	
-	refresh_env()  # refresh environment variables, in case the environment is not up-to-date
 	
 	check_ubuntu_prerequisites()
 	
