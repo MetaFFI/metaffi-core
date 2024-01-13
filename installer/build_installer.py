@@ -64,10 +64,10 @@ def get_windows_metaffi_files():
 	files.extend(['xllr.dll', 'metaffi.exe', 'bin/vcruntime140_1d.dll', 'bin/vcruntime140d.dll', 'bin/boost_filesystem-mt-gd-x64.dll', 'bin/boost_program_options-mt-gd-x64.dll', 'bin/msvcp140d.dll', 'bin/ucrtbased.dll', 'include/cdt_capi_loader.c', 'include/cdt_capi_loader.h', 'include/cdt_structs.h', 'include/metaffi_primitives.h'])
 	
 	# python plugin
-	files.extend(['xllr.python3.dll'])
+	files.extend(['xllr.python311.dll'])
 	
 	# go plugin
-	files.extend(['xllr.go.dll', 'metaffi.compiler.go.dll'])
+	files.extend(['xllr.go.dll', 'metaffi.compiler.go.dll', 'metaffi.idl.go.dll'])
 	
 	# openjdk plugin
 	files.extend(['xllr.openjdk.dll', 'xllr.openjdk.bridge.jar', 'xllr.openjdk.jni.bridge.dll', 'metaffi.api.jar'])
@@ -94,11 +94,9 @@ def get_windows_metaffi_files():
 		test_files = tmp
 		files.extend(test_files)
 	
-	add_dir_test_files(['../../lang-plugin-go/api/tests/sanity/**'], 'tests/go/sanity/', '../../lang-plugin-go/api/tests/sanity')
-	add_dir_test_files(['../../lang-plugin-openjdk/api/tests/sanity/**'], 'tests/openjdk/sanity/', '../../lang-plugin-openjdk/api/tests/sanity')
-	files.append(tuple((os.path.abspath('../../lang-plugin-openjdk/api/tests/hamcrest-core-1.3.jar'), 'tests/openjdk/sanity/hamcrest-core-1.3.jar')))
-	files.append(tuple((os.path.abspath('../../lang-plugin-openjdk/api/tests/junit-platform-console-standalone-1.10.1.jar'), 'tests/openjdk/sanity/junit-platform-console-standalone-1.10.1.jar')))
-	add_dir_test_files(['../../lang-plugin-python3/api/tests/sanity/**'], 'tests/python3/sanity/', '../../lang-plugin-python3/api/tests/sanity')
+	add_dir_test_files(['../../lang-plugin-go/api/tests/**'], 'tests/go/', '../../lang-plugin-go/api/tests')
+	add_dir_test_files(['../../lang-plugin-openjdk/api/tests/**'], 'tests/openjdk/', '../../lang-plugin-openjdk/api/tests')
+	add_dir_test_files(['../../lang-plugin-python3/api/tests/**'], 'tests/python3/', '../../lang-plugin-python3/api/tests')
 	
 	return files
 
@@ -110,10 +108,10 @@ def get_ubuntu_metaffi_files():
 	files.extend(['xllr.so', 'metaffi', 'lib/libstdc++.so.6.0.30', 'lib/libc.so.6', 'lib/libboost_thread-mt-d-x64.so.1.79.0', 'lib/libboost_program_options-mt-d-x64.so.1.79.0', 'lib/libboost_filesystem-mt-d-x64.so.1.79.0', 'include/cdt_capi_loader.c', 'include/cdt_capi_loader.h', 'include/cdt_structs.h', 'include/metaffi_primitives.h'])
 	
 	# python plugin
-	files.extend(['xllr.python3.so'])
+	files.extend(['xllr.python311.so'])
 	
 	# go plugin
-	files.extend(['xllr.go.so', 'metaffi.compiler.go.so'])
+	files.extend(['xllr.go.so', 'metaffi.compiler.go.so', 'metaffi.idl.go.so'])
 	
 	# openjdk plugin
 	files.extend(['xllr.openjdk.so', 'xllr.openjdk.bridge.jar', 'xllr.openjdk.jni.bridge.so', 'metaffi.api.jar'])
@@ -139,12 +137,9 @@ def get_ubuntu_metaffi_files():
 		test_files = tmp
 		files.extend(test_files)
 	
-	add_dir_test_files(['../../lang-plugin-openjdk/api/tests/sanity/**'], 'tests/openjdk/sanity/', '../../lang-plugin-openjdk/api/tests/sanity')
-	files.append(tuple((os.path.abspath('../../lang-plugin-openjdk/api/tests/hamcrest-core-1.3.jar'), 'tests/openjdk/sanity/hamcrest-core-1.3.jar')))
-	files.append(tuple((os.path.abspath('../../lang-plugin-openjdk/api/tests/junit-platform-console-standalone-1.10.1.jar'), 'tests/openjdk/sanity/junit-platform-console-standalone-1.10.1.jar')))
-	add_dir_test_files(['../../lang-plugin-python3/api/tests/sanity/**'], 'tests/python3/sanity/', '../../lang-plugin-python3/api/tests/sanity')
-	add_dir_test_files(['../../lang-plugin-go/api/tests/sanity/**'], 'tests/go/sanity/', '../../lang-plugin-go/api/tests/sanity')
-	
+	add_dir_test_files(['../../lang-plugin-go/api/tests/**'], 'tests/go/', '../../lang-plugin-go/api/tests')
+	add_dir_test_files(['../../lang-plugin-openjdk/api/tests/**'], 'tests/openjdk/', '../../lang-plugin-openjdk/api/tests')
+	add_dir_test_files(['../../lang-plugin-python3/api/tests/**'], 'tests/python3/', '../../lang-plugin-python3/api/tests')
 	
 	return files
 

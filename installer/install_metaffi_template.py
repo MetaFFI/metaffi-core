@@ -19,10 +19,25 @@ ubuntu_x64_zip = 'ubuntu_x64_zip_data'
 windows_patched_signal_file = 'Ly8gQ29weXJpZ2h0IDIwMTEgVGhlIEdvIEF1dGhvcnMuIEFsbCByaWdodHMgcmVzZXJ2ZWQuDQovLyBVc2Ugb2YgdGhpcyBzb3VyY2UgY29kZSBpcyBnb3Zlcm5lZCBieSBhIEJTRC1zdHlsZQ0KLy8gbGljZW5zZSB0aGF0IGNhbiBiZSBmb3VuZCBpbiB0aGUgTElDRU5TRSBmaWxlLg0KDQpwYWNrYWdlIHJ1bnRpbWUNCg0KaW1wb3J0ICgNCgkiaW50ZXJuYWwvYWJpIg0KCSJ1bnNhZmUiDQopDQoNCmNvbnN0ICgNCglfU0VNX0ZBSUxDUklUSUNBTEVSUk9SUyA9IDB4MDAwMQ0KCV9TRU1fTk9HUEZBVUxURVJST1JCT1ggID0gMHgwMDAyDQoJX1NFTV9OT09QRU5GSUxFRVJST1JCT1ggPSAweDgwMDANCg0KCV9XRVJfRkFVTFRfUkVQT1JUSU5HX05PX1VJID0gMHgwMDIwDQopDQoNCmZ1bmMgcHJldmVudEVycm9yRGlhbG9ncygpIHsNCgllcnJvcm1vZGUgOj0gc3RkY2FsbDAoX0dldEVycm9yTW9kZSkNCglzdGRjYWxsMShfU2V0RXJyb3JNb2RlLCBlcnJvcm1vZGV8X1NFTV9GQUlMQ1JJVElDQUxFUlJPUlN8X1NFTV9OT0dQRkFVTFRFUlJPUkJPWHxfU0VNX05PT1BFTkZJTEVFUlJPUkJPWCkNCg0KCS8vIERpc2FibGUgV0VSIGZhdWx0IHJlcG9ydGluZyBVSS4NCgkvLyBEbyB0aGlzIGV2ZW4gaWYgV0VSIGlzIGRpc2FibGVkIGFzIGEgd2hvbGUsDQoJLy8gYXMgV0VSIG1pZ2h0IGJlIGVuYWJsZWQgbGF0ZXIgd2l0aCBzZXRUcmFjZWJhY2soIndlciIpDQoJLy8gYW5kIHdlIHN0aWxsIHdhbnQgdGhlIGZhdWx0IHJlcG9ydGluZyBVSSB0byBiZSBkaXNhYmxlZCBpZiB0aGlzIGhhcHBlbnMuDQoJdmFyIHdlcmZsYWdzIHVpbnRwdHINCglzdGRjYWxsMihfV2VyR2V0RmxhZ3MsIGN1cnJlbnRQcm9jZXNzLCB1aW50cHRyKHVuc2FmZS5Qb2ludGVyKCZ3ZXJmbGFncykpKQ0KCXN0ZGNhbGwxKF9XZXJTZXRGbGFncywgd2VyZmxhZ3N8X1dFUl9GQVVMVF9SRVBPUlRJTkdfTk9fVUkpDQp9DQoNCi8vIGVuYWJsZVdFUiByZS1lbmFibGVzIFdpbmRvd3MgZXJyb3IgcmVwb3J0aW5nIHdpdGhvdXQgZmF1bHQgcmVwb3J0aW5nIFVJLg0KZnVuYyBlbmFibGVXRVIoKSB7DQoJLy8gcmUtZW5hYmxlIFdpbmRvd3MgRXJyb3IgUmVwb3J0aW5nDQoJZXJyb3Jtb2RlIDo9IHN0ZGNhbGwwKF9HZXRFcnJvck1vZGUpDQoJaWYgZXJyb3Jtb2RlJl9TRU1fTk9HUEZBVUxURVJST1JCT1ggIT0gMCB7DQoJCXN0ZGNhbGwxKF9TZXRFcnJvck1vZGUsIGVycm9ybW9kZV5fU0VNX05PR1BGQVVMVEVSUk9SQk9YKQ0KCX0NCn0NCg0KLy8gaW4gc3lzX3dpbmRvd3NfMzg2LnMsIHN5c193aW5kb3dzX2FtZDY0LnMsIHN5c193aW5kb3dzX2FybS5zLCBhbmQgc3lzX3dpbmRvd3NfYXJtNjQucw0KZnVuYyBleGNlcHRpb250cmFtcCgpDQpmdW5jIGZpcnN0Y29udGludWV0cmFtcCgpDQpmdW5jIGxhc3Rjb250aW51ZXRyYW1wKCkNCmZ1bmMgc2lncmVzdW1lKCkNCg0KZnVuYyBpbml0RXhjZXB0aW9uSGFuZGxlcigpIHsNCglzdGRjYWxsMihfQWRkVmVjdG9yZWRFeGNlcHRpb25IYW5kbGVyLCAxLCBhYmkuRnVuY1BDQUJJMChleGNlcHRpb250cmFtcCkpDQoJaWYgX0FkZFZlY3RvcmVkQ29udGludWVIYW5kbGVyID09IG5pbCB8fCBHT0FSQ0ggPT0gIjM4NiIgew0KCQkvLyB1c2UgU2V0VW5oYW5kbGVkRXhjZXB0aW9uRmlsdGVyIGZvciB3aW5kb3dzLTM4NiBvcg0KCQkvLyBpZiBWZWN0b3JlZENvbnRpbnVlSGFuZGxlciBpcyB1bmF2YWlsYWJsZS4NCgkJLy8gbm90ZTogU2V0VW5oYW5kbGVkRXhjZXB0aW9uRmlsdGVyIGhhbmRsZXIgd29uJ3QgYmUgY2FsbGVkLCBpZiBkZWJ1Z2dpbmcuDQoJCXN0ZGNhbGwxKF9TZXRVbmhhbmRsZWRFeGNlcHRpb25GaWx0ZXIsIGFiaS5GdW5jUENBQkkwKGxhc3Rjb250aW51ZXRyYW1wKSkNCgl9IGVsc2Ugew0KCQlzdGRjYWxsMihfQWRkVmVjdG9yZWRDb250aW51ZUhhbmRsZXIsIDEsIGFiaS5GdW5jUENBQkkwKGZpcnN0Y29udGludWV0cmFtcCkpDQoJCXN0ZGNhbGwyKF9BZGRWZWN0b3JlZENvbnRpbnVlSGFuZGxlciwgMCwgYWJpLkZ1bmNQQ0FCSTAobGFzdGNvbnRpbnVldHJhbXApKQ0KCX0NCn0NCg0KLy8gaXNBYm9ydCByZXR1cm5zIHRydWUsIGlmIGNvbnRleHQgciBkZXNjcmliZXMgZXhjZXB0aW9uIHJhaXNlZA0KLy8gYnkgY2FsbGluZyBydW50aW1lLmFib3J0IGZ1bmN0aW9uLg0KLy8NCi8vZ286bm9zcGxpdA0KZnVuYyBpc0Fib3J0KHIgKmNvbnRleHQpIGJvb2wgew0KCXBjIDo9IHIuaXAoKQ0KCWlmIEdPQVJDSCA9PSAiMzg2IiB8fCBHT0FSQ0ggPT0gImFtZDY0IiB8fCBHT0FSQ0ggPT0gImFybSIgew0KCQkvLyBJbiB0aGUgY2FzZSBvZiBhbiBhYm9ydCwgdGhlIGV4Y2VwdGlvbiBJUCBpcyBvbmUgYnl0ZSBhZnRlcg0KCQkvLyB0aGUgSU5UMyAodGhpcyBkaWZmZXJzIGZyb20gVU5JWCBPU2VzKS4gTm90ZSB0aGF0IG9uIEFSTSwNCgkJLy8gdGhpcyBtZWFucyB0aGF0IHRoZSBleGNlcHRpb24gSVAgaXMgbm8gbG9uZ2VyIGFsaWduZWQuDQoJCXBjLS0NCgl9DQoJcmV0dXJuIGlzQWJvcnRQQyhwYykNCn0NCg0KLy8gaXNnb2V4Y2VwdGlvbiByZXBvcnRzIHdoZXRoZXIgdGhpcyBleGNlcHRpb24gc2hvdWxkIGJlIHRyYW5zbGF0ZWQNCi8vIGludG8gYSBHbyBwYW5pYyBvciB0aHJvdy4NCi8vDQovLyBJdCBpcyBub3NwbGl0IHRvIGF2b2lkIGdyb3dpbmcgdGhlIHN0YWNrIGluIGNhc2Ugd2UncmUgYWJvcnRpbmcNCi8vIGJlY2F1c2Ugb2YgYSBzdGFjayBvdmVyZmxvdy4NCi8vDQovL2dvOm5vc3BsaXQNCmZ1bmMgaXNnb2V4Y2VwdGlvbihpbmZvICpleGNlcHRpb25yZWNvcmQsIHIgKmNvbnRleHQpIGJvb2wgew0KCS8vIE9ubHkgaGFuZGxlIGV4Y2VwdGlvbiBpZiBleGVjdXRpbmcgaW5zdHJ1Y3Rpb25zIGluIEdvIGJpbmFyeQ0KCS8vIChub3QgV2luZG93cyBsaWJyYXJ5IGNvZGUpLg0KCS8vIFRPRE8obXdodWRzb24pOiBuZWVkcyB0byBsb29wIHRvIHN1cHBvcnQgc2hhcmVkIGxpYnMNCglpZiByLmlwKCkgPCBmaXJzdG1vZHVsZWRhdGEudGV4dCB8fCBmaXJzdG1vZHVsZWRhdGEuZXRleHQgPCByLmlwKCkgew0KCQlyZXR1cm4gZmFsc2UNCgl9DQoNCgkvLyBHbyB3aWxsIG9ubHkgaGFuZGxlIHNvbWUgZXhjZXB0aW9ucy4NCglzd2l0Y2ggaW5mby5leGNlcHRpb25jb2RlIHsNCglkZWZhdWx0Og0KCQlyZXR1cm4gZmFsc2UNCgljYXNlIF9FWENFUFRJT05fQUNDRVNTX1ZJT0xBVElPTjoNCgljYXNlIF9FWENFUFRJT05fSU5fUEFHRV9FUlJPUjoNCgljYXNlIF9FWENFUFRJT05fSU5UX0RJVklERV9CWV9aRVJPOg0KCWNhc2UgX0VYQ0VQVElPTl9JTlRfT1ZFUkZMT1c6DQoJY2FzZSBfRVhDRVBUSU9OX0ZMVF9ERU5PUk1BTF9PUEVSQU5EOg0KCWNhc2UgX0VYQ0VQVElPTl9GTFRfRElWSURFX0JZX1pFUk86DQoJY2FzZSBfRVhDRVBUSU9OX0ZMVF9JTkVYQUNUX1JFU1VMVDoNCgljYXNlIF9FWENFUFRJT05fRkxUX09WRVJGTE9XOg0KCWNhc2UgX0VYQ0VQVElPTl9GTFRfVU5ERVJGTE9XOg0KCWNhc2UgX0VYQ0VQVElPTl9CUkVBS1BPSU5UOg0KCWNhc2UgX0VYQ0VQVElPTl9JTExFR0FMX0lOU1RSVUNUSU9OOiAvLyBicmVha3BvaW50IGFycml2ZXMgdGhpcyB3YXkgb24gYXJtNjQNCgl9DQoJcmV0dXJuIHRydWUNCn0NCg0KY29uc3QgKA0KCWNhbGxiYWNrVkVIID0gaW90YQ0KCWNhbGxiYWNrRmlyc3RWQ0gNCgljYWxsYmFja0xhc3RWQ0gNCikNCg0KLy8gc2lnRmV0Y2hHU2FmZSBpcyBsaWtlIGdldGcoKSBidXQgd2l0aG91dCBwYW5pY2tpbmcNCi8vIHdoZW4gVExTIGlzIG5vdCBzZXQuDQovLyBPbmx5IGltcGxlbWVudGVkIG9uIHdpbmRvd3MvMzg2LCB3aGljaCBpcyB0aGUgb25seQ0KLy8gYXJjaCB0aGF0IGxvYWRzIFRMUyB3aGVuIGNhbGxpbmcgZ2V0ZygpLiBPdGhlcnMNCi8vIHVzZSBhIGRlZGljYXRlZCByZWdpc3Rlci4NCmZ1bmMgc2lnRmV0Y2hHU2FmZSgpICpnDQoNCmZ1bmMgc2lnRmV0Y2hHKCkgKmcgew0KCWlmIEdPQVJDSCA9PSAiMzg2IiB7DQoJCXJldHVybiBzaWdGZXRjaEdTYWZlKCkNCgl9DQoJcmV0dXJuIGdldGcoKQ0KfQ0KDQovLyBzaWd0cmFtcGdvIGlzIGNhbGxlZCBmcm9tIHRoZSBleGNlcHRpb24gaGFuZGxlciBmdW5jdGlvbiwgc2lndHJhbXAsDQovLyB3cml0dGVuIGluIGFzc2VtYmx5IGNvZGUuDQovLyBSZXR1cm4gRVhDRVBUSU9OX0NPTlRJTlVFX0VYRUNVVElPTiBpZiB0aGUgZXhjZXB0aW9uIGlzIGhhbmRsZWQsDQovLyBlbHNlIHJldHVybiBFWENFUFRJT05fQ09OVElOVUVfU0VBUkNILg0KLy8NCi8vIEl0IGlzIG5vc3BsaXQgZm9yIHRoZSBzYW1lIHJlYXNvbiBhcyBleGNlcHRpb25oYW5kbGVyLg0KLy8NCi8vZ286bm9zcGxpdA0KZnVuYyBzaWd0cmFtcGdvKGVwICpleGNlcHRpb25wb2ludGVycywga2luZCBpbnQpIGludDMyIHsNCglncCA6PSBzaWdGZXRjaEcoKQ0KCWlmIGdwID09IG5pbCB7DQoJCXJldHVybiBfRVhDRVBUSU9OX0NPTlRJTlVFX1NFQVJDSA0KCX0NCg0KCXZhciBmbiBmdW5jKGluZm8gKmV4Y2VwdGlvbnJlY29yZCwgciAqY29udGV4dCwgZ3AgKmcpIGludDMyDQoJc3dpdGNoIGtpbmQgew0KCWNhc2UgY2FsbGJhY2tWRUg6DQoJCWZuID0gZXhjZXB0aW9uaGFuZGxlcg0KCWNhc2UgY2FsbGJhY2tGaXJzdFZDSDoNCgkJZm4gPSBmaXJzdGNvbnRpbnVlaGFuZGxlcg0KCWNhc2UgY2FsbGJhY2tMYXN0VkNIOg0KCQlmbiA9IGxhc3Rjb250aW51ZWhhbmRsZXINCglkZWZhdWx0Og0KCQl0aHJvdygidW5rbm93biBzaWd0cmFtcCBjYWxsYmFjayIpDQoJfQ0KDQoJLy8gQ2hlY2sgaWYgd2UgYXJlIHJ1bm5pbmcgb24gZzAgc3RhY2ssIGFuZCBpZiB3ZSBhcmUsDQoJLy8gY2FsbCBmbiBkaXJlY3RseSBpbnN0ZWFkIG9mIGNyZWF0aW5nIHRoZSBjbG9zdXJlLg0KCS8vIGZvciB0aGUgc3lzdGVtc3RhY2sgYXJndW1lbnQuDQoJLy8NCgkvLyBBIGNsb3N1cmUgY2FuJ3QgYmUgbWFya2VkIGFzIG5vc3BsaXQsIHNvIGl0IG1pZ2h0DQoJLy8gY2FsbCBtb3Jlc3RhY2sgaWYgd2UgYXJlIGF0IHRoZSBnMCBzdGFjayBsaW1pdC4NCgkvLyBJZiB0aGF0IGhhcHBlbnMsIHRoZSBydW50aW1lIHdpbGwgY2FsbCBhYm9ydA0KCS8vIGFuZCBlbmQgdXAgaW4gc2lndHJhbXBnbyBhZ2Fpbi4NCgkvLyBUT0RPOiByZXZpc2l0IHRoaXMgd29ya2Fyb3VuZCBpZi93aGVuIGNsb3N1cmVzDQoJLy8gY2FuIGJlIGNvbXBpbGVkIGFzIG5vc3BsaXQuDQoJLy8NCgkvLyBOb3RlIHRoYXQgdGhpcyBzY2VuYXJpbyBzaG91bGQgb25seSBvY2N1ciBvbg0KCS8vIFRlc3RHMFN0YWNrT3ZlcmZsb3cuIEFueSBvdGhlciBvY2N1cnJlbmNlIHNob3VsZA0KCS8vIGJlIHRyZWF0ZWQgYXMgYSBidWcuDQoJdmFyIHJldCBpbnQzMg0KCWlmIGdwICE9IGdwLm0uZzAgew0KCQlzeXN0ZW1zdGFjayhmdW5jKCkgew0KCQkJcmV0ID0gZm4oZXAucmVjb3JkLCBlcC5jb250ZXh0LCBncCkNCgkJfSkNCgl9IGVsc2Ugew0KCQlyZXQgPSBmbihlcC5yZWNvcmQsIGVwLmNvbnRleHQsIGdwKQ0KCX0NCglpZiByZXQgPT0gX0VYQ0VQVElPTl9DT05USU5VRV9TRUFSQ0ggew0KCQlyZXR1cm4gcmV0DQoJfQ0KDQoJLy8gQ2hlY2sgaWYgd2UgbmVlZCB0byBzZXQgdXAgdGhlIGNvbnRyb2wgZmxvdyBndWFyZCB3b3JrYXJvdW5kLg0KCS8vIE9uIFdpbmRvd3MsIHRoZSBzdGFjayBwb2ludGVyIGluIHRoZSBjb250ZXh0IG11c3QgbGllIHdpdGhpbg0KCS8vIHN5c3RlbSBzdGFjayBsaW1pdHMgd2hlbiB3ZSByZXN1bWUgZnJvbSBleGNlcHRpb24uDQoJLy8gU3RvcmUgdGhlIHJlc3VtZSBTUCBhbmQgUEMgaW4gYWx0ZXJuYXRlIHJlZ2lzdGVycw0KCS8vIGFuZCByZXR1cm4gdG8gc2lncmVzdW1lIG9uIHRoZSBnMCBzdGFjay4NCgkvLyBzaWdyZXN1bWUgbWFrZXMgbm8gdXNlIG9mIHRoZSBzdGFjayBhdCBhbGwsDQoJLy8gbG9hZGluZyBTUCBmcm9tIFJYIGFuZCBqdW1waW5nIHRvIFJZLCBiZWluZyBSWCBhbmQgUlkgdHdvIHNjcmF0Y2ggcmVnaXN0ZXJzLg0KCS8vIE5vdGUgdGhhdCBibGluZGx5IHNtYXNoaW5nIFJYIGFuZCBSWSBpcyBvbmx5IHNhZmUgYmVjYXVzZSB3ZSBrbm93IHNpZ3BhbmljDQoJLy8gd2lsbCBub3QgYWN0dWFsbHkgcmV0dXJuIHRvIHRoZSBvcmlnaW5hbCBmcmFtZSwgc28gdGhlIHJlZ2lzdGVycw0KCS8vIGFyZSBlZmZlY3RpdmVseSBkZWFkLiBCdXQgdGhpcyBkb2VzIG1lYW4gd2UgY2FuJ3QgdXNlIHRoZQ0KCS8vIHNhbWUgbWVjaGFuaXNtIGZvciBhc3luYyBwcmVlbXB0aW9uLg0KCWlmIGVwLmNvbnRleHQuaXAoKSA9PSBhYmkuRnVuY1BDQUJJMChzaWdyZXN1bWUpIHsNCgkJLy8gc2lncmVzdW1lIGhhcyBhbHJlYWR5IGJlZW4gc2V0IHVwIGJ5IGEgcHJldmlvdXMgZXhjZXB0aW9uLg0KCQlyZXR1cm4gcmV0DQoJfQ0KCXByZXBhcmVDb250ZXh0Rm9yU2lnUmVzdW1lKGVwLmNvbnRleHQpDQoJZXAuY29udGV4dC5zZXRfc3AoZ3AubS5nMC5zY2hlZC5zcCkNCgllcC5jb250ZXh0LnNldF9pcChhYmkuRnVuY1BDQUJJMChzaWdyZXN1bWUpKQ0KCXJldHVybiByZXQNCn0NCg0KLy8gQ2FsbGVkIGJ5IHNpZ3RyYW1wIGZyb20gV2luZG93cyBWRUggaGFuZGxlci4NCi8vIFJldHVybiB2YWx1ZSBzaWduYWxzIHdoZXRoZXIgdGhlIGV4Y2VwdGlvbiBoYXMgYmVlbiBoYW5kbGVkIChFWENFUFRJT05fQ09OVElOVUVfRVhFQ1VUSU9OKQ0KLy8gb3Igc2hvdWxkIGJlIG1hZGUgYXZhaWxhYmxlIHRvIG90aGVyIGhhbmRsZXJzIGluIHRoZSBjaGFpbiAoRVhDRVBUSU9OX0NPTlRJTlVFX1NFQVJDSCkuDQovLw0KLy8gVGhpcyBpcyBub3NwbGl0IHRvIGF2b2lkIGdyb3dpbmcgdGhlIHN0YWNrIHVudGlsIHdlJ3ZlIGNoZWNrZWQgZm9yDQovLyBfRVhDRVBUSU9OX0JSRUFLUE9JTlQsIHdoaWNoIGlzIHJhaXNlZCBieSBhYm9ydCgpIGlmIHdlIG92ZXJmbG93IHRoZSBnMCBzdGFjay4NCi8vDQovL2dvOm5vc3BsaXQNCmZ1bmMgZXhjZXB0aW9uaGFuZGxlcihpbmZvICpleGNlcHRpb25yZWNvcmQsIHIgKmNvbnRleHQsIGdwICpnKSBpbnQzMiB7DQoNCglyZXR1cm4gX0VYQ0VQVElPTl9DT05USU5VRV9TRUFSQ0gNCg0KCS8vIGlmICFpc2dvZXhjZXB0aW9uKGluZm8sIHIpIHsNCgkvLyAJcmV0dXJuIF9FWENFUFRJT05fQ09OVElOVUVfU0VBUkNIDQoJLy8gfQ0KDQoJLy8gaWYgZ3AudGhyb3dzcGxpdCB8fCBpc0Fib3J0KHIpIHsNCgkvLyAJLy8gV2UgY2FuJ3Qgc2FmZWx5IHNpZ3BhbmljIGJlY2F1c2UgaXQgbWF5IGdyb3cgdGhlIHN0YWNrLg0KCS8vIAkvLyBPciB0aGlzIGlzIGEgY2FsbCB0byBhYm9ydC4NCgkvLyAJLy8gRG9uJ3QgZ28gdGhyb3VnaCBhbnkgbW9yZSBvZiB0aGUgV2luZG93cyBoYW5kbGVyIGNoYWluLg0KCS8vIAkvLyBDcmFzaCBub3cuDQoJLy8gCXdpbnRocm93KGluZm8sIHIsIGdwKQ0KCS8vIH0NCg0KCS8vIC8vIEFmdGVyIHRoaXMgcG9pbnQsIGl0IGlzIHNhZmUgdG8gZ3JvdyB0aGUgc3RhY2suDQoNCgkvLyAvLyBNYWtlIGl0IGxvb2sgbGlrZSBhIGNhbGwgdG8gdGhlIHNpZ25hbCBmdW5jLg0KCS8vIC8vIEhhdmUgdG8gcGFzcyBhcmd1bWVudHMgb3V0IG9mIGJhbmQgc2luY2UNCgkvLyAvLyBhdWdtZW50aW5nIHRoZSBzdGFjayBmcmFtZSB3b3VsZCBicmVhaw0KCS8vIC8vIHRoZSB1bndpbmRpbmcgY29kZS4NCgkvLyBncC5zaWcgPSBpbmZvLmV4Y2VwdGlvbmNvZGUNCgkvLyBncC5zaWdjb2RlMCA9IGluZm8uZXhjZXB0aW9uaW5mb3JtYXRpb25bMF0NCgkvLyBncC5zaWdjb2RlMSA9IGluZm8uZXhjZXB0aW9uaW5mb3JtYXRpb25bMV0NCgkvLyBncC5zaWdwYyA9IHIuaXAoKQ0KDQoJLy8gLy8gT25seSBwdXNoIHJ1bnRpbWXCt3NpZ3BhbmljIGlmIHIuaXAoKSAhPSAwLg0KCS8vIC8vIElmIHIuaXAoKSA9PSAwLCBwcm9iYWJseSBwYW5pY2tlZCBiZWNhdXNlIG9mIGENCgkvLyAvLyBjYWxsIHRvIGEgbmlsIGZ1bmMuIE5vdCBwdXNoaW5nIHRoYXQgb250byBzcCB3aWxsDQoJLy8gLy8gbWFrZSB0aGUgdHJhY2UgbG9vayBsaWtlIGEgY2FsbCB0byBydW50aW1lwrdzaWdwYW5pYyBpbnN0ZWFkLg0KCS8vIC8vIChPdGhlcndpc2UgdGhlIHRyYWNlIHdpbGwgZW5kIGF0IHJ1bnRpbWXCt3NpZ3BhbmljIGFuZCB3ZQ0KCS8vIC8vIHdvbid0IGdldCB0byBzZWUgd2hvIGZhdWx0ZWQuKQ0KCS8vIC8vIEFsc28gZG9uJ3QgcHVzaCBhIHNpZ3BhbmljIGZyYW1lIGlmIHRoZSBmYXVsdGluZyBQQw0KCS8vIC8vIGlzIHRoZSBlbnRyeSBvZiBhc3luY1ByZWVtcHQuIEluIHRoaXMgY2FzZSwgd2Ugc3VzcGVuZGVkDQoJLy8gLy8gdGhlIHRocmVhZCByaWdodCBiZXR3ZWVuIHRoZSBmYXVsdCBhbmQgdGhlIGV4Y2VwdGlvbiBoYW5kbGVyDQoJLy8gLy8gc3RhcnRpbmcgdG8gcnVuLCBhbmQgd2UgaGF2ZSBwdXNoZWQgYW4gYXN5bmNQcmVlbXB0IGNhbGwuDQoJLy8gLy8gVGhlIGV4Y2VwdGlvbiBpcyBub3QgZnJvbSBhc3luY1ByZWVtcHQsIHNvIG5vdCB0byBwdXNoIGENCgkvLyAvLyBzaWdwYW5pYyBjYWxsIHRvIG1ha2UgaXQgbG9vayBsaWtlIHRoYXQuIEluc3RlYWQsIGp1c3QNCgkvLyAvLyBvdmVyd3JpdGUgdGhlIFBDLiAoU2VlIGlzc3VlICMzNTc3MykNCgkvLyBpZiByLmlwKCkgIT0gMCAmJiByLmlwKCkgIT0gYWJpLkZ1bmNQQ0FCSTAoYXN5bmNQcmVlbXB0KSB7DQoJLy8gCXNwIDo9IHVuc2FmZS5Qb2ludGVyKHIuc3AoKSkNCgkvLyAJZGVsdGEgOj0gdWludHB0cihzeXMuU3RhY2tBbGlnbikNCgkvLyAJc3AgPSBhZGQoc3AsIC1kZWx0YSkNCgkvLyAJci5zZXRfc3AodWludHB0cihzcCkpDQoJLy8gCWlmIHVzZXNMUiB7DQoJLy8gCQkqKCgqdWludHB0cikoc3ApKSA9IHIubHIoKQ0KCS8vIAkJci5zZXRfbHIoci5pcCgpKQ0KCS8vIAl9IGVsc2Ugew0KCS8vIAkJKigoKnVpbnRwdHIpKHNwKSkgPSByLmlwKCkNCgkvLyAJfQ0KCS8vIH0NCgkvLyByLnNldF9pcChhYmkuRnVuY1BDQUJJMChzaWdwYW5pYzApKQ0KCS8vIHJldHVybiBfRVhDRVBUSU9OX0NPTlRJTlVFX0VYRUNVVElPTg0KfQ0KDQovLyBJdCBzZWVtcyBXaW5kb3dzIHNlYXJjaGVzIENvbnRpbnVlSGFuZGxlcidzIGxpc3QgZXZlbg0KLy8gaWYgRXhjZXB0aW9uSGFuZGxlciByZXR1cm5zIEVYQ0VQVElPTl9DT05USU5VRV9FWEVDVVRJT04uDQovLyBmaXJzdGNvbnRpbnVlaGFuZGxlciB3aWxsIHN0b3AgdGhhdCBzZWFyY2gsDQovLyBpZiBleGNlcHRpb25oYW5kbGVyIGRpZCB0aGUgc2FtZSBlYXJsaWVyLg0KLy8NCi8vIEl0IGlzIG5vc3BsaXQgZm9yIHRoZSBzYW1lIHJlYXNvbiBhcyBleGNlcHRpb25oYW5kbGVyLg0KLy8NCi8vZ286bm9zcGxpdA0KZnVuYyBmaXJzdGNvbnRpbnVlaGFuZGxlcihpbmZvICpleGNlcHRpb25yZWNvcmQsIHIgKmNvbnRleHQsIGdwICpnKSBpbnQzMiB7DQoNCglyZXR1cm4gX0VYQ0VQVElPTl9DT05USU5VRV9TRUFSQ0gNCg0KCS8vIGlmICFpc2dvZXhjZXB0aW9uKGluZm8sIHIpIHsNCgkvLyAJcmV0dXJuIF9FWENFUFRJT05fQ09OVElOVUVfU0VBUkNIDQoJLy8gfQ0KCS8vIHJldHVybiBfRVhDRVBUSU9OX0NPTlRJTlVFX0VYRUNVVElPTg0KfQ0KDQovLyBsYXN0Y29udGludWVoYW5kbGVyIGlzIHJlYWNoZWQsIGJlY2F1c2UgcnVudGltZSBjYW5ub3QgaGFuZGxlDQovLyBjdXJyZW50IGV4Y2VwdGlvbi4gbGFzdGNvbnRpbnVlaGFuZGxlciB3aWxsIHByaW50IGNyYXNoIGluZm8gYW5kIGV4aXQuDQovLw0KLy8gSXQgaXMgbm9zcGxpdCBmb3IgdGhlIHNhbWUgcmVhc29uIGFzIGV4Y2VwdGlvbmhhbmRsZXIuDQovLw0KLy9nbzpub3NwbGl0DQpmdW5jIGxhc3Rjb250aW51ZWhhbmRsZXIoaW5mbyAqZXhjZXB0aW9ucmVjb3JkLCByICpjb250ZXh0LCBncCAqZykgaW50MzIgew0KDQoJcmV0dXJuIF9FWENFUFRJT05fQ09OVElOVUVfU0VBUkNIDQoNCgkvLyBpZiBpc2xpYnJhcnkgfHwgaXNhcmNoaXZlIHsNCgkvLyAJLy8gR28gRExML2FyY2hpdmUgaGFzIGJlZW4gbG9hZGVkIGluIGEgbm9uLWdvIHByb2dyYW0uDQoJLy8gCS8vIElmIHRoZSBleGNlcHRpb24gZG9lcyBub3Qgb3JpZ2luYXRlIGZyb20gZ28sIHRoZSBnbyBydW50aW1lDQoJLy8gCS8vIHNob3VsZCBub3QgdGFrZSByZXNwb25zaWJpbGl0eSBvZiBjcmFzaGluZyB0aGUgcHJvY2Vzcy4NCgkvLyAJcmV0dXJuIF9FWENFUFRJT05fQ09OVElOVUVfU0VBUkNIDQoJLy8gfQ0KDQoJLy8gLy8gVkVIIGlzIGNhbGxlZCBiZWZvcmUgU0VILCBidXQgYXJtNjQgTVNWQyBETExzIHVzZSBTRUggdG8gdHJhcA0KCS8vIC8vIGlsbGVnYWwgaW5zdHJ1Y3Rpb25zIGR1cmluZyBydW50aW1lIGluaXRpYWxpemF0aW9uIHRvIGRldGVybWluZQ0KCS8vIC8vIENQVSBmZWF0dXJlcywgc28gaWYgd2UgbWFrZSBpdCB0byB0aGUgbGFzdCBoYW5kbGVyIGFuZCB3ZSdyZQ0KCS8vIC8vIGFybTY0IGFuZCBpdCdzIGFuIGlsbGVnYWwgaW5zdHJ1Y3Rpb24gYW5kIHRoaXMgaXMgY29taW5nIGZyb20NCgkvLyAvLyBub24tR28gY29kZSwgdGhlbiBhc3N1bWUgaXQncyB0aGlzIHJ1bnRpbWUgcHJvYmluZyBoYXBwZW4sIGFuZA0KCS8vIC8vIHBhc3MgdGhhdCBvbndhcmQgdG8gU0VILg0KCS8vIGlmIEdPQVJDSCA9PSAiYXJtNjQiICYmIGluZm8uZXhjZXB0aW9uY29kZSA9PSBfRVhDRVBUSU9OX0lMTEVHQUxfSU5TVFJVQ1RJT04gJiYNCgkvLyAJKHIuaXAoKSA8IGZpcnN0bW9kdWxlZGF0YS50ZXh0IHx8IGZpcnN0bW9kdWxlZGF0YS5ldGV4dCA8IHIuaXAoKSkgew0KCS8vIAlyZXR1cm4gX0VYQ0VQVElPTl9DT05USU5VRV9TRUFSQ0gNCgkvLyB9DQoNCgkvLyB3aW50aHJvdyhpbmZvLCByLCBncCkNCgkvLyByZXR1cm4gMCAvLyBub3QgcmVhY2hlZA0KfQ0KDQovLyBBbHdheXMgY2FsbGVkIG9uIGcwLiBncCBpcyB0aGUgRyB3aGVyZSB0aGUgZXhjZXB0aW9uIG9jY3VycmVkLg0KLy8NCi8vZ286bm9zcGxpdA0KZnVuYyB3aW50aHJvdyhpbmZvICpleGNlcHRpb25yZWNvcmQsIHIgKmNvbnRleHQsIGdwICpnKSB7DQoJZzAgOj0gZ2V0ZygpDQoNCglpZiBwYW5pY2tpbmcuTG9hZCgpICE9IDAgeyAvLyB0cmFjZWJhY2sgYWxyZWFkeSBwcmludGVkDQoJCWV4aXQoMikNCgl9DQoJcGFuaWNraW5nLlN0b3JlKDEpDQoNCgkvLyBJbiBjYXNlIHdlJ3JlIGhhbmRsaW5nIGEgZzAgc3RhY2sgb3ZlcmZsb3csIGJsb3cgYXdheSB0aGUNCgkvLyBnMCBzdGFjayBib3VuZHMgc28gd2UgaGF2ZSByb29tIHRvIHByaW50IHRoZSB0cmFjZWJhY2suIElmDQoJLy8gdGhpcyBzb21laG93IG92ZXJmbG93cyB0aGUgc3RhY2ssIHRoZSBPUyB3aWxsIHRyYXAgaXQuDQoJZzAuc3RhY2subG8gPSAwDQoJZzAuc3RhY2tndWFyZDAgPSBnMC5zdGFjay5sbyArIHN0YWNrR3VhcmQNCglnMC5zdGFja2d1YXJkMSA9IGcwLnN0YWNrZ3VhcmQwDQoNCglwcmludCgiRXhjZXB0aW9uICIsIGhleChpbmZvLmV4Y2VwdGlvbmNvZGUpLCAiICIsIGhleChpbmZvLmV4Y2VwdGlvbmluZm9ybWF0aW9uWzBdKSwgIiAiLCBoZXgoaW5mby5leGNlcHRpb25pbmZvcm1hdGlvblsxXSksICIgIiwgaGV4KHIuaXAoKSksICJcbiIpDQoNCglwcmludCgiUEM9IiwgaGV4KHIuaXAoKSksICJcbiIpDQoJaWYgZzAubS5pbmNnbyAmJiBncCA9PSBnMC5tLmcwICYmIGcwLm0uY3VyZyAhPSBuaWwgew0KCQlpZiBpc2NnbyB7DQoJCQlwcmludCgic2lnbmFsIGFycml2ZWQgZHVyaW5nIGV4dGVybmFsIGNvZGUgZXhlY3V0aW9uXG4iKQ0KCQl9DQoJCWdwID0gZzAubS5jdXJnDQoJfQ0KCXByaW50KCJcbiIpDQoNCglnMC5tLnRocm93aW5nID0gdGhyb3dUeXBlUnVudGltZQ0KCWcwLm0uY2F1Z2h0c2lnLnNldChncCkNCg0KCWxldmVsLCBfLCBkb2NyYXNoIDo9IGdvdHJhY2ViYWNrKCkNCglpZiBsZXZlbCA+IDAgew0KCQl0cmFjZWJhY2t0cmFwKHIuaXAoKSwgci5zcCgpLCByLmxyKCksIGdwKQ0KCQl0cmFjZWJhY2tvdGhlcnMoZ3ApDQoJCWR1bXByZWdzKHIpDQoJfQ0KDQoJaWYgZG9jcmFzaCB7DQoJCWRpZUZyb21FeGNlcHRpb24oaW5mbywgcikNCgl9DQoNCglleGl0KDIpDQp9DQoNCmZ1bmMgc2lncGFuaWMoKSB7DQoJZ3AgOj0gZ2V0ZygpDQoJaWYgIWNhbnBhbmljKCkgew0KCQl0aHJvdygidW5leHBlY3RlZCBzaWduYWwgZHVyaW5nIHJ1bnRpbWUgZXhlY3V0aW9uIikNCgl9DQoNCglzd2l0Y2ggZ3Auc2lnIHsNCgljYXNlIF9FWENFUFRJT05fQUNDRVNTX1ZJT0xBVElPTiwgX0VYQ0VQVElPTl9JTl9QQUdFX0VSUk9SOg0KCQlpZiBncC5zaWdjb2RlMSA8IDB4MTAwMCB7DQoJCQlwYW5pY21lbSgpDQoJCX0NCgkJaWYgZ3AucGFuaWNvbmZhdWx0IHsNCgkJCXBhbmljbWVtQWRkcihncC5zaWdjb2RlMSkNCgkJfQ0KCQlpZiBpblVzZXJBcmVuYUNodW5rKGdwLnNpZ2NvZGUxKSB7DQoJCQkvLyBXZSBjb3VsZCBjaGVjayB0aGF0IHRoZSBhcmVuYSBjaHVuayBpcyBleHBsaWNpdGx5IHNldCB0byBmYXVsdCwNCgkJCS8vIGJ1dCB0aGUgZmFjdCB0aGF0IHdlIGZhdWx0ZWQgb24gYWNjZXNzaW5nIGl0IGlzIGVub3VnaCB0byBwcm92ZQ0KCQkJLy8gdGhhdCBpdCBpcy4NCgkJCXByaW50KCJhY2Nlc3NlZCBkYXRhIGZyb20gZnJlZWQgdXNlciBhcmVuYSAiLCBoZXgoZ3Auc2lnY29kZTEpLCAiXG4iKQ0KCQl9IGVsc2Ugew0KCQkJcHJpbnQoInVuZXhwZWN0ZWQgZmF1bHQgYWRkcmVzcyAiLCBoZXgoZ3Auc2lnY29kZTEpLCAiXG4iKQ0KCQl9DQoJCXRocm93KCJmYXVsdCIpDQoJY2FzZSBfRVhDRVBUSU9OX0lOVF9ESVZJREVfQllfWkVSTzoNCgkJcGFuaWNkaXZpZGUoKQ0KCWNhc2UgX0VYQ0VQVElPTl9JTlRfT1ZFUkZMT1c6DQoJCXBhbmljb3ZlcmZsb3coKQ0KCWNhc2UgX0VYQ0VQVElPTl9GTFRfREVOT1JNQUxfT1BFUkFORCwNCgkJX0VYQ0VQVElPTl9GTFRfRElWSURFX0JZX1pFUk8sDQoJCV9FWENFUFRJT05fRkxUX0lORVhBQ1RfUkVTVUxULA0KCQlfRVhDRVBUSU9OX0ZMVF9PVkVSRkxPVywNCgkJX0VYQ0VQVElPTl9GTFRfVU5ERVJGTE9XOg0KCQlwYW5pY2Zsb2F0KCkNCgl9DQoJdGhyb3coImZhdWx0IikNCn0NCg0KLy8gRm9sbG93aW5nIGFyZSBub3QgaW1wbGVtZW50ZWQuDQoNCmZ1bmMgaW5pdHNpZyhwcmVpbml0IGJvb2wpIHsNCn0NCg0KZnVuYyBzaWdlbmFibGUoc2lnIHVpbnQzMikgew0KfQ0KDQpmdW5jIHNpZ2Rpc2FibGUoc2lnIHVpbnQzMikgew0KfQ0KDQpmdW5jIHNpZ2lnbm9yZShzaWcgdWludDMyKSB7DQp9DQoNCmZ1bmMgc2lnbmFtZShzaWcgdWludDMyKSBzdHJpbmcgew0KCXJldHVybiAiIg0KfQ0KDQovL2dvOm5vc3BsaXQNCmZ1bmMgY3Jhc2goKSB7DQoJZGllRnJvbUV4Y2VwdGlvbihuaWwsIG5pbCkNCn0NCg0KLy8gZGllRnJvbUV4Y2VwdGlvbiByYWlzZXMgYW4gZXhjZXB0aW9uIHRoYXQgYnlwYXNzZXMgYWxsIGV4Y2VwdGlvbiBoYW5kbGVycy4NCi8vIFRoaXMgcHJvdmlkZXMgdGhlIGV4cGVjdGVkIGV4aXQgc3RhdHVzIGZvciB0aGUgc2hlbGwuDQovLw0KLy9nbzpub3NwbGl0DQpmdW5jIGRpZUZyb21FeGNlcHRpb24oaW5mbyAqZXhjZXB0aW9ucmVjb3JkLCByICpjb250ZXh0KSB7DQoJaWYgaW5mbyA9PSBuaWwgew0KCQlncCA6PSBnZXRnKCkNCgkJaWYgZ3Auc2lnICE9IDAgew0KCQkJLy8gVHJ5IHRvIHJlY29uc3RydWN0IGFuIGV4Y2VwdGlvbiByZWNvcmQgZnJvbQ0KCQkJLy8gdGhlIGV4Y2VwdGlvbiBpbmZvcm1hdGlvbiBzdG9yZWQgaW4gZ3AuDQoJCQlpbmZvID0gJmV4Y2VwdGlvbnJlY29yZHsNCgkJCQlleGNlcHRpb25hZGRyZXNzOiBncC5zaWdwYywNCgkJCQlleGNlcHRpb25jb2RlOiAgICBncC5zaWcsDQoJCQkJbnVtYmVycGFyYW1ldGVyczogMiwNCgkJCX0NCgkJCWluZm8uZXhjZXB0aW9uaW5mb3JtYXRpb25bMF0gPSBncC5zaWdjb2RlMA0KCQkJaW5mby5leGNlcHRpb25pbmZvcm1hdGlvblsxXSA9IGdwLnNpZ2NvZGUxDQoJCX0gZWxzZSB7DQoJCQkvLyBCeSBkZWZhdWx0LCBhIGZhaWxpbmcgR28gYXBwbGljYXRpb24gZXhpdHMgd2l0aCBleGl0IGNvZGUgMi4NCgkJCS8vIFVzZSB0aGlzIHZhbHVlIHdoZW4gZ3AgZG9lcyBub3QgY29udGFpbiBleGNlcHRpb24gaW5mby4NCgkJCWluZm8gPSAmZXhjZXB0aW9ucmVjb3Jkew0KCQkJCWV4Y2VwdGlvbmNvZGU6IDIsDQoJCQl9DQoJCX0NCgl9DQoJY29uc3QgRkFJTF9GQVNUX0dFTkVSQVRFX0VYQ0VQVElPTl9BRERSRVNTID0gMHgxDQoJc3RkY2FsbDMoX1JhaXNlRmFpbEZhc3RFeGNlcHRpb24sIHVpbnRwdHIodW5zYWZlLlBvaW50ZXIoaW5mbykpLCB1aW50cHRyKHVuc2FmZS5Qb2ludGVyKHIpKSwgRkFJTF9GQVNUX0dFTkVSQVRFX0VYQ0VQVElPTl9BRERSRVNTKQ0KfQ0KDQovLyBnc2lnbmFsU3RhY2sgaXMgdW51c2VkIG9uIFdpbmRvd3MuDQp0eXBlIGdzaWduYWxTdGFjayBzdHJ1Y3R7fQ0K'
 
 is_silent = False
-
+is_skip_tests = False
+is_extended_tests = False
 
 
 # ====================================
+
+def install_pip_package(package_name: str):
+	command = f"pip show {package_name}"
+	err_code, stdout, stderr = run_command(command, False, False)
+	
+	if err_code != 0:
+		reply = ask_user(f'{package_name} python package is required for the installation, do you want me to install it?', 'y', ['y', 'n'])
+		if reply == 'n':
+			raise Exception(f'Cannot continue without {package_name}, please install it and try again')
+		
+		command = f"{sys.executable} -m pip install {package_name}"
+		err_code, stdout, stderr = run_command(command, True, False)
+		if err_code != 0:
+			raise Exception(f"Failed installing {package_name} with the command {command}. Error code {err_code}. Output:\n{stdout}{stderr}")
 
 
 def ask_user(input_text: str, default: str, valid_answers: list | None):
@@ -147,18 +162,18 @@ def run_command(command: str, raise_if_command_fail: bool = False, is_refresh_en
 		print(f'{os.getcwd()}> {command}')
 	else:
 		print(f'{os.getcwd()}$ {command}')
-		
+	
 	# create a process object with the command line
 	if is_refresh_envvars:
 		refresh_env()
-		
+	
 	try:
 		command_split = shlex.split(os.path.expanduser(os.path.expandvars(command)))
 		output = subprocess.run(command_split, capture_output=True, text=True)
 	except subprocess.CalledProcessError as e:
 		if raise_if_command_fail:
 			raise Exception(f'Failed running "{command}" with exit code {e.returncode}. Output:\n{str(e.stdout)}{str(e.stderr)}')
-			
+		
 		# your code to handle the exception
 		return e.returncode, str(e.stdout), str(e.stderr)
 	except FileNotFoundError as e:
@@ -258,7 +273,7 @@ def check_go_installed(install_go: typing.Callable):
 				print('Enabled CGo')
 		else:
 			raise Exception('Cancelling installation')
-	
+
 
 def add_metaffi_home_to_cgo_cflags(install_dir: str, set_system_env_var: typing.Callable):
 	exit_code, stdout, stderr = run_command("go env CGO_CFLAGS")
@@ -277,11 +292,11 @@ def add_metaffi_home_to_cgo_cflags(install_dir: str, set_system_env_var: typing.
 		if reply == 'n':
 			raise Exception(f'Set -I"{install_dir}" to CGO_CFLAGS and try again')
 		
-		if cgo_cflags is not None and cgo_cflags != '':
-			new_cflags = f'"{cgo_cflags} -I{install_dir}"'
-			set_system_env_var('CGO_CFLAGS', f'{new_cflags}')
-		else:
-			set_system_env_var('CGO_CFLAGS', f'-I{install_dir}')
+		# if cgo_cflags is not None and cgo_cflags != '':
+		# 	new_cflags = f'"{cgo_cflags} -I{install_dir}"'
+		# 	set_system_env_var('CGO_CFLAGS', f'{new_cflags}')
+		# else:
+		set_system_env_var('CGO_CFLAGS', f'-I{install_dir}')
 		
 		refresh_env()
 
@@ -336,11 +351,23 @@ def get_exe_format(execname):
 		return f'./{execname}'
 
 
+def metaffi_go_guest(path: str, source: str):
+	os.chdir(path)
+	err_code, stdout, stderr = run_command(f'metaffi -c --idl {source} -g')
+	if err_code != 0:
+		raise Exception(f'Failed to build MetaFFI guest for {path}/{source}. Output:\n{stdout}{stderr}')
+
+
+def run_python_file(path: str):
+	with open("my_script.py") as f:
+		code = f.read()
+		exec(code)
+
+
 def run_go_tests():
-	
 	def run(path: str, exec_name: str):
 		os.chdir(path)
-	
+		
 		err_code, stdout, stderr = run_command('go get -u')
 		if err_code != 0:
 			raise Exception(f'Failed "go get -u" in path {path}.\n{stdout}{stderr}')
@@ -355,25 +382,61 @@ def run_go_tests():
 			raise Exception(f'sanity failed in {path}.\n{stdout}{stderr}')
 	
 	print('Go --> Python3.11')
-	run(os.environ['METAFFI_HOME']+'/tests/go/sanity/python3', get_exe_format('python3'))
+	run(os.environ['METAFFI_HOME'] + '/tests/go/sanity/python3', get_exe_format('python3'))
 	
 	print('Go --> OpenJDK')
-	run(os.environ['METAFFI_HOME']+'/tests/go/sanity/openjdk', get_exe_format('openjdk'))
+	run(os.environ['METAFFI_HOME'] + '/tests/go/sanity/openjdk', get_exe_format('openjdk'))
+
+
+def run_extended_go_tests():
+	def run(path: str, exec_name: str):
+		os.chdir(path)
+		
+		err_code, stdout, stderr = run_command('go get -u')
+		if err_code != 0:
+			raise Exception(f'Failed "go get -u" in path {path}.\n{stdout}{stderr}')
+		
+		err_code, stdout, stderr = run_command('go build')
+		if err_code != 0:
+			raise Exception(f'Failed "go build" in path {path}.\n{stdout}{stderr}')
+		
+		err_code, stdout, stderr = run_command(exec_name)
+		os.remove(exec_name)
+		if err_code != 0:
+			raise Exception(f'sanity failed in {path}.\n{stdout}{stderr}')
+	
+	print('Go --> Python3.11 (BeautifulSoup)')
+	install_pip_package('bs4')
+	run(os.environ['METAFFI_HOME'] + '/tests/go/extended/python3/beautifulsoup/', get_exe_format('beautifulsoup'))
+	
+	print('Go --> Python3.11 (Collections)')
+	run(os.environ['METAFFI_HOME'] + '/tests/go/extended/python3/collections/', get_exe_format('collections'))
+	
+	print('Go --> Python3.11 (Named, positional and variant arguments)')
+	run(os.environ['METAFFI_HOME'] + '/tests/go/extended/python3/complex-primitives/', get_exe_format('complex-primitives'))
+	
+	print('Go --> Python3.11 (numpy)')
+	install_pip_package('numpy')
+	run(os.environ['METAFFI_HOME'] + '/tests/go/extended/python3/numpy/', get_exe_format('numpy'))
+	
+	print('Go --> Python3.11 (pandas)')
+	install_pip_package('pandas')
+	run(os.environ['METAFFI_HOME'] + '/tests/go/extended/python3/pandas/', get_exe_format('pandas'))
+	
+	print('Go --> OpenJDK')
+	run(os.environ['METAFFI_HOME'] + '/tests/go/extended/openjdk/log4j/', get_exe_format('log4j'))
 
 
 def run_openjdk_tests():
-	
 	def run(path: str, test_file: str):
 		os.chdir(path)
 		
 		# build
-		metaffi_home = os.environ['METAFFI_HOME']+'/'
-		openjdk_api = metaffi_home+'metaffi.api.jar'
-		bridge = metaffi_home+'xllr.openjdk.bridge.jar'
-		junit = metaffi_home+'/tests/openjdk/sanity/junit-platform-console-standalone-1.10.1.jar'
-		hamcrest = metaffi_home+'/tests/openjdk/sanity/hamcrest-core-1.3.jar'
-		
-		
+		metaffi_home = os.environ['METAFFI_HOME'] + '/'
+		openjdk_api = metaffi_home + 'metaffi.api.jar'
+		bridge = metaffi_home + 'xllr.openjdk.bridge.jar'
+		junit = metaffi_home + '/tests/openjdk/junit-platform-console-standalone-1.10.1.jar'
+		hamcrest = metaffi_home + '/tests/openjdk/hamcrest-core-1.3.jar'
 		
 		error_code, stdout, stderr = run_command(f'javac -cp "{openjdk_api}{os.pathsep}{bridge}{os.pathsep}{junit}{os.pathsep}{hamcrest}" {test_file}')
 		
@@ -387,10 +450,56 @@ def run_openjdk_tests():
 			raise Exception(f'Failed {test_file} with {error_code} openjdk sanity test:\n{stdout}{stderr}')
 	
 	print('OpenJDK --> Python3.11')
-	run(os.environ['METAFFI_HOME']+'/tests/openjdk/sanity/', 'APITestPython3.java')
+	run(os.environ['METAFFI_HOME'] + '/tests/openjdk/sanity/', 'APITestPython3.java')
 	
 	print('OpenJDK --> Go')
-	run(os.environ['METAFFI_HOME']+'/tests/openjdk/sanity/', 'APITestGo.java')
+	metaffi_go_guest(os.environ['METAFFI_HOME'] + '/tests/openjdk/sanity/go', 'TestRuntime.go')
+	run(os.environ['METAFFI_HOME'] + '/tests/openjdk/sanity/', 'APITestGo.java')
+
+
+def run_extended_openjdk_tests():
+	def run(path: str, test_file: str):
+		os.chdir(path)
+		
+		# build
+		metaffi_home = os.environ['METAFFI_HOME'] + '/'
+		openjdk_api = metaffi_home + 'metaffi.api.jar'
+		bridge = metaffi_home + 'xllr.openjdk.bridge.jar'
+		junit = metaffi_home + '/tests/openjdk/junit-platform-console-standalone-1.10.1.jar'
+		hamcrest = metaffi_home + '/tests/openjdk/hamcrest-core-1.3.jar'
+		
+		error_code, stdout, stderr = run_command(f'javac -cp "{openjdk_api}{os.pathsep}{bridge}{os.pathsep}{junit}{os.pathsep}{hamcrest}" {test_file}')
+		
+		if error_code != 0:
+			raise Exception(f'Failed compiling openjdk test:\n{stdout}{stderr}')
+		
+		test_file = os.path.splitext(test_file)[0]
+		error_code, stdout, stderr = run_command(f'java -jar "{junit}" -cp ".{os.pathsep}{openjdk_api}{os.pathsep}{bridge}{os.pathsep}{hamcrest}" -d. --select-class {test_file} --details=Verbose --fail-if-no-tests --disable-banner')
+		
+		if error_code != 0:
+			raise Exception(f'Failed {test_file} with {error_code} openjdk sanity test:\n{stdout}{stderr}')
+	
+	print('OpenJDK --> Python3.11 (BeautifulSoup)')
+	install_pip_package('bs4')
+	run(os.environ['METAFFI_HOME'] + '/tests/openjdk/extended/python3/beautifulsoup/', 'BeautifulSoupTest.java')
+	
+	print('OpenJDK --> Python3.11 (Collections)')
+	run(os.environ['METAFFI_HOME'] + '/tests/openjdk/extended/python3/collections/', 'CollectionsTest.java')
+	
+	print('OpenJDK --> Python3.11 (Named, positional and variant arguments)')
+	run(os.environ['METAFFI_HOME'] + '/tests/openjdk/extended/python3/complex-primitives/', 'ComplexPrimitivesTest.java')
+	
+	print('OpenJDK --> Python3.11 (numpy)')
+	install_pip_package('numpy')
+	run(os.environ['METAFFI_HOME'] + '/tests/openjdk/extended/python3/numpy/', 'NumpyTest.java')
+	
+	print('OpenJDK --> Python3.11 (pandas)')
+	install_pip_package('pandas')
+	run(os.environ['METAFFI_HOME'] + '/tests/openjdk/extended/python3/pandas/', 'PandasTest.java')
+	
+	print('OpenJDK --> Go (gomcache)')
+	run_python_file(os.environ['METAFFI_HOME'] + '/tests/openjdk/extended/go/gomcache/build_metaffi.py')
+	run(os.environ['METAFFI_HOME'] + '/tests/openjdk/extended/go/gomcache/', 'GoMCacheTest.java')
 
 
 def run_python_tests():
@@ -405,16 +514,42 @@ def run_python_tests():
 			raise Exception(f'Failed {test_file} with {error_code}:\n{stdout}{stderr}')
 	
 	print('Python3.11 --> OpenJDK')
-	run(os.environ['METAFFI_HOME']+'/tests/python3/sanity/openjdk/', 'openjdk_test.py')
+	run(os.environ['METAFFI_HOME'] + '/tests/python3/sanity/openjdk/', 'openjdk_test.py')
 	
 	print('Python3.11 --> Go')
-	run(os.environ['METAFFI_HOME']+'/tests/python3/sanity/go/', 'go_test.py')
+	metaffi_go_guest(os.environ['METAFFI_HOME'] + '/tests/python3/sanity/go/', 'TestRuntime.go')
+	run(os.environ['METAFFI_HOME'] + '/tests/python3/sanity/go/', 'go_test.py')
+
+
+def run_extended_python_tests():
+	def run(path: str, test_file: str):
+		os.chdir(path)
+		
+		# build
+		test_file = os.path.splitext(test_file)[0]
+		error_code, stdout, stderr = run_command(f'{python_exe()} -m unittest {test_file}')
+		
+		if error_code != 0:
+			raise Exception(f'Failed {test_file} with {error_code}:\n{stdout}{stderr}')
+	
+	print('Python3.11 --> OpenJDK (log4j)')
+	run(os.environ['METAFFI_HOME'] + '/tests/python3/extended/openjdk/log4j/', 'log4j_test.py')
+	
+	print('Python3.11 --> Go (gomcache)')
+	run_python_file(os.environ['METAFFI_HOME'] + '/tests/python3/extended/go/gomcache/build_metaffi.py')
+	run(os.environ['METAFFI_HOME'] + '/tests/python3/extended/go/gomcache/', 'gomcache_test.py')
 
 
 def run_sanity_tests():
 	run_python_tests()
 	run_openjdk_tests()
 	run_go_tests()
+
+
+def run_extended_tests():
+	run_extended_python_tests()
+	run_extended_openjdk_tests()
+	run_extended_go_tests()
 
 
 def install_python3_api():
@@ -562,14 +697,14 @@ def get_dll_version(filename):
 
 
 def install_windows_python():
-	return_code, all_stdout, all_stderr = run_command('winget install Python.Python.3.11')
+	return_code, all_stdout, all_stderr = run_command('winget install winget install -e --silent --accept-source-agreements --accept-package-agreements --id Python.Python.3.11')
 	if return_code != 0:
 		if 'Found an existing package already installed.' not in all_stdout and 'Found an existing package already installed.' not in all_stderr:
 			raise Exception('Failed to install Python 3.11')
 
 
 def install_windows_openjdk():
-	return_code, all_stdout, all_stderr = run_command('winget install Microsoft.OpenJDK.11')
+	return_code, all_stdout, all_stderr = run_command('winget install -e --silent --accept-source-agreements --accept-package-agreements --id Microsoft.OpenJDK.11')
 	if return_code != 0:
 		if 'Found an existing package already installed.' not in all_stdout and 'Found an existing package already installed.' not in all_stderr:
 			raise Exception('Failed to install OpenJDK')
@@ -577,7 +712,7 @@ def install_windows_openjdk():
 
 def install_windows_go():
 	refresh_env()
-	return_code, all_stdout, all_stderr = run_command('winget install GoLang.Go')
+	return_code, all_stdout, all_stderr = run_command('winget install -e --silent --accept-source-agreements --accept-package-agreements --id GoLang.Go')
 	print(os.environ['PATH'])
 	if return_code != 0:
 		if 'Found an existing package already installed.' not in all_stdout and 'Found an existing package already installed.' not in all_stderr:
@@ -717,18 +852,17 @@ def refresh_windows_env():
 
 
 def refresh_ubuntu_env():
-	
 	from dotenv import load_dotenv
 	
 	load_dotenv("/etc/environment")
 	load_dotenv("~/.profile")
 
-	
+
 if is_windows():
 	refresh_env = refresh_windows_env
 elif is_ubuntu():
 	refresh_env = refresh_ubuntu_env
-	
+
 
 def check_windows_java_jni_installed(version: str):
 	java_path = shutil.which("java.exe")
@@ -755,7 +889,7 @@ def check_windows_java_jni_installed(version: str):
 	
 	# try to load jvm.dll
 	add_to_path_environment_variable(os.path.dirname(java_home))
-	add_to_path_environment_variable(os.path.dirname(java_home+'\\bin\\server\\'))
+	add_to_path_environment_variable(os.path.dirname(java_home + '\\bin\\server\\'))
 	refresh_env()
 	
 	try:
@@ -870,7 +1004,6 @@ def install_windows():
 
 
 def get_ubuntu_environment_variable(file: str, name: str) -> str | None:
-	
 	# Execute the command and capture the output
 	err_code, stdout, stderr = run_shell(f"grep -q '{name}=' {file}")
 	
@@ -895,7 +1028,6 @@ def get_ubuntu_machine_environment_variable(name: str) -> str | None:
 
 
 def set_ubuntu_environment_variable(file: str, name: str, value: str):
-	
 	existing_val = get_ubuntu_environment_variable(name, file)
 	
 	if existing_val is not None:  # env var exists
@@ -913,13 +1045,13 @@ def set_ubuntu_environment_variable(file: str, name: str, value: str):
 		if err_code != 0:
 			raise Exception(f'Failed to update {name} environment variable in {file}: {stdout}{stderr}')
 		return
-		
+	
 	else:  # var doesn't exist
 		print(f'Adding environment variable {name}={value} in {file}')
 		err_code, stdout, stderr = run_shell(f"echo 'export {name}={value}' >> {file}")
 		if err_code != 0:
 			raise Exception(f"Failed to add {name} environment variable to {file}: {stdout}{stderr}")
-		
+	
 	refresh_env()
 
 
@@ -929,7 +1061,7 @@ def set_ubuntu_user_environment_variable(name: str, value: str):
 
 def set_ubuntu_machine_environment_variable(name: str, value: str):
 	set_ubuntu_system_environment_variable(name, value)
-	
+
 
 def check_python_ubuntu_installed(version: str):
 	# split the version number into major, minor, and micro parts
@@ -950,7 +1082,7 @@ def check_python_ubuntu_installed(version: str):
 		exit_code, stdout, stderr = run_command(f'apt install {exe_name} -y')
 		if exit_code != 0:
 			raise Exception(f'Failed to install {exe_name}. Output\n{stdout}{stderr}')
-	
+
 
 def check_ubuntu_pythonhome(version: str):
 	major, minor = map(int, version.split("."))
@@ -985,16 +1117,15 @@ def check_ubuntu_pythonhome(version: str):
 
 
 def get_java_home(version: str) -> str | None:
-
 	output = os.popen("update-java-alternatives -l").read()
 	lines = output.split("\n")
-
+	
 	for line in lines:
 		# use regular expression to extract the name, priority and path of the alternative
 		match = re.search(r"(\S+)\s+(\d+)\s+(\S+)", line)
 		if not match:
 			continue
-
+		
 		# get the name of the alternative
 		name = match.group(1)
 		
@@ -1002,12 +1133,11 @@ def get_java_home(version: str) -> str | None:
 		if version in name:
 			path = match.group(3)
 			return path
-		
+	
 	return None
 
 
 def check_ubuntu_java_jni_installed(version: str):
-	
 	# Execute the command and get the output
 	err_code, stdout, stderr = run_command(f"java -version {version}")
 	
@@ -1065,24 +1195,10 @@ def check_ubuntu_java_jni_installed(version: str):
 
 
 def verify_pip_packages_installed():
-	
-	command = "pip show python-dotenv"
-	err_code, stdout, stderr = run_command(command, False, False)
-	
-	if err_code != 0:
-		reply = ask_user('python-dotenv python package is required for the installation, do you want me to install it?', 'y', ['y', 'n'])
-		if reply == 'n':
-			raise Exception('Cannot continue without python-dotenv, please install it and try again')
-		
-		command = f"{sys.executable} -m pip install python-dotenv"
-		err_code, stdout, stderr = run_command(command, True, False)
-		if err_code != 0:
-			raise Exception(f"Failed installing python-dotenv with the command {command}. Error code {err_code}. Output:\n{stdout}{stderr}")
-	
+	install_pip_package('python-dotenv')
 
 
 def install_ubuntu_go():
-	
 	import requests
 	
 	# Define the command to check if Go exists
@@ -1105,9 +1221,9 @@ def install_ubuntu_go():
 		# Check the return code and get the value
 		if err_code != 0:
 			raise Exception(f"Although Go is installed, failed the command {command} with error code {err_code}. Output:\n{stdout}{stderr}")
-			
+		
 		go_version = stdout.split()[2].replace("go", "")
-			
+		
 		# Compare the go version with the minimum required version
 		if go_version < "1.21.0":
 			# The go version is below 1.21.0
@@ -1118,7 +1234,7 @@ def install_ubuntu_go():
 		err_code, stdout, stderr = run_command("go env -w CGO_ENABLED=1")
 		if err_code != 0:
 			raise Exception(f"Failed settings CGO_ENABLED=1. error code {err_code}. Output:\n{stdout}{stderr}")
-			
+	
 	else:  # Go does not exist
 		
 		# install go 1.21.5
@@ -1151,10 +1267,9 @@ def install_ubuntu_go():
 		
 		# set environment variable CGO_ENABLED=1
 		set_ubuntu_system_environment_variable('CGO_ENABLED', '1')
-		
+
 
 def check_ubuntu_gcc_installed():
-	
 	err_code, stdout, stderr = run_command("gcc --version")
 	if err_code != 0:
 		
@@ -1167,10 +1282,9 @@ def check_ubuntu_gcc_installed():
 		
 		if err_code != 0:
 			raise Exception(f"Failed to install GCC using the {command}. error code {err_code}. Output:\n{stdout}{stderr}")
-			
+
 
 def check_pip_installed():
-	
 	exit_code, stdout, stderr = run_command('add-apt-repository ppa:deadsnakes/ppa -y', False, False)
 	if exit_code != 0:
 		raise Exception(f'Failed to add ppa:deadsnakes/paa. Output\n{stdout}{stderr}')
@@ -1202,7 +1316,7 @@ def check_ubuntu_prerequisites():
 	
 	# gcc
 	check_ubuntu_gcc_installed()
-	
+
 
 def set_ubuntu_system_environment_variable(name: str, value: str):
 	# construct the file name for the environment file
@@ -1231,7 +1345,7 @@ def set_ubuntu_system_environment_variable(name: str, value: str):
 	# write the modified lines back to the environment file
 	with open(env_file, "w") as f:
 		f.writelines(lines)
-		
+	
 	refresh_env()
 
 
@@ -1276,24 +1390,47 @@ def install_ubuntu():
 	print()
 	print('==== Running Sanity Tests ====')
 	print()
-
-	run_sanity_tests()
-
+	
+	global is_skip_tests
+	global is_extended_tests
+	
+	if not is_skip_tests:
+		run_sanity_tests()
+		
+		if is_extended_tests:
+			run_extended_tests()
+	
 	print('Done')
+
 
 # -------------------------------
 
 
 def set_is_silent():
 	global is_silent
+	global is_skip_tests
+	global is_extended_tests
+	
 	for arg in sys.argv:
 		arg = arg.lower()
+		
+		if arg == '-h' or arg == '--help' or arg == '/?' or arg == '/h':
+			print('MetaFFI Installer')
+			print('-s - silent mode (using defaults)')
+			print('--skip-sanity - skips all tests after installation')
+			print('--include-extended-tests - runs extended tests after installation (downloads several 3rd party libraries for tests)')
+		
 		if arg == "/s" or arg == "-s":
 			is_silent = True
+		
+		if arg == '--skip-sanity':
+			is_skip_tests = True
+		
+		if arg == '--include-extended-tests':
+			is_extended_tests = True
 
 
 def main():
-	
 	set_is_silent()
 	
 	try:
@@ -1312,7 +1449,7 @@ def main():
 	except Exception as exp:
 		traceback.print_exc()
 		exit(2)
-		
+	
 	print('\nInstallation Complete')
 
 
