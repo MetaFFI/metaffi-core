@@ -21,6 +21,7 @@ windows_patched_signal_file = 'Ly8gQ29weXJpZ2h0IDIwMTEgVGhlIEdvIEF1dGhvcnMuIEFsb
 is_silent = False
 is_skip_tests = False
 is_extended_tests = False
+is_run_windows_patched_go_tests = False
 
 
 # ====================================
@@ -384,8 +385,11 @@ def run_go_tests():
 	print('Go --> Python3.11')
 	run(os.environ['METAFFI_HOME'] + '/tests/go/sanity/python3', get_exe_format('python3'))
 	
-	print('Go --> OpenJDK')
-	run(os.environ['METAFFI_HOME'] + '/tests/go/sanity/openjdk', get_exe_format('openjdk'))
+	if not is_windows() or is_run_windows_patched_go_tests:
+		print('Go --> OpenJDK')
+		run(os.environ['METAFFI_HOME'] + '/tests/go/sanity/openjdk', get_exe_format('openjdk'))
+	else:
+		print('Skipping Go --> OpenJDK (Go bug not patched on Windows)')
 
 
 def run_extended_go_tests():
@@ -423,8 +427,11 @@ def run_extended_go_tests():
 	install_pip_package('pandas')
 	run(os.environ['METAFFI_HOME'] + '/tests/go/extended/python3/pandas/', get_exe_format('pandas'))
 	
-	print('Go --> OpenJDK')
-	run(os.environ['METAFFI_HOME'] + '/tests/go/extended/openjdk/log4j/', get_exe_format('log4j'))
+	if not is_windows() or is_run_windows_patched_go_tests:
+		print('Go --> OpenJDK')
+		run(os.environ['METAFFI_HOME'] + '/tests/go/extended/openjdk/log4j/', get_exe_format('log4j'))
+	else:
+		print('Skipping Go --> OpenJDK (Go bug not patched on Windows)')
 
 
 def run_openjdk_tests():
@@ -697,14 +704,14 @@ def get_dll_version(filename):
 
 
 def install_windows_python():
-	return_code, all_stdout, all_stderr = run_command('winget install winget install -e --silent --accept-source-agreements --accept-package-agreements --id Python.Python.3.11')
+	return_code, all_stdout, all_stderr = run_command('winget install -e --silent --accept-source-agreements --accept-package-agreements --id Python.Python.3.11')
 	if return_code != 0:
 		if 'Found an existing package already installed.' not in all_stdout and 'Found an existing package already installed.' not in all_stderr:
 			raise Exception('Failed to install Python 3.11')
 
 
-def install_windows_openjdk():
-	return_code, all_stdout, all_stderr = run_command('winget install -e --silent --accept-source-agreements --accept-package-agreements --id Microsoft.OpenJDK.11')
+def install_windows_openjdk(version):
+	return_code, all_stdout, all_stderr = run_command(f'winget install -e --silent --accept-source-agreements --accept-package-agreements --id Microsoft.OpenJDK.{version}')
 	if return_code != 0:
 		if 'Found an existing package already installed.' not in all_stdout and 'Found an existing package already installed.' not in all_stderr:
 			raise Exception('Failed to install OpenJDK')
@@ -732,8 +739,7 @@ def check_python_windows_installed(version: str):
 	try:
 		dll = ctypes.WinDLL(dll_name)
 	except OSError:
-		is_install_python = input("Python3.11 was not detected, do you want me to install it for you? [y/n] (default: n) ")
-		is_install_python = is_install_python.strip().lower()
+		is_install_python = ask_user("Python3.11 was not detected, do you want me to install it for you?", 'y', ['y', 'n'])
 		if is_install_python == 'y':
 			install_windows_python()
 		else:
@@ -869,7 +875,7 @@ def check_windows_java_jni_installed(version: str):
 	if java_path is None:
 		is_install_java = ask_user("Java was not detected, do you want me to install it for you?", 'y', ['y', 'n'])
 		if is_install_java == 'y':
-			install_windows_openjdk()
+			install_windows_openjdk(version)
 			refresh_windows_env()
 		else:
 			raise Exception('JAVA_HOME is not set. Make sure JVM is installed and JAVA_HOME environment variable is set and try again.')
@@ -948,11 +954,11 @@ def check_windows_prerequisites():
 	check_windows_pythonhome('3.11')
 	
 	# openjdk
-	check_windows_java_jni_installed('11')
+	check_windows_java_jni_installed('21')
 	
 	# go
 	check_go_installed(install_windows_go)
-	patch_windows_go()
+	#patch_windows_go()
 	
 	# gcc
 	install_windows_gcc()
@@ -1309,7 +1315,7 @@ def check_ubuntu_prerequisites():
 	check_ubuntu_pythonhome('3.11')
 	
 	# openjdk
-	check_ubuntu_java_jni_installed('11')
+	check_ubuntu_java_jni_installed('21')
 	
 	# go
 	check_go_installed(install_ubuntu_go)
@@ -1406,19 +1412,22 @@ def install_ubuntu():
 # -------------------------------
 
 
-def set_is_silent():
+def set_installer_flags():
 	global is_silent
 	global is_skip_tests
 	global is_extended_tests
+	global is_run_windows_patched_go_tests
 	
 	for arg in sys.argv:
 		arg = arg.lower()
 		
 		if arg == '-h' or arg == '--help' or arg == '/?' or arg == '/h':
-			print('MetaFFI Installer')
+			print('MetaFFI Installer - Installs MetaFFI and Python3.11, Go and OpenJDK plugins')
 			print('-s - silent mode (using defaults)')
 			print('--skip-sanity - skips all tests after installation')
 			print('--include-extended-tests - runs extended tests after installation (downloads several 3rd party libraries for tests)')
+			print('--patched-go (windows only) - Assume Go is patched and able to run Go -> OpenJDK tests (https://github.com/golang/go/issues/58542)')
+			return False
 		
 		if arg == "/s" or arg == "-s":
 			is_silent = True
@@ -1428,10 +1437,16 @@ def set_is_silent():
 		
 		if arg == '--include-extended-tests':
 			is_extended_tests = True
+			
+		if arg == '--patched-go':
+			is_run_windows_patched_go_tests = True
+			
+	return True
 
 
 def main():
-	set_is_silent()
+	if not set_installer_flags():  # returns is continue running installer
+		return
 	
 	try:
 		if platform.system() == 'Windows':
