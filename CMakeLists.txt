@@ -27,7 +27,7 @@ project(metaffi-core VERSION 0.0.1)
 
 # Add required packages
 hunter_add_package(Catch)
-add_ctest_and_catch2_packages()
+add_ctest_and_unitest_libs()
 
 # set RPATH
 set(CMAKE_MACOSX_RPATH 1) # tell MacOS RPATH is in use
