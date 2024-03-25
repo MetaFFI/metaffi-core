@@ -61,7 +61,7 @@ def get_windows_metaffi_files():
 	files = []
 	
 	# metaffi
-	files.extend(['xllr.dll', 'metaffi.exe', 'bin/vcruntime140_1d.dll', 'bin/vcruntime140d.dll', 'bin/boost_filesystem-mt-gd-x64.dll', 'bin/boost_program_options-mt-gd-x64.dll', 'bin/msvcp140d.dll', 'bin/ucrtbased.dll', 'include/cdt_capi_loader.c', 'include/cdt_capi_loader.h', 'include/cdt_structs.h', 'include/metaffi_primitives.h'])
+	files.extend(['xllr.dll', 'metaffi.exe', 'bin/vcruntime140_1d.dll', 'bin/vcruntime140d.dll', 'bin/boost_filesystem-mt-gd-x64.dll', 'bin/boost_program_options-mt-gd-x64.dll', 'bin/msvcp140d.dll', 'bin/ucrtbased.dll', 'include/cdt_capi_loader.c', 'include/cdt_capi_loader.h', 'include/cdt.h', 'include/metaffi_primitives.h'])
 	
 	# python plugin
 	files.extend(['xllr.python311.dll'])
@@ -105,7 +105,7 @@ def get_ubuntu_metaffi_files():
 	files = []
 	
 	# metaffi
-	files.extend(['xllr.so', 'metaffi', 'lib/libstdc++.so.6.0.30', 'lib/libc.so.6', 'lib/libboost_thread-mt-d-x64.so.1.79.0', 'lib/libboost_program_options-mt-d-x64.so.1.79.0', 'lib/libboost_filesystem-mt-d-x64.so.1.79.0', 'include/cdt_capi_loader.c', 'include/cdt_capi_loader.h', 'include/cdt_structs.h', 'include/metaffi_primitives.h'])
+	files.extend(['xllr.so', 'metaffi', 'lib/libstdc++.so.6.0.30', 'lib/libc.so.6', 'lib/libboost_thread-mt-d-x64.so.1.79.0', 'lib/libboost_program_options-mt-d-x64.so.1.79.0', 'lib/libboost_filesystem-mt-d-x64.so.1.79.0', 'include/cdt_capi_loader.c', 'include/cdt_capi_loader.h', 'include/cdt.h', 'include/metaffi_primitives.h'])
 	
 	# python plugin
 	files.extend(['xllr.python311.so'])

@@ -123,8 +123,8 @@ std::shared_ptr<foreign_function> runtime_plugin::load_function(const std::strin
 	uint32_t err_len = 0;
     void** pxcall_and_context = this->_loaded_plugin->load_function(module_path.c_str(), module_path.length(),
 												function_path.c_str(), function_path.length(),
-												                    !params_types.empty() ? (metaffi_type_infos_ptr)&params_types[0] : nullptr,
-												                    !retval_types.empty() ? (metaffi_type_infos_ptr)&retval_types[0] : nullptr,
+												                    !params_types.empty() ? (metaffi_type_info*)&params_types[0] : nullptr,
+												                    !retval_types.empty() ? (metaffi_type_info*)&retval_types[0] : nullptr,
 												params_types.size(), retval_types.size(), &err, &err_len);
 
 	if(err != nullptr)
@@ -149,8 +149,8 @@ std::shared_ptr<foreign_function> runtime_plugin::make_callable(void* make_calla
 	char* err = nullptr;
 	uint32_t err_len = 0;
 	void** pxcall_and_context = this->_loaded_plugin->make_callable(make_callable_context,
-	                                                                !params_types.empty() ? (metaffi_type_infos_ptr)&params_types[0] : nullptr,
-	                                                                !retval_types.empty() ? (metaffi_type_infos_ptr)&retval_types[0] : nullptr,
+	                                                                !params_types.empty() ? (metaffi_type_info*)&params_types[0] : nullptr,
+	                                                                !retval_types.empty() ? (metaffi_type_info*)&retval_types[0] : nullptr,
 												params_types.size(), retval_types.size(), &err, &err_len);
 
 	if(err != nullptr)

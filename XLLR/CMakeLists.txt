@@ -3,8 +3,10 @@
 hunter_add_package(Boost COMPONENTS thread filesystem)
 add_boost(thread filesystem)
 
+
 # build XLLR
-FILE(GLOB sources "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
+prepend_dir_to_files(sdk_files_for_xllr "${METAFFI_SDK}/runtime" "cdts_traverse_construct.cpp xllr_capi_loader.c cdt.cpp")
+FILE(GLOB sources "${CMAKE_CURRENT_LIST_DIR}/*.cpp" ${sdk_files_for_xllr})
 add_library(xllr SHARED)
 target_sources(xllr PRIVATE ${sources})
 target_include_directories(xllr PRIVATE ${CMAKE_CURRENT_LIST_DIR} ${Boost_INCLUDE_DIRS} ${METAFFI_SDK})
@@ -16,9 +18,9 @@ set_property(TARGET xllr APPEND PROPERTY INSTALL_RPATH "$ORIGIN;$ORIGIN/lib")
 
 
 #unitest
-prepend_dir_to_files(cdts_wrapper_test_sdk_sources "${METAFFI_SDK}/runtime" "cdts_wrapper_test.cpp cdts_wrapper.cpp cdt_capi_loader.c")
+prepend_dir_to_files(cdts_wrapper_test_sdk_sources "${METAFFI_SDK}/runtime" "cdts_test.cpp cdts_wrapper.cpp cdts_traverse_construct.cpp xllr_static_capi_loader.cpp xllr_capi_loader.c cdt.cpp")
 add_executable(cdts_wrapper_test_sdk ${cdts_wrapper_test_sdk_sources})
-target_link_libraries(cdts_wrapper_test_sdk PRIVATE Threads::Threads Catch2::Catch2)
+target_link_libraries(cdts_wrapper_test_sdk PRIVATE Threads::Threads doctest::doctest)
 link_to_dl_for_non_windows(cdts_wrapper_test_sdk)
 add_test(NAME "CDTS Wrapper" COMMAND cdts_wrapper_test_sdk WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
 

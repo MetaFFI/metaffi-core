@@ -5,6 +5,8 @@ cmake_policy(SET CMP0110 NEW) # Allow arbitrary names in CTest names
 
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 set(CMAKE_CXX_STANDARD 20)
+add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
+add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 if (CMAKE_BUILD_TYPE MATCHES Debug)
 	add_definitions(-DEBUG) # add -DEBUG to "Debug" builds
 	set(CMAKE_DEBUG_POSTFIX "")
@@ -41,7 +43,7 @@ add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/CLI/)
 # unitests
 prepend_dir_to_files(expand_env_test_src "${METAFFI_SDK}/utils" "expand_env.cpp expand_env_test.cpp")
 add_executable(expand_env_test ${expand_env_test_src})
-target_link_libraries(expand_env_test PRIVATE Catch2::Catch2)
+target_link_libraries(expand_env_test PRIVATE doctest::doctest)
 add_test(NAME "Expand Environment Variables" COMMAND expand_env_test)
 
 add_go_test("MetaFFI IDL Definition" WORKING_DIRECTORY ${METAFFI_SDK}/compiler/go/IDL)

@@ -4,7 +4,7 @@
 #include <string>
 #include <memory>
 #include "runtime_plugin_interface_wrapper.h"
-#include <runtime/cdt_structs.h>
+#include <runtime/cdt.h>
 
 //--------------------------------------------------------------------
 class foreign_function
