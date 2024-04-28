@@ -157,6 +157,7 @@ refresh_env: typing.Callable
 
 def run_command(command: str, raise_if_command_fail: bool = False, is_refresh_envvars: bool = True):
 	global refresh_env
+	global is_silent
 	
 	if is_windows():
 		print(f'{os.getcwd()}> {command}')
@@ -169,7 +170,12 @@ def run_command(command: str, raise_if_command_fail: bool = False, is_refresh_en
 	
 	try:
 		command_split = shlex.split(os.path.expanduser(os.path.expandvars(command)))
-		output = subprocess.run(command_split, capture_output=True, text=True)
+		
+		env = os.environ.copy()
+		if is_silent and not is_windows():
+			env["DEBIAN_FRONTEND"] = "noninteractive"
+		
+		output = subprocess.run(command_split, capture_output=True, text=True, env=env)
 	except subprocess.CalledProcessError as e:
 		if raise_if_command_fail:
 			raise Exception(f'Failed running "{command}" with exit code {e.returncode}. Output:\n{str(e.stdout)}{str(e.stderr)}')
@@ -441,7 +447,7 @@ def run_openjdk_tests():
 		metaffi_home = os.environ['METAFFI_HOME'] + '/'
 		openjdk_api = metaffi_home + 'metaffi.api.jar'
 		bridge = metaffi_home + 'xllr.openjdk.bridge.jar'
-		junit = metaffi_home + '/tests/openjdk/junit-platform-console-standalone-1.10.1.jar'
+		junit = metaffi_home + '/tests/openjdk/junit-platform-console-standalone-1.10.2.jar'
 		hamcrest = metaffi_home + '/tests/openjdk/hamcrest-core-1.3.jar'
 		
 		error_code, stdout, stderr = run_command(f'javac -cp "{openjdk_api}{os.pathsep}{bridge}{os.pathsep}{junit}{os.pathsep}{hamcrest}" {test_file}')
@@ -471,7 +477,7 @@ def run_extended_openjdk_tests():
 		metaffi_home = os.environ['METAFFI_HOME'] + '/'
 		openjdk_api = metaffi_home + 'metaffi.api.jar'
 		bridge = metaffi_home + 'xllr.openjdk.bridge.jar'
-		junit = metaffi_home + '/tests/openjdk/junit-platform-console-standalone-1.10.1.jar'
+		junit = metaffi_home + '/tests/openjdk/junit-platform-console-standalone-1.10.2.jar'
 		hamcrest = metaffi_home + '/tests/openjdk/hamcrest-core-1.3.jar'
 		
 		error_code, stdout, stderr = run_command(f'javac -cp "{openjdk_api}{os.pathsep}{bridge}{os.pathsep}{junit}{os.pathsep}{hamcrest}" {test_file}')
@@ -562,7 +568,7 @@ def install_python3_api():
 	answer = ask_user('Do you want to install MetaFFI Python3 API?', 'y', ['y', 'n'])
 	
 	if answer.strip() == 'y':
-		err_code, stdout, stderr = run_command(f"{python_exe()} -m pip install -i https://test.pypi.org/simple/ metaffi-api")
+		err_code, stdout, stderr = run_command(f"{python_exe()} -m pip install metaffi-api")
 		if err_code != 0:
 			raise Exception(f'Failed to install metaffi-api python package (error code: {err_code}):\n{stderr}{stdout}')
 
@@ -861,7 +867,7 @@ def refresh_ubuntu_env():
 	
 	load_dotenv("/etc/environment")
 	load_dotenv("~/.profile")
-
+	
 
 if is_windows():
 	refresh_env = refresh_windows_env
@@ -1210,7 +1216,7 @@ def install_ubuntu_go():
 	else:  # Go does not exist
 		
 		# install go 1.21.5
-		dl_link = f"https://go.dev/dl/go1.21.5.linux-amd64.tar.gz"
+		dl_link = f"https://go.dev/dl/go1.22.2.linux-amd64.tar.gz"
 		
 		with tempfile.TemporaryDirectory() as tempdir:
 			# Get the file name from the link
@@ -1431,7 +1437,7 @@ def main():
 		traceback.print_exc()
 		exit(2)
 	
-	print('\nInstallation Complete')
+	print('\nInstallation Complete!\nNotice you might need to logout/login or reboot to apply environmental changes\n')
 
 
 if __name__ == '__main__':
