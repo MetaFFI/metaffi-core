@@ -24,6 +24,13 @@ target_link_libraries(cdts_wrapper_test_sdk PRIVATE Threads::Threads doctest::do
 link_to_dl_for_non_windows(cdts_wrapper_test_sdk)
 add_test(NAME "CDTS Wrapper" COMMAND cdts_wrapper_test_sdk WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
 
+prepend_dir_to_files(xllr_capi_test_sdk_sources "${METAFFI_SDK}/runtime" "xllr_capi_test.cpp cdts_wrapper.cpp xllr_static_capi_loader.cpp xllr_capi_loader.c cdt.cpp")
+add_executable(xllr_capi_test_sdk_sources ${xllr_capi_test_sdk_sources})
+target_link_libraries(xllr_capi_test_sdk_sources PRIVATE Threads::Threads doctest::doctest)
+link_to_dl_for_non_windows(xllr_capi_test_sdk_sources)
+add_test(NAME "XLLR C-API" COMMAND xllr_capi_test_sdk_sources WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+
+
 
 # install
 install_target(xllr .)
