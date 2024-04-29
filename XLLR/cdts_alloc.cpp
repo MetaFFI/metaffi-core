@@ -17,19 +17,15 @@ extern "C" cdts* alloc_cdts_buffer(metaffi_size params_count, metaffi_size ret_c
 	{
 		cdts_cache[0].arr = cdt_cache;
 		cdts_cache[0].length = params_count;
-		cdts_cache[0].free_required = 0;
 		cdts_cache[1].arr = cdt_cache+params_count;
 		cdts_cache[1].length = ret_count;
-		cdts_cache[1].free_required = 0;
 	}
 	else
 	{
 		cdts_cache[0].arr = new cdt[params_count+ret_count];
 		cdts_cache[0].length = params_count;
-		cdts_cache[0].free_required = 1;
 		cdts_cache[1].arr = cdts_cache[0].arr+params_count;
 		cdts_cache[1].length = ret_count;
-		cdts_cache[1].free_required = 0;
 	}
 	
 	return (cdts*)cdts_cache;
