@@ -7,51 +7,48 @@ using namespace metaffi::utils;
 
 //--------------------------------------------------------------------
 runtime_plugin_interface_wrapper::runtime_plugin_interface_wrapper(const std::string& plugin_filename_without_extension)
+    : runtime_plugin_interface_wrapper(plugin_filename_without_extension.c_str()){}
+//--------------------------------------------------------------------
+runtime_plugin_interface_wrapper::runtime_plugin_interface_wrapper(const char* plugin_filename_without_extension)
 {
 	std::shared_ptr<boost::dll::shared_library> plugin_dll = load_plugin(plugin_filename_without_extension);
 	
-	this->pload_runtime = load_func<void(char**,uint32_t*)>(*plugin_dll, "load_runtime");
+	this->pload_runtime = load_func<void(char**)>(*plugin_dll, "load_runtime");
+	this->pfree_runtime = load_func<void(char**)>(*plugin_dll, "free_runtime");
 	
-	this->pfree_runtime = load_func<void(char**,uint32_t*)>(*plugin_dll, "free_runtime");
+	this->pload_entity = load_func<xcall*(const char*, const char*, struct metaffi_type_info*, int8_t, struct metaffi_type_info*, int8_t, char**)>(*plugin_dll, "load_function");
+	this->pmake_callable = load_func<xcall*(void*, struct metaffi_type_info*, int8_t, struct metaffi_type_info*, int8_t, char**)>(*plugin_dll, "make_callable");
 	
-	this->pload_function = load_func<void**(const char*, uint32_t, const char*, uint32_t, struct metaffi_type_info*, struct metaffi_type_info*, int8_t, int8_t, char**, uint32_t*)>(*plugin_dll, "load_function");
-	this->pmake_callable = load_func<void**(void*, struct metaffi_type_info*, struct metaffi_type_info*, int8_t, int8_t, char**, uint32_t*)>(*plugin_dll, "make_callable");
-
-	this->pfree_function = load_func<void(void*, char**, uint32_t*)>(*plugin_dll, "free_function");
+	this->pfree_xcall = load_func<void(xcall*, char**)>(*plugin_dll, "free_xcall");
 }
 //--------------------------------------------------------------------
-void runtime_plugin_interface_wrapper::load_runtime(char** err, uint32_t* err_len)
+void runtime_plugin_interface_wrapper::load_runtime(char** err)
 {
 	*err = nullptr;
-	*err_len = 0;
-	(*this->pload_runtime)(err, err_len);
+	(*this->pload_runtime)(err);
 }
 //--------------------------------------------------------------------
-void runtime_plugin_interface_wrapper::free_runtime(char** err, uint32_t* err_len)
+void runtime_plugin_interface_wrapper::free_runtime(char** err)
 {
 	*err = nullptr;
-	*err_len = 0;
-	(*this->pfree_runtime)(err, err_len);
+	(*this->pfree_runtime)(err);
 }
 //--------------------------------------------------------------------
-void** runtime_plugin_interface_wrapper::load_function(const char* module_path, uint32_t module_path_len, const char* function_path, uint32_t function_path_len, struct metaffi_type_info* params_types, struct metaffi_type_info* retvals_types, uint8_t params_count, uint8_t retval_count, char** err, uint32_t* err_len)
+xcall* runtime_plugin_interface_wrapper::load_entity(const char* module_path, const char* function_path, struct metaffi_type_info* params_types, uint8_t params_count, struct metaffi_type_info* retvals_types, uint8_t retval_count, char** err)
 {
 	*err = nullptr;
-	*err_len = 0;
-	return (*this->pload_function)(module_path, module_path_len, function_path, function_path_len, params_types, retvals_types, params_count, retval_count, err, err_len);
+	return (*this->pload_entity)(module_path, function_path, params_types, params_count, retvals_types, retval_count, err);
 }
 //--------------------------------------------------------------------
-void** runtime_plugin_interface_wrapper::make_callable(void* make_callable_context, struct metaffi_type_info* params_types, struct metaffi_type_info* retval_types, uint8_t params_count, uint8_t retval_count, char** err, uint32_t* err_len)
+xcall* runtime_plugin_interface_wrapper::make_callable(void* make_callable_context, struct metaffi_type_info* params_types, uint8_t params_count, struct metaffi_type_info* retval_types, uint8_t retval_count, char** err)
 {
 	*err = nullptr;
-	*err_len = 0;
-	return (*this->pmake_callable)(make_callable_context, params_types, retval_types, params_count, retval_count, err, err_len);
+	return (*this->pmake_callable)(make_callable_context, params_types, params_count, retval_types, retval_count, err);
 }
 //--------------------------------------------------------------------
-void runtime_plugin_interface_wrapper::free_function(void* pff, char** err, uint32_t* err_len)
+void runtime_plugin_interface_wrapper::free_xcall(xcall* pxcall, char** err)
 {
 	*err = nullptr;
-	*err_len = 0;
-	(*this->pfree_function)(pff, err, err_len);
+	(*this->pfree_xcall)(pxcall, err);
 }
 //--------------------------------------------------------------------

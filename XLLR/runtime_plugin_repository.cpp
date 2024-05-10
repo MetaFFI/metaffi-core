@@ -2,7 +2,7 @@
 #include <iostream>
 
 //--------------------------------------------------------------------
-runtime_plugin_respository::~runtime_plugin_respository()
+runtime_plugin_repository::~runtime_plugin_repository()
 {
 	try
 	{
@@ -26,11 +26,16 @@ runtime_plugin_respository::~runtime_plugin_respository()
 	
 }
 //--------------------------------------------------------------------
-std::shared_ptr<runtime_plugin> runtime_plugin_respository::get(const std::string& plugin) const
+std::shared_ptr<runtime_plugin> runtime_plugin_repository::get(const std::string& plugin) const
+{
+	return this->get(plugin.c_str());
+}
+//--------------------------------------------------------------------
+std::shared_ptr<runtime_plugin> runtime_plugin_repository::get(const char* plugin) const
 {
 	// readers lock
 	boost::shared_lock<boost::shared_mutex> readlock(this->_mutex);
-
+	
 	auto it = this->_plugins.find(plugin);
 	if(it == this->_plugins.end()) // if NOT found
 	{
@@ -40,12 +45,16 @@ std::shared_ptr<runtime_plugin> runtime_plugin_respository::get(const std::strin
 	return it->second;
 }
 //--------------------------------------------------------------------
-std::shared_ptr<runtime_plugin> runtime_plugin_respository::load(const std::string& plugin)
+std::shared_ptr<runtime_plugin> runtime_plugin_repository::load(const std::string& plugin)
 {
-
-    // readers lock
+	return this->load(plugin.c_str());
+}
+//--------------------------------------------------------------------
+std::shared_ptr<runtime_plugin> runtime_plugin_repository::load(const char* plugin)
+{
+	// readers lock
 	boost::upgrade_lock<boost::shared_mutex> read_lock(this->_mutex);
-
+	
 	auto it = this->_plugins.find(plugin);
 	if(it != this->_plugins.end()) // if found
 	{
@@ -60,11 +69,16 @@ std::shared_ptr<runtime_plugin> runtime_plugin_respository::load(const std::stri
 	return res;
 }
 //--------------------------------------------------------------------
-void runtime_plugin_respository::release(const std::string& plugin)
+void runtime_plugin_repository::release(const std::string& plugin)
 {
-    // readers lock
+	this->release(plugin.c_str());
+}
+//--------------------------------------------------------------------
+void runtime_plugin_repository::release(const char* plugin)
+{
+	// readers lock
 	boost::upgrade_lock<boost::shared_mutex> read_lock(this->_mutex);
-
+	
 	auto it = this->_plugins.find(plugin);
 	if(it == this->_plugins.end()) // if found
 	{
