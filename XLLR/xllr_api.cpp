@@ -93,7 +93,7 @@ void load_runtime_plugin(const char* runtime_plugin_name, char** err)
 		
 		// loads plugin if not loaded
 	    std::shared_ptr<runtime_plugin> loaded_plugin = g_runtime_plugins.load(runtime_plugin_name);
-		loaded_plugin->load_runtime();
+		loaded_plugin->load_runtime(err);
     }
     handle_err(err,);
 }
@@ -131,12 +131,12 @@ xcall* load_entity(const char* runtime_plugin_name, const char* module_path, con
 			retvals = std::vector<metaffi_type_info>(retval_types, retval_types + retval_count);
 		}
 		
-	    auto res = p->load_entity(module_path, function_path, params, retvals);
-		if(!res)
+	    auto res = p->load_entity(module_path, function_path, params, retvals, err);
+		if(err)
 		{
 			std::stringstream ss;
 			ss << "Failed to load function with function path" << function_path;
-			throw std::runtime_error(ss.str());
+			return nullptr;
 		}
 		
 		return res.get();
@@ -167,12 +167,12 @@ xcall* make_callable(const char* runtime_plugin_name, void* make_callable_contex
 			retvals = std::vector<metaffi_type_info>(retval_types, retval_types + retval_count);
 		}
 
-		auto res = p->make_callable(make_callable_context, params, retvals);
-		if(!res)
+		auto res = p->make_callable(make_callable_context, params, retvals, err);
+		if(err)
 		{
 			std::stringstream ss;
 			ss << "Failed to load callable from runtime plugin " << runtime_plugin_name;
-			throw std::runtime_error(ss.str());
+			return nullptr;
 		}
 
 		return res.get();
@@ -187,9 +187,26 @@ void free_xcall(const char* runtime_plugin_name, xcall* pxcall, char** err)
     try
     {
 		std::shared_ptr<runtime_plugin> p = g_runtime_plugins.get(runtime_plugin_name);
-		p->free_and_remove_xcall_from_cache(pxcall);
+		p->free_and_remove_xcall_from_cache(pxcall, err);
     }
     handle_err(err, );
+}
+//--------------------------------------------------------------------
+char* set_error_message(const char* err_message, uint64_t length)
+{
+	if(err_message == nullptr) {
+		return nullptr;
+	}
+	
+	char* copy = new char[length + 1];
+	std::memcpy(copy, err_message, length);
+	copy[length] = '\0'; // Null-terminate the string
+	return copy;
+}
+//--------------------------------------------------------------------
+void free_error_message(const char* err_to_free)
+{
+	delete err_to_free;
 }
 //--------------------------------------------------------------------
 void xcall_params_ret(

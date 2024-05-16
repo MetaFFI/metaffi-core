@@ -14,7 +14,7 @@ private:
 	std::shared_ptr<boost::dll::detail::import_type<xcall*(const char*, const char*, struct metaffi_type_info*, int8_t, struct metaffi_type_info*, int8_t, char**)>::type> pload_entity;
 	std::shared_ptr<boost::dll::detail::import_type<xcall*(void*, struct metaffi_type_info*, int8_t, struct metaffi_type_info*, int8_t, char**)>::type> pmake_callable;
 	std::shared_ptr<boost::dll::detail::import_type<void(xcall*, char**)>::type> pfree_xcall;
-
+	
 public:
 	explicit runtime_plugin_interface_wrapper(const std::string& plugin_filename_without_extension);
 	explicit runtime_plugin_interface_wrapper(const char* plugin_filename_without_extension);
@@ -44,7 +44,7 @@ public:
 	 * Free module of foreign language
 	 */ 
 	void free_xcall(xcall* pxcall, char** err) override;
-
-
+	
+	
 };
 //--------------------------------------------------------------------
