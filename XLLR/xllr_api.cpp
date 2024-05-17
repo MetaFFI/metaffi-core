@@ -198,21 +198,38 @@ void free_xcall(const char* runtime_plugin_name, xcall* pxcall, char** err)
     handle_err(err, );
 }
 //--------------------------------------------------------------------
-char* metaffi_alloc_string(const char* err_message, uint64_t length)
+template<typename char_t>
+char_t* alloc_string_t(const char_t* err_message, uint64_t length, char_t null_terminator)
 {
 	if(err_message == nullptr) {
 		return nullptr;
 	}
 	
-	char* copy = (char*)metaffi_alloc(length + 1);
-	std::memcpy(copy, err_message, length);
-	copy[length] = '\0'; // Null-terminate the string
+	char_t* copy = new char_t[length + 1];
+	std::memcpy(copy, err_message, length*sizeof(char_t));
+	copy[length] = null_terminator; // Null-terminate the string
 	return copy;
 }
-//--------------------------------------------------------------------
-void metaffi_free_string(const char* err_to_free)
+char* alloc_string(const char* err_message, uint64_t length)
 {
-	metaffi_free((void*)err_to_free);
+	return alloc_string_t(err_message, length, '\0');
+}
+char8_t* alloc_string8(const char8_t* err_message, uint64_t length)
+{
+	return alloc_string_t(err_message, length, u8'\0');
+}
+char16_t* alloc_string16(const char16_t* err_message, uint64_t length)
+{
+	return alloc_string_t(err_message, length, u'\0');
+}
+char32_t* alloc_string32(const char32_t* err_message, uint64_t length)
+{
+	return alloc_string_t(err_message, length, U'\0');
+}
+//--------------------------------------------------------------------
+void free_string(const char* err_to_free)
+{
+	delete[] err_to_free;
 }
 //--------------------------------------------------------------------
 void* metaffi_alloc(uint64_t size)
@@ -235,7 +252,7 @@ void xcall_params_ret(
 	{
 		((pforeign_function_entrypoint_signature_params_ret)pplugin_xcall_and_context->pxcall_and_context[0])(pplugin_xcall_and_context->pxcall_and_context[1], params_ret, out_err);
 	}
-	handle_err((char**)out_err,)
+	handle_err((char**)out_err,);
 }
 //--------------------------------------------------------------------
 void xcall_no_params_ret(
