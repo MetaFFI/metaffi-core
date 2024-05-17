@@ -187,26 +187,42 @@ void free_xcall(const char* runtime_plugin_name, xcall* pxcall, char** err)
     try
     {
 		std::shared_ptr<runtime_plugin> p = g_runtime_plugins.get(runtime_plugin_name);
+		if(!p)
+		{
+			std::stringstream ss;
+			ss << "plugin was not found in the loaded plugin repository: " << runtime_plugin_name;
+			throw std::runtime_error(ss.str());
+		}
 		p->free_and_remove_xcall_from_cache(pxcall, err);
     }
     handle_err(err, );
 }
 //--------------------------------------------------------------------
-char* set_error_message(const char* err_message, uint64_t length)
+char* metaffi_alloc_string(const char* err_message, uint64_t length)
 {
 	if(err_message == nullptr) {
 		return nullptr;
 	}
 	
-	char* copy = new char[length + 1];
+	char* copy = (char*)metaffi_alloc(length + 1);
 	std::memcpy(copy, err_message, length);
 	copy[length] = '\0'; // Null-terminate the string
 	return copy;
 }
 //--------------------------------------------------------------------
-void free_error_message(const char* err_to_free)
+void metaffi_free_string(const char* err_to_free)
 {
-	delete err_to_free;
+	metaffi_free((void*)err_to_free);
+}
+//--------------------------------------------------------------------
+void* metaffi_alloc(uint64_t size)
+{
+	return malloc(size);
+}
+//--------------------------------------------------------------------
+void metaffi_free(void* ptr)
+{
+	free(ptr);
 }
 //--------------------------------------------------------------------
 void xcall_params_ret(
