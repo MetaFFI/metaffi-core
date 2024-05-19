@@ -89,6 +89,12 @@ void load_runtime_plugin(const char* runtime_plugin_name, char** err)
 {
     try
     {
+		if(err == nullptr)
+		{
+			std::cerr << "err is null" << std::endl;
+			std::abort();
+		}
+		
 		*err = nullptr;
 		
 		// loads plugin if not loaded
@@ -110,7 +116,7 @@ void free_runtime_plugin(const char* runtime_plugin, char** err)
     handle_err(err,);
 }
 //--------------------------------------------------------------------
-xcall* load_entity(const char* runtime_plugin_name, const char* module_path, const char* function_path, metaffi_type_info* params_types, uint8_t params_count, metaffi_type_info* retval_types, uint8_t retval_count, char** err)
+xcall* load_entity(const char* runtime_plugin_name, const char* module_path, const char* function_path, metaffi_type_info* params_types, int8_t params_count, metaffi_type_info* retval_types, int8_t retval_count, char** err)
 {
 	try
     {
@@ -132,21 +138,21 @@ xcall* load_entity(const char* runtime_plugin_name, const char* module_path, con
 		}
 		
 	    auto res = p->load_entity(module_path, function_path, params, retvals, err);
-		if(err)
+		if(*err)
 		{
 			std::stringstream ss;
 			ss << "Failed to load function with function path" << function_path;
-			return nullptr;
+			throw std::runtime_error(ss.str());
 		}
 		
-		return res.get();
+		return res;
     }
     handle_err(err,);
 	
 	return nullptr;
 }
 //--------------------------------------------------------------------
-xcall* make_callable(const char* runtime_plugin_name, void* make_callable_context, metaffi_type_info* params_types, uint8_t params_count, metaffi_type_info* retval_types, uint8_t retval_count, char** err)
+xcall* make_callable(const char* runtime_plugin_name, void* make_callable_context, metaffi_type_info* params_types, int8_t params_count, metaffi_type_info* retval_types, int8_t retval_count, char** err)
 {
 	try
 	{
@@ -175,7 +181,7 @@ xcall* make_callable(const char* runtime_plugin_name, void* make_callable_contex
 			return nullptr;
 		}
 
-		return res.get();
+		return res;
 	}
 	handle_err(err,);
 
@@ -193,7 +199,7 @@ void free_xcall(const char* runtime_plugin_name, xcall* pxcall, char** err)
 			ss << "plugin was not found in the loaded plugin repository: " << runtime_plugin_name;
 			throw std::runtime_error(ss.str());
 		}
-		p->free_and_remove_xcall_from_cache(pxcall, err);
+		p->free_xcall(pxcall, err);
     }
     handle_err(err, );
 }

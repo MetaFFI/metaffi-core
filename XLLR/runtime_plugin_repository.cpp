@@ -88,6 +88,13 @@ void runtime_plugin_repository::release(const char* plugin)
 	// not found - load it
 	boost::upgrade_to_unique_lock<boost::shared_mutex> exclusive_lock(read_lock);
 
+	char* out_err = nullptr;
+	it->second->free_runtime(&out_err);
+	if(out_err != nullptr)
+	{
+		throw std::runtime_error(out_err);
+	}
+	
 	this->_plugins.erase(it);
 }
 //--------------------------------------------------------------------

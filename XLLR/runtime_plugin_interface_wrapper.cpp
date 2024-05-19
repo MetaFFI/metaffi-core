@@ -16,7 +16,7 @@ runtime_plugin_interface_wrapper::runtime_plugin_interface_wrapper(const char* p
 	this->pload_runtime = load_func<void(char**)>(*plugin_dll, "load_runtime");
 	this->pfree_runtime = load_func<void(char**)>(*plugin_dll, "free_runtime");
 	
-	this->pload_entity = load_func<xcall*(const char*, const char*, struct metaffi_type_info*, int8_t, struct metaffi_type_info*, int8_t, char**)>(*plugin_dll, "load_function");
+	this->pload_entity = load_func<xcall*(const char*, const char*, struct metaffi_type_info*, int8_t, struct metaffi_type_info*, int8_t, char**)>(*plugin_dll, "load_entity");
 	this->pmake_callable = load_func<xcall*(void*, struct metaffi_type_info*, int8_t, struct metaffi_type_info*, int8_t, char**)>(*plugin_dll, "make_callable");
 	
 	this->pfree_xcall = load_func<void(xcall*, char**)>(*plugin_dll, "free_xcall");
