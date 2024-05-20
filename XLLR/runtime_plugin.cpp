@@ -14,25 +14,7 @@ runtime_plugin::runtime_plugin(std::string plugin_filename, bool is_init /*= tru
 	}
 }
 //--------------------------------------------------------------------
-runtime_plugin::~runtime_plugin() 
-{
-	try
-	{
-		char* err = fini();
-		if(err != nullptr)
-		{
-			std::cerr << "Failed to release " << this->_plugin_filename << ". Error: " << err << std::endl;
-		}
-	}
-	catch(const std::exception& e)
-	{
-		std::cerr << "Failed to release " << this->_plugin_filename << ". Error: " << e.what() << std::endl;
-	}
-    catch(...)
-	{
-		std::cerr << "Failed to release " << this->_plugin_filename << std::endl;
-	}
-}
+runtime_plugin::~runtime_plugin() = default;
 //--------------------------------------------------------------------
 void runtime_plugin::init() 
 {
@@ -42,16 +24,9 @@ void runtime_plugin::init()
 //--------------------------------------------------------------------
 char* runtime_plugin::fini()
 {
-	// make sure plugin is released before unloading the dynamic library
-	char* err = nullptr;
-    this->free_runtime(&err);
-	if(err != nullptr)
-	{
-		std::cerr << "Failed to free runtime. Error: " << err << std::endl;
-		return err;
-	}
-	
-	this->_loaded_plugin = nullptr;
+	//make sure plugin is released before unloading the dynamic library
+	//this->_loaded_plugin->fini();
+	//this->_loaded_plugin = nullptr;
 	return nullptr;
 }
 //--------------------------------------------------------------------

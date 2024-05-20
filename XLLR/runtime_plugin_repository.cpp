@@ -12,16 +12,16 @@ runtime_plugin_repository::~runtime_plugin_repository()
 		}
 
 		for(const std::string& k : keys){
-			this->release(k);
+			this->unload(k);
 		}
 	}
 	catch(const std::exception& e)
 	{
-		std::cout << "Failed to release plugins. Error: " << e.what() << std::endl;
+		std::cout << "Failed to unload plugins. Error: " << e.what() << std::endl;
 	}
     catch(...)
 	{
-		std::cout << "Failed to release plugins. Unknown error." << std::endl;
+		std::cout << "Failed to unload plugins. Unknown error." << std::endl;
 	}
 	
 }
@@ -69,12 +69,12 @@ std::shared_ptr<runtime_plugin> runtime_plugin_repository::load(const char* plug
 	return res;
 }
 //--------------------------------------------------------------------
-void runtime_plugin_repository::release(const std::string& plugin)
+void runtime_plugin_repository::unload(const std::string& plugin)
 {
-	this->release(plugin.c_str());
+	this->unload(plugin.c_str());
 }
 //--------------------------------------------------------------------
-void runtime_plugin_repository::release(const char* plugin)
+void runtime_plugin_repository::unload(const char* plugin)
 {
 	// readers lock
 	boost::upgrade_lock<boost::shared_mutex> read_lock(this->_mutex);
@@ -84,10 +84,7 @@ void runtime_plugin_repository::release(const char* plugin)
 	{
 		return;
 	}
-
-	// not found - load it
-	boost::upgrade_to_unique_lock<boost::shared_mutex> exclusive_lock(read_lock);
-
+	
 	char* out_err = nullptr;
 	it->second->free_runtime(&out_err);
 	if(out_err != nullptr)
@@ -95,6 +92,5 @@ void runtime_plugin_repository::release(const char* plugin)
 		throw std::runtime_error(out_err);
 	}
 	
-	this->_plugins.erase(it);
 }
 //--------------------------------------------------------------------

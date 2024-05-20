@@ -11,7 +11,7 @@ runtime_plugin_interface_wrapper::runtime_plugin_interface_wrapper(const std::st
 //--------------------------------------------------------------------
 runtime_plugin_interface_wrapper::runtime_plugin_interface_wrapper(const char* plugin_filename_without_extension)
 {
-	std::shared_ptr<boost::dll::shared_library> plugin_dll = load_plugin(plugin_filename_without_extension);
+	this->plugin_dll = load_plugin(plugin_filename_without_extension);
 	
 	this->pload_runtime = load_func<void(char**)>(*plugin_dll, "load_runtime");
 	this->pfree_runtime = load_func<void(char**)>(*plugin_dll, "free_runtime");
@@ -50,5 +50,17 @@ void runtime_plugin_interface_wrapper::free_xcall(xcall* pxcall, char** err)
 {
 	*err = nullptr;
 	(*this->pfree_xcall)(pxcall, err);
+}
+//--------------------------------------------------------------------
+void runtime_plugin_interface_wrapper::fini()
+{
+	// unload dynamic library
+	this->pload_runtime = nullptr;
+	this->pfree_runtime = nullptr;
+	this->pload_entity = nullptr;
+	this->pmake_callable = nullptr;
+	this->pfree_xcall = nullptr;
+	this->plugin_dll->unload();
+	this->plugin_dll = nullptr;
 }
 //--------------------------------------------------------------------

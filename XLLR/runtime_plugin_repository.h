@@ -22,8 +22,8 @@ public:
 	std::shared_ptr<runtime_plugin> load(const std::string& plugin);
 	std::shared_ptr<runtime_plugin> load(const char* plugin);
 	
-	void release(const std::string& plugin);
-	void release(const char* plugin);
+	void unload(const std::string& plugin);
+	void unload(const char* plugin);
 	
 };
 //--------------------------------------------------------------------

@@ -8,6 +8,7 @@
 class runtime_plugin_interface_wrapper : public runtime_plugin_interface
 {
 private:
+	std::shared_ptr<boost::dll::shared_library> plugin_dll;
 	std::shared_ptr<boost::dll::detail::import_type<void(char**)>::type> pload_runtime;
 	std::shared_ptr<boost::dll::detail::import_type<void(char**)>::type> pfree_runtime;
 
@@ -45,6 +46,6 @@ public:
 	 */ 
 	void free_xcall(xcall* pxcall, char** err) override;
 	
-	
+	void fini();
 };
 //--------------------------------------------------------------------

@@ -111,7 +111,7 @@ void free_runtime_plugin(const char* runtime_plugin, char** err)
 		*err = nullptr;
 
 		// loads plugin if not loaded
-        g_runtime_plugins.release(runtime_plugin);
+		g_runtime_plugins.unload(runtime_plugin);
     }
     handle_err(err,);
 }
