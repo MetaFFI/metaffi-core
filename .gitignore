@@ -68,3 +68,17 @@ installer/install_metaffi.py
 installer/metaffi_installer.exe
 installer/metaffi_installer
 installer/metaffi_installer.py
+
+# -------------- Conan --------------
+# Conan build files
+.conan/
+conanbuildinfo*
+conaninfo.txt
+conan.lock
+graph_info.json
+conanbuildenv.*
+conanbuild*
+deactivate_conanbuild*
+deactivate_conanrun*
+conanrun*
+conandata.yml

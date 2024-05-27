@@ -1,43 +1,42 @@
 cmake_minimum_required(VERSION 3.16.3)
 
-# policies
-cmake_policy(SET CMP0110 NEW) # Allow arbitrary names in CTest names
+# --- Global CMake header for all MetaFFI projects ---
 
-set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
-set(CMAKE_CXX_STANDARD 20)
-add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
-add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
-if (CMAKE_BUILD_TYPE MATCHES Debug)
-	add_definitions(-DEBUG) # add -DEBUG to "Debug" builds
-	set(CMAKE_DEBUG_POSTFIX "")
-endif()
-
-# Add SDK
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/plugin-sdk/)
+# SDK Paths
 set(METAFFI_SDK ${CMAKE_CURRENT_LIST_DIR}/plugin-sdk)
 set(CMAKE_SCRIPTS_DIR ${CMAKE_CURRENT_LIST_DIR}/plugin-sdk/cmake)
 
-# Load hunter package manager
-load_hunter_pm(${CMAKE_SCRIPTS_DIR}) # load package manager
+# add SDK
+add_subdirectory(${METAFFI_SDK})
 
-# include scripts required for project
-include(${CMAKE_SCRIPTS_DIR}/InstallUtils.cmake)
+# VCPKG
+add_vcpkg()
 
-#-----------------------------------------------------------------------------------------------
+# policies
+add_global_policies()
 
-project(metaffi-core VERSION 0.0.1)
-
-# Add required packages
-hunter_add_package(Catch)
-add_ctest_and_unitest_libs()
+# set global C/C++ flags and compiler options
+c_cpp_global_settings()
 
 # set RPATH
-set(CMAKE_MACOSX_RPATH 1) # tell MacOS RPATH is in use
-list(APPEND CMAKE_INSTALL_RPATH "$ORIGIN;$ORIGIN/lib")
+add_rpath()
 
-# add targets
+# --- Root project ---
+project(metaffi-core VERSION 0.0.1)
+
+# global debug settings for all MetaFFI projects
+c_cpp_debug_settings()
+
+# --- Dependencies ---
+add_ctest_and_unitest_libs()
+add_boost(thread program_options filesystem)
+
+# --- Add Targets ---
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/XLLR/)
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/CLI/)
+
+
+# --- Tests ---
 
 # SDK unitests (done only in core project)
 # unitests
@@ -48,49 +47,19 @@ add_test(NAME "Expand Environment Variables" COMMAND expand_env_test)
 
 add_go_test("MetaFFI IDL Definition" WORKING_DIRECTORY ${METAFFI_SDK}/compiler/go/IDL)
 
-install(CODE "set(ENV{METAFFI_HOME}, ${CMAKE_BINARY_DIR})")
+# --- Install ---
+install_globals()
 
-# cmake install directory (not cpack)
-set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR})
-set(CMAKE_SKIP_INSTALL_RPATH OFF)
+install(CODE "message(STATUS \"Installing MetaFFI SDK\")")
+# install SDK - occurs only in core project
+# Copy "include" code to METAFFI_HOME/include
+install(FILES   ${METAFFI_SDK}/runtime/metaffi_primitives.h
+				${METAFFI_SDK}/runtime/cdt.h
+				${METAFFI_SDK}/runtime/xcall.h
+				${METAFFI_SDK}/runtime/xllr_capi_loader.h
+				${METAFFI_SDK}/runtime/xllr_capi_loader.c
+				${METAFFI_SDK}/runtime/cdts_traverse_construct.h
+		DESTINATION "include")
 
-#-----------------------------------------------------------------------------------------------
-
-# build installer
-set(CPACK_PACKAGE_NAME "MetaFFI")
-set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.txt")
-set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
-set(CPACK_COMPONENTS_GROUPING ONE_PER_GROUP)
-
-set(CPACK_PACKAGE_NAME ${PROJECT_NAME} CACHE STRING "MetaFFI")
-set(CPACK_PACKAGE_INSTALL_DIRECTORY "metaffi")
-set(CPACK_PACKAGE_HOMEPAGE_URL "https://github.com/MetaFFI/")
-
-if(WIN32)
-	set(CPACK_PACKAGE_INSTALL_DIRECTORY "c:\\metaffi")
-else()
-	set(CPACK_PACKAGE_INSTALL_DIRECTORY "metaffi")
-endif()
-
-if(${CMAKE_SYSTEM_NAME} MATCHES Linux)
-	set(CPACK_GENERATOR "DEB")
-	set(CPACK_DEBIAN_FILE_NAME DEB-DEFAULT)
-	set(CPACK_PACKAGING_INSTALL_PREFIX "/opt/metaffi/")
-	set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Tsvi Cherny-Shahar")
-
-	set(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA "${CMAKE_CURRENT_LIST_DIR}/installer/postinst;${CMAKE_CURRENT_LIST_DIR}/installer/prerm")
-
-elseif(WIN32)
-
-	set(CPACK_GENERATOR "WIX")
-	set(CPACK_WIX_PRODUCT_GUID "07862856-71e8-4c92-88ea-8eb759b591b0")
-	set(CPACK_WIX_UPGRADE_GUID "193774b5-8b4d-4684-9539-241f04645802")
-	set(CPACK_WIX_PROPERTY_ARPURLINFOABOUT "https://github.com/MetaFFI/")
-	set(CPACK_WIX_PATCH_FILE "${CMAKE_CURRENT_LIST_DIR}/installer/WixExtraCommands.xml")
-
-endif()
-
-set(CPACK_RESOURCE_FILE_LICENSE    ${CMAKE_CURRENT_LIST_DIR}/LICENSE.txt)
-set(CPACK_RESOURCE_FILE_README     ${CMAKE_CURRENT_LIST_DIR}/README.md)
-
-include(CPack)
+# install dependencies
+install_boost(filesystem program_options thread)

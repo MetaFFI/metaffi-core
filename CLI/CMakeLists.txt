@@ -1,8 +1,5 @@
 
 #------------------------------- metaffi-cli Project ------------------------------------------
-hunter_add_package(Boost COMPONENTS program_options filesystem)
-add_boost(program_options filesystem)
-
 
 # build MetaFFI CLI
 FILE(GLOB metaffi_cli_sources "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
