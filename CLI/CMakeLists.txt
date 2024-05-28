@@ -8,7 +8,6 @@ set_target_properties(metaffi_cli PROPERTIES OUTPUT_NAME "metaffi")
 target_include_directories(metaffi_cli PRIVATE ${CMAKE_CURRENT_LIST_DIR} ${Boost_INCLUDE_DIRS} ${METAFFI_SDK})
 target_sources(metaffi_cli PRIVATE ${metaffi_cli_sources} ${METAFFI_SDK}/utils/expand_env.cpp)
 target_link_libraries(metaffi_cli PRIVATE ${CMAKE_DL_LIBS} Boost::filesystem Boost::program_options)
-link_to_dl_for_non_windows(metaffi_cli)
 
 set_property(TARGET metaffi_cli APPEND PROPERTY BUILD_RPATH "$ORIGIN;$ORIGIN/lib")
 

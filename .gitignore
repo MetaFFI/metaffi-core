@@ -82,3 +82,5 @@ deactivate_conanbuild*
 deactivate_conanrun*
 conanrun*
 conandata.yml
+
+metaffi.code-workspace

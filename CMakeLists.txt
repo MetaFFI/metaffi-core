@@ -50,7 +50,6 @@ add_go_test("MetaFFI IDL Definition" WORKING_DIRECTORY ${METAFFI_SDK}/compiler/g
 # --- Install ---
 install_globals()
 
-install(CODE "message(STATUS \"Installing MetaFFI SDK\")")
 # install SDK - occurs only in core project
 # Copy "include" code to METAFFI_HOME/include
 install(FILES   ${METAFFI_SDK}/runtime/metaffi_primitives.h
