@@ -1,0 +1,25 @@
+from ast import Return
+import SCons.Environment
+import SCons.Script
+
+# * Import the parent Environment
+env: SCons.Environment.Environment
+SCons.Script.Import('env')
+env = env.Clone()
+
+# set the sdk path
+env['sdk_path'] = env.Dir('.').abspath + '/plugin-sdk'
+
+# tag to run the SDK tests
+env['sdk_tests'] = True
+
+# * ---- Build MetaFFI Core Targets ----
+SCons.Script.SConscript(['plugin-sdk/SConscript_plugin-sdk', # plugin-sdk unitest - only from metaffi-core
+#						 'XLLR/SConscript',
+#						 'CLI/SConscript',
+#						 'installer/SConscript']
+						 ], exports='env')
+
+
+# * ---- Return default targets to the parent SConscript ----
+

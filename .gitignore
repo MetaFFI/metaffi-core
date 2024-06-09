@@ -84,3 +84,5 @@ conanrun*
 conandata.yml
 
 metaffi.code-workspace
+
+SConscript_conandeps
