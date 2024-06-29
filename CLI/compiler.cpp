@@ -17,7 +17,7 @@ compiler::compiler(const std::string& idl_json, const std::string& output_path)
 	if(!std::filesystem::exists(_output_path))
 	{
 		std::stringstream ss;
-		ss << "IDL/Source file \"" << _output_path << "\" was not found";
+		ss << "expected output directory \"" << _output_path << "\" does not exist";
 		throw std::runtime_error(ss.str().c_str());
 	}
 }

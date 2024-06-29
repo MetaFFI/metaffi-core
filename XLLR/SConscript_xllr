@@ -1,0 +1,57 @@
+import SCons.Environment
+import SCons.Script
+import SCons.Node
+import SCons.Node.FS
+import glob
+import SCons.Script.SConsOptions
+import compiler_options
+import post_actions
+import platform
+
+from site_scons import ALIAS_CORE, ALIAS_CORE_UNITTESTS
+
+# * Import the parent Environment
+env: SCons.Environment.Environment
+SCons.Script.Import('env')
+
+
+# * ---- Build XLLR dynamic library ----
+env_xllr = env.Clone()
+env_xllr.LoadConanPackagesInfo()
+
+source = env['sdk_src']
+source += glob.glob(env_xllr.Dir('.').abspath+'/*.cpp')
+
+includes = env['sdk_includes']
+includes.append(env_xllr.Dir('.').abspath)
+
+if platform.system() == 'Linux' or platform.system() == 'Darwin':
+	env_xllr.Append(LINKFLAGS=['-Wl,-rpath,$ORIGIN'])
+
+xllr_dylib = env_xllr.CPPSharedLibrary(target='xllr', project_name='xllr', sources=source, include_dirs=includes)
+install_xllr = env_xllr.Install(env_xllr['METAFFI_HOME'], xllr_dylib) # install only dll.
+
+# install boost_filesystem.dll
+install_boost_filesystem = env_xllr.Install(env_xllr['METAFFI_HOME'], env_xllr.SearchConanBinaryFile('boost', f'boost_filesystem{env_xllr.DynamicLibraryExtension()}'))
+SCons.Script.Alias(ALIAS_CORE, [xllr_dylib, install_xllr, install_boost_filesystem])
+
+# * --- Unit Tests ---
+# runtime/xllr_capi_test.cpp
+env_xllr_capi_test = env.Clone()
+env_xllr_capi_test.LoadConanPackagesInfo()
+
+# dependet on XLLR dynamic library
+xllr_capi_test: SCons.Node.NodeList = env_xllr_capi_test.CPPProgram('xllr_capi_test',
+															'plugin-sdk',
+															[
+																env_xllr_capi_test.Dir('./../plugin-sdk/runtime/').File('xllr_capi_test.cpp').abspath,
+																env_xllr_capi_test.Dir('./../plugin-sdk/runtime/').File('xllr_capi_loader.c').abspath,
+																env_xllr_capi_test.Dir('./../plugin-sdk/runtime/').File('xllr_static_capi_loader.cpp').abspath
+															],
+															[
+																env_xllr_capi_test['sdk_includes']
+															])
+
+env_xllr_capi_test.AddPostAction(xllr_capi_test, post_actions.execute_doctest_unitest)
+env.Depends(xllr_capi_test, xllr_dylib)
+SCons.Script.Alias(ALIAS_CORE_UNITTESTS, xllr_capi_test)

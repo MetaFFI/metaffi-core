@@ -141,7 +141,7 @@ xcall* load_entity(const char* runtime_plugin_name, const char* module_path, con
 		if(*err)
 		{
 			std::stringstream ss;
-			ss << "Failed to load function with function path" << function_path;
+			ss << "Failed to load function with function path " << function_path;
 			throw std::runtime_error(ss.str());
 		}
 		
@@ -174,7 +174,7 @@ xcall* make_callable(const char* runtime_plugin_name, void* make_callable_contex
 		}
 
 		auto res = p->make_callable(make_callable_context, params, retvals, err);
-		if(err)
+		if(*err)
 		{
 			std::stringstream ss;
 			ss << "Failed to load callable from runtime plugin " << runtime_plugin_name;

@@ -12,14 +12,13 @@ env['sdk_path'] = env.Dir('.').abspath + '/plugin-sdk'
 
 # tag to run the SDK tests
 env['sdk_tests'] = True
+env['install_sdk_includes'] = True
 
 # * ---- Build MetaFFI Core Targets ----
-SCons.Script.SConscript(['plugin-sdk/SConscript_plugin-sdk', # plugin-sdk unitest - only from metaffi-core
-#						 'XLLR/SConscript',
-#						 'CLI/SConscript',
-#						 'installer/SConscript']
+SCons.Script.SConscript('plugin-sdk/SConscript_plugin-sdk', exports='env') # plugin-sdk + run unit tests (only from metaffi-core)
+
+SCons.Script.SConscript(['XLLR/SConscript_xllr', # XLLR
+						 'CLI/SConscript_cli', # metaffi command line
 						 ], exports='env')
 
-
-# * ---- Return default targets to the parent SConscript ----
 
