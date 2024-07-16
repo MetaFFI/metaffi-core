@@ -25,15 +25,14 @@ source += glob.glob(env_cli.Dir('.').abspath+'/*.cpp')
 includes = env['sdk_includes']
 includes += [env_cli.Dir('.').abspath]
 
-if platform.system() == 'Linux' or platform.system() == 'Darwin':
-	env_cli.Append(LINKFLAGS=['-Wl,-rpath,$ORIGIN'])
-
 cli_exec = env_cli.CPPProgram(target='metaffi', project_name='metaffi', sources=source, include_dirs=includes)
 
 cli_install = env_cli.Install(env_cli['METAFFI_HOME'], cli_exec)
 env_cli.Depends(cli_install, cli_exec)
 
 # install boost_program_options.dll
-cli_depends_install = env_cli.Install(env_cli['METAFFI_HOME'], env_cli.SearchConanBinaryFile('boost', f'boost_program_options{env_cli.DynamicLibraryExtension()}'))
+cli_depends_install = env_cli.Install(env_cli['METAFFI_HOME'], env_cli.SearchConanBinaryFile('boost', f'*boost_program_options*'))
+if not env_cli.IsWindows(): # non-windows also uses boost thread
+	cli_depends_install.extend(env_cli.Install(env_cli['METAFFI_HOME'], env_cli.SearchConanBinaryFile('boost', f'*boost_stacktrace_from_exception*')))
 
 SCons.Script.Alias(ALIAS_CORE, [cli_exec, cli_install, cli_depends_install])

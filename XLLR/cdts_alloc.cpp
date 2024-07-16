@@ -38,7 +38,6 @@ extern "C" cdts* alloc_cdts_buffer(metaffi_size params_count, metaffi_size ret_c
 			std::abort();
 		}
 		
-		//printf("++++ allocating from cache: %d , %d (+%ld)\n", cdts_current_index, cdt_current_index, (params_count+ret_count));
 		cdts_cache[cdts_current_index].arr = cdt_cache+cdt_current_index;
 		cdts_cache[cdts_current_index].length = params_count;
 		cdts_cache[cdts_current_index+1].arr = cdt_cache+cdt_current_index+params_count;
@@ -53,8 +52,6 @@ extern "C" cdts* alloc_cdts_buffer(metaffi_size params_count, metaffi_size ret_c
 	}
 	else
 	{
-		//printf("++++ allocating from heap: %d , %d\n", cdts_current_index, cdt_current_index);
-		
 		cdts* pcdts = new cdts[2];
 		
 		pcdts[0].arr = new cdt[params_count+ret_count];

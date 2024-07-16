@@ -25,14 +25,16 @@ source += glob.glob(env_xllr.Dir('.').abspath+'/*.cpp')
 includes = env['sdk_includes']
 includes.append(env_xllr.Dir('.').abspath)
 
-if platform.system() == 'Linux' or platform.system() == 'Darwin':
-	env_xllr.Append(LINKFLAGS=['-Wl,-rpath,$ORIGIN'])
-
 xllr_dylib = env_xllr.CPPSharedLibrary(target='xllr', project_name='xllr', sources=source, include_dirs=includes)
 install_xllr = env_xllr.Install(env_xllr['METAFFI_HOME'], xllr_dylib) # install only dll.
 
-# install boost_filesystem.dll
-install_boost_filesystem = env_xllr.Install(env_xllr['METAFFI_HOME'], env_xllr.SearchConanBinaryFile('boost', f'boost_filesystem{env_xllr.DynamicLibraryExtension()}'))
+# install boost_filesystem
+install_boost_filesystem = env_xllr.Install(env_xllr['METAFFI_HOME'], env_xllr.SearchConanBinaryFile('boost', env_xllr.SearchConanBinaryFile('boost', f'*boost_filesystem*')))
+
+if not env_xllr.IsWindows(): # non-windows also uses boost thread
+	install_boost_filesystem.extend(env_xllr.Install(env_xllr['METAFFI_HOME'], env_xllr.SearchConanBinaryFile('boost', f'*boost_thread*')))
+
+
 SCons.Script.Alias(ALIAS_CORE, [xllr_dylib, install_xllr, install_boost_filesystem])
 
 # * --- Unit Tests ---

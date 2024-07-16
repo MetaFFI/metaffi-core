@@ -6,6 +6,7 @@
 #include <iostream>
 #include <cstring>
 #include <set>
+#include <utils/defines.h>
 
 std::set<std::string> runtime_flags;
 std::shared_mutex runtime_flags_lock;
@@ -294,7 +295,6 @@ void xcall_no_params_no_ret(
 {
 	try
 	{
-		
 		((pforeign_function_entrypoint_signature_no_params_no_ret)pplugin_xcall_and_context->pxcall_and_context[0])(pplugin_xcall_and_context->pxcall_and_context[1], out_err);
 	}
 	handle_err((char**)out_err,);
