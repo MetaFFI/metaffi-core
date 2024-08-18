@@ -22,6 +22,25 @@
 
 #pragma once
 
+// Disable warnings for MSVC
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable: 4189) // Disable unused value warnings
+#endif
+
+// Disable warnings for GCC
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-value" // Disable unused value warnings
+#endif
+
+// Disable warnings for Clang
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-value" // Disable unused value warnings
+#endif
+
+
 #include <algorithm>
 #include <cstdint>
 #include <iostream>
@@ -5707,3 +5726,18 @@ char alt_directory_separator = '\\';
 	};
 	
 } // namespace miniz_cpp
+
+// Re-enable warnings
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
+
+// Re-enable warnings for GCC
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
+
+// Re-enable warnings for Clang
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
