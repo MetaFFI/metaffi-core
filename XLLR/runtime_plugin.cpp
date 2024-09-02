@@ -73,7 +73,7 @@ void runtime_plugin::free_runtime(char** out_err)
 	_is_runtime_loaded = false;
 }
 //--------------------------------------------------------------------
-xcall* runtime_plugin::load_entity(const std::string& module_path, const std::string& function_path, const std::vector<metaffi_type_info>& params_types, const std::vector<metaffi_type_info>& retval_types, char** out_err)
+xcall* runtime_plugin::load_entity(const std::string& module_path, const std::string& entity_path, const std::vector<metaffi_type_info>& params_types, const std::vector<metaffi_type_info>& retval_types, char** out_err)
 {
 	*out_err = nullptr;
 	this->load_runtime(out_err); // verify that runtime has been loaded
@@ -81,7 +81,7 @@ xcall* runtime_plugin::load_entity(const std::string& module_path, const std::st
 	boost::unique_lock<boost::shared_mutex> exclusive_lock(this->_mutex);
 
     xcall* xcall_and_context = this->_loaded_plugin->load_entity(module_path.c_str(),
-																	function_path.c_str(),
+																	entity_path.c_str(),
 												                    !params_types.empty() ? (metaffi_type_info*)&params_types[0] : nullptr, params_types.size(),
 												                    !retval_types.empty() ? (metaffi_type_info*)&retval_types[0] : nullptr, retval_types.size(),
 																	out_err);

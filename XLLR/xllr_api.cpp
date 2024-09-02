@@ -117,7 +117,7 @@ void free_runtime_plugin(const char* runtime_plugin, char** err)
     handle_err(err,);
 }
 //--------------------------------------------------------------------
-xcall* load_entity(const char* runtime_plugin_name, const char* module_path, const char* function_path, metaffi_type_info* params_types, int8_t params_count, metaffi_type_info* retval_types, int8_t retval_count, char** err)
+xcall* load_entity(const char* runtime_plugin_name, const char* module_path, const char* entity_path, metaffi_type_info* params_types, int8_t params_count, metaffi_type_info* retval_types, int8_t retval_count, char** err)
 {
 	try
     {
@@ -138,11 +138,11 @@ xcall* load_entity(const char* runtime_plugin_name, const char* module_path, con
 			retvals = std::vector<metaffi_type_info>(retval_types, retval_types + retval_count);
 		}
 		
-	    auto res = p->load_entity(module_path, function_path, params, retvals, err);
+	    auto res = p->load_entity(module_path, entity_path, params, retvals, err);
 		if(*err)
 		{
 			std::stringstream ss;
-			ss << "Failed to load function with function path " << function_path;
+			ss << "Failed to load function with function path " << entity_path;
 			throw std::runtime_error(ss.str());
 		}
 		

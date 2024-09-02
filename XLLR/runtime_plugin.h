@@ -27,7 +27,7 @@ public:
 	void load_runtime(char** out_err);
 	void free_runtime(char** out_err);
 	
-	xcall* load_entity(const std::string& module_path, const std::string& function_path, const std::vector<metaffi_type_info>& params_types, const std::vector<metaffi_type_info>& retval_types, char** out_err);
+	xcall* load_entity(const std::string& module_path, const std::string& entity_path, const std::vector<metaffi_type_info>& params_types, const std::vector<metaffi_type_info>& retval_types, char** out_err);
 	xcall* make_callable(void* make_callable_context, const std::vector<metaffi_type_info>& params_types, const std::vector<metaffi_type_info>& retval_types, char** out_err);
 	void free_xcall(xcall* pxcall, char** out_err);
 	

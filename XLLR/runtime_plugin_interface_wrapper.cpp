@@ -34,10 +34,10 @@ void runtime_plugin_interface_wrapper::free_runtime(char** err)
 	(*this->pfree_runtime)(err);
 }
 //--------------------------------------------------------------------
-xcall* runtime_plugin_interface_wrapper::load_entity(const char* module_path, const char* function_path, struct metaffi_type_info* params_types, uint8_t params_count, struct metaffi_type_info* retvals_types, uint8_t retval_count, char** err)
+xcall* runtime_plugin_interface_wrapper::load_entity(const char* module_path, const char* entity_path, struct metaffi_type_info* params_types, uint8_t params_count, struct metaffi_type_info* retvals_types, uint8_t retval_count, char** err)
 {
 	*err = nullptr;
-	return (*this->pload_entity)(module_path, function_path, params_types, params_count, retvals_types, retval_count, err);
+	return (*this->pload_entity)(module_path, entity_path, params_types, params_count, retvals_types, retval_count, err);
 }
 //--------------------------------------------------------------------
 xcall* runtime_plugin_interface_wrapper::make_callable(void* make_callable_context, struct metaffi_type_info* params_types, uint8_t params_count, struct metaffi_type_info* retval_types, uint8_t retval_count, char** err)

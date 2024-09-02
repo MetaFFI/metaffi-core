@@ -33,7 +33,7 @@ public:
 	/**
 	 * Load module of foreign language
 	 */ 
-	[[nodiscard]] xcall* load_entity(const char* module_path, const char* function_path, struct metaffi_type_info* params_types, uint8_t params_count, struct metaffi_type_info* retval_types, uint8_t retval_count, char** err) override;
+	[[nodiscard]] xcall* load_entity(const char* module_path, const char* entity_path, struct metaffi_type_info* params_types, uint8_t params_count, struct metaffi_type_info* retval_types, uint8_t retval_count, char** err) override;
 
 	/**
 	* Load module of foreign language
