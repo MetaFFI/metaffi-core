@@ -7,7 +7,6 @@
 #include "uri.h"
 #include <utils/scope_guard.hpp>
 #include <filesystem>
-#include "zip_file.hpp"
 
 using namespace metaffi::utils;
 
@@ -27,22 +26,13 @@ std::vector<std::string> plugin_utils::list()
 	
 	for(std::filesystem::directory_iterator di(get_install_path()) ; di != end_di ; di++)
 	{
-		std::string name;
-		plugin_type t;
-		if(extract_plugin_name_and_type(di->path(), name, t))
+		if(di->is_directory())
 		{
-			if(t == plugin_type::runtime_plugin)
-			{
-				res.push_back( name+" runtime" );
+			if(di->path().filename().string() == "include"){
+				continue;
 			}
-			else if(t == plugin_type::compiler_plugin)
-			{
-				res.push_back( name+" compiler" );
-			}
-			else
-			{
-				res.push_back( name+" IDL" );
-			}
+
+			res.push_back(di->path().filename().string());
 		}
 	}
 	
@@ -55,51 +45,42 @@ void plugin_utils::install(const std::string& url_or_path)
 	std::string lowered_url_or_path = url_or_path;
 	std::transform(lowered_url_or_path.begin(), lowered_url_or_path.end(), lowered_url_or_path.begin(), [](unsigned char c){ return std::tolower(c); });
 	
-	std::filesystem::path compressed_plugin_path;
+	std::filesystem::path plugin_installer_python_script;
 	bool is_delete_file = false;
 	scope_guard sg([&]()
 	{
-		if(is_delete_file && std::filesystem::exists(compressed_plugin_path)){
-			std::filesystem::remove(compressed_plugin_path);
+		if(is_delete_file && std::filesystem::exists(plugin_installer_python_script)){
+			std::filesystem::remove(plugin_installer_python_script);
 		}
 	});
 	
 	if(lowered_url_or_path.rfind("http", 0) == 0) // if starts with "http" - download
 	{
 		is_delete_file = true;
-		compressed_plugin_path = download(url_or_path);
+		plugin_installer_python_script = download(url_or_path);
 	}
 	else
 	{
-		compressed_plugin_path = url_or_path;
-		if(!std::filesystem::exists(compressed_plugin_path)){
+		plugin_installer_python_script = url_or_path;
+		if(!std::filesystem::exists(plugin_installer_python_script)){
 			throw std::runtime_error("Plugin path doesn't exist");
 		}
 	}
 	
-	auto decompressed_plugin_path = decompress(compressed_plugin_path);
-	validate_plugin(decompressed_plugin_path);
-	
-	std::filesystem::path install_message_file = decompressed_plugin_path;
-	install_message_file.append("notes.txt");
-	std::string msg;
-	if(std::filesystem::exists(install_message_file))
+	// run installer using python
+	std::stringstream ss_install_cmds;
+#ifdef _WIN32
+	ss_install_cmds << "python " << plugin_installer_python_script.generic_string() << " install";
+#else
+	ss_install_cmds << "python3 " << plugin_installer_python_script.generic_string() << " install";
+#endif
+
+	std::cout << "Installing plugin" << std::endl;
+	int exit_code = system(ss_install_cmds.str().c_str());
+
+	if(exit_code != 0) // failure
 	{
-		std::ifstream file;
-		file.open(install_message_file.generic_string(), std::ios_base::binary);
-		const boost::uintmax_t sz = std::filesystem::file_size(install_message_file);
-		msg.resize(static_cast< std::size_t >(sz), '\0');
-		if (sz > 0u)
-		{
-			file.read(&msg[0], static_cast< std::streamsize >(sz));
-		}
-	}
-	
-	copy_plugin_package(decompressed_plugin_path);
-	
-	// print install message, if one exists
-	if(!msg.empty()){
-		std::cout << "Installation Notes:" << std::endl << "-------------------" << std::endl << msg << std::endl;
+		throw std::runtime_error("Failed to install plugin");
 	}
 	
 	std::cout << "Installation completed" << std::endl;
@@ -111,25 +92,31 @@ void plugin_utils::remove(const std::string& name)
 		throw std::runtime_error("Plugin not installed");
 	}
 	
-	std::stringstream compiler_path;
-	compiler_path << get_install_path() << "/metaffi.compiler." << name << boost::dll::shared_library::suffix().generic_string();
-	
-	std::stringstream xllr_path;
-	xllr_path << get_install_path() << "/xllr." << name << boost::dll::shared_library::suffix().generic_string();
-	
-	if(std::filesystem::exists(compiler_path.str()))
+	// get uninstaller python script in the plugin directory
+	std::stringstream ss_plugin_path;
+	ss_plugin_path << get_install_path() << "/" << name << "/uninstall.py";
+	std::filesystem::path uninstaller_python_script = ss_plugin_path.str();
+	if(!std::filesystem::exists(uninstaller_python_script)){
+		throw std::runtime_error("Uninstaller script not found");
+	}
+
+	// run uninstaller using python
+	std::stringstream ss_uninstall_cmds;
+#ifdef _WIN32
+	ss_uninstall_cmds << "python " << uninstaller_python_script.generic_string();
+#else
+	ss_uninstall_cmds << "python3 " << uninstaller_python_script.generic_string();
+#endif
+
+	std::cout << "Uninstalling plugin" << std::endl;
+	int exit_code = system(ss_uninstall_cmds.str().c_str());
+
+	if(exit_code != 0) // failure
 	{
-		std::cout << "Deleting: " << compiler_path.str() << std::endl;
-		std::filesystem::remove(compiler_path.str());
+		throw std::runtime_error("Failed to uninstall plugin");
 	}
 	
-	if(std::filesystem::exists(xllr_path.str()))
-	{
-		std::cout << "Deleting: " << xllr_path.str() << std::endl;
-		std::filesystem::remove(xllr_path.str());
-	}
-	
-	std::cout << "Done removing" << name << std::endl;
+	std::cout << "Uninstallation completed" << std::endl;
 }
 //--------------------------------------------------------------------
 std::string plugin_utils::get_install_path()
@@ -163,191 +150,5 @@ std::filesystem::path plugin_utils::download(const std::string& url)
 	}
 	
 	return compressed_plugin_path;
-}
-//--------------------------------------------------------------------
-std::filesystem::path plugin_utils::decompress(const std::filesystem::path& compressed_file)
-{
-	// unzip/untar to temp directory.
-	
-	std::filesystem::path temp_dir = std::filesystem::temp_directory_path();
-	std::string plugin_path(compressed_file.filename().generic_string());
-	boost::replace_all(plugin_path, compressed_file.extension().generic_string(), "");
-	temp_dir.append(plugin_path);
-	std::filesystem::remove_all(temp_dir); // make sure dir is clear
-	std::filesystem::create_directories(temp_dir);
-	
-	miniz_cpp::zip_file file(compressed_file.generic_string());
-	file.extractall(temp_dir.generic_string());
-	
-	return temp_dir;
-}
-//--------------------------------------------------------------------
-void plugin_utils::validate_plugin(const std::filesystem::path& decompressed_plugin_path)
-{
-	// make sure at least one compiler/runtime/idl plugin exists
-	std::filesystem::recursive_directory_iterator rdi(decompressed_plugin_path);
-	std::filesystem::recursive_directory_iterator end_rdi;
-	
-	bool is_exist_plugin = false;
-	
-	for (; rdi != end_rdi; rdi++)
-	{
-		if(is_regular_file(rdi->path()))
-		{
-			std::string filename = rdi->path().filename().generic_string();
-			transform(filename.begin(), filename.end(), filename.begin(), ::tolower);
-			if( filename.find("xllr.") != std::string::npos ||
-					filename.find("metaffi.compiler.") != std::string::npos ||
-					filename.find("metaffi.idl.") != std::string::npos)
-			{
-				is_exist_plugin = true;
-				break;
-			}
-		}
-	}
-	
-	if(!is_exist_plugin){
-		throw std::runtime_error("Package does not contain at least one plugin (runtime, compiler, IDL)");
-	}
-	
-}
-//--------------------------------------------------------------------
-void plugin_utils::copy_plugin_package(const std::filesystem::path& decompressed_plugin_path)
-{
-	std::string target_path = get_install_path();
-	if(std::filesystem::exists(decompressed_plugin_path.generic_string()+"/notes.txt")) // remove installation notes
-	{
-		std::filesystem::remove(decompressed_plugin_path.generic_string()+"/notes.txt");
-	}
-	
-	std::filesystem::copy(decompressed_plugin_path.generic_string(), target_path, std::filesystem::copy_options::recursive | std::filesystem::copy_options::overwrite_existing);
-	std::filesystem::remove_all(decompressed_plugin_path);
-	
-//	// move plugin files to METAFFI_HOME
-//	std::filesystem::recursive_directory_iterator rdi(target_path);
-//	std::filesystem::recursive_directory_iterator end_rdi;
-//	for (; rdi != end_rdi; rdi++)
-//	{
-//		if(is_regular_file(rdi->path()))
-//		{
-//			std::string filename = rdi->path().filename().generic_string();
-//			transform(filename.begin(), filename.end(), filename.begin(), ::tolower);
-//			if( filename.find("xllr.") != std::string::npos ||
-//			    filename.find("metaffi.compiler.") != std::string::npos ||
-//			    filename.find("metaffi.idl.") != std::string::npos)
-//			{
-//				auto src = rdi->path();
-//				auto dst = rdi->path().parent_path().parent_path().append(rdi->path().filename());
-//				std::filesystem::copy_file(src, dst, std::filesystem::copy_option::overwrite_if_exists);
-//				std::filesystem::remove(rdi->path());
-//			}
-//		}
-//	}
-//
-//	// if target_path is empty, remove it
-//	if(std::filesystem::is_empty(target_path))
-//	{
-//		std::filesystem::remove(target_path);
-//	}
-}
-//--------------------------------------------------------------------
-void plugin_utils::pack(const std::vector<std::string>& files_and_dirs, const std::string& root)
-{
-	// compress directory
-	miniz_cpp::zip_file file;
-	std::string candidate;
-	std::string name;
-	plugin_type t;
-	for(auto& file_or_dir : files_and_dirs)
-	{
-		std::filesystem::path p(root);
-		p.append(file_or_dir);
-		
-		if(!exists(p))
-		{
-			std::stringstream ss;
-			ss << p.generic_string() << " cannot be found";
-			throw std::runtime_error(ss.str());
-		}
-		
-		if(p.filename().string() == "." || p.filename().string() == ".."){
-			continue;
-		}
-		
-		file.write(absolute(p).generic_string(), file_or_dir);
-		
-		if(name.empty())
-		{
-			std::string temp;
-			if(extract_plugin_name_and_type(p, temp, t))
-			{
-				if(t == idl_plugin){ // if IDL plugin - use as name only if there's no other plugin type
-					candidate = temp;
-				}
-				else {
-					name = temp;
-				}
-				
-			}
-		}
-	}
-	
-	if(name.empty() && !candidate.empty())
-	{
-		name = candidate;
-	}
-	else if(name.empty())
-	{
-		throw std::runtime_error("Did not detect \"MetaFFI plugin\" within given files");
-	}
-	
-	file.save(name+".mffipack");
-}
-//--------------------------------------------------------------------
-bool plugin_utils::extract_plugin_name_and_type(const std::filesystem::path& path, std::string& out_name, plugin_type& out_type)
-{
-	if(path.filename().string() == "." || path.filename().string() == ".." || std::filesystem::is_directory(path)){
-		return false;
-	}
-	
-	std::string filename = path.filename().generic_string();
-	
-	std::stringstream pattern;
-	pattern << R"(metaffi\.compiler\.([a-zA-Z0-9_]+)\)" << boost::dll::shared_library::suffix().generic_string();
-	pattern << R"(|xllr\.([a-zA-Z0-9_]+)\)" << boost::dll::shared_library::suffix().generic_string();
-	pattern << R"(|metaffi\.idl\.([a-zA-Z0-9_]+)\)" << boost::dll::shared_library::suffix().generic_string();
-	std::regex plugin_name_pattern(pattern.str(), std::regex::icase);
-	
-	std::sregex_iterator matches_begin(filename.begin(), filename.end(), plugin_name_pattern); // match and extract plugin name
-	if(matches_begin != std::sregex_iterator() && matches_begin->size() > 1) // make sure subgroup got matched
-	{
-		if((*matches_begin)[1].matched){
-			out_name = (*matches_begin)[1].str();
-		}
-		else if((*matches_begin)[2].matched){
-			out_name = (*matches_begin)[2].str();
-		}
-		else{
-			out_name = (*matches_begin)[3].str();
-		}
-		
-		std::transform(filename.begin(), filename.end(), filename.begin(), ::tolower);
-		if(filename.find("metaffi.compiler.") != std::string::npos)
-		{
-			out_type = plugin_type::compiler_plugin;
-		}
-		else if(filename.find("xllr.") != std::string::npos)
-		{
-			out_type = plugin_type::runtime_plugin;
-		}
-		else
-		{
-			out_type = plugin_type::idl_plugin;
-		}
-		
-		return true;
-	}
-	
-	return false;
 }
 //--------------------------------------------------------------------

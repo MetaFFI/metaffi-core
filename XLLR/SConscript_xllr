@@ -7,6 +7,8 @@ import SCons.Script.SConsOptions
 import compiler_options
 import post_actions
 import platform
+from colorama import Fore
+import sys
 
 from site_scons import ALIAS_CORE, ALIAS_CORE_UNITTESTS
 
@@ -17,7 +19,13 @@ SCons.Script.Import('env')
 
 # * ---- Build XLLR dynamic library ----
 env_xllr = env.Clone()
-env_xllr.LoadConanPackagesInfo()
+if env_xllr.IsWindows():
+	env_xllr.LoadConanPackagesInfo('conanfile.txt', 'SConscript_conandeps_windows')
+elif env_xllr.IsLinux():
+	env_xllr.LoadConanPackagesInfo('conanfile.txt', 'SConscript_conandeps_linux')
+else:
+	print(f'{Fore.RED}Unsupported platform: {platform.system()}{Fore.RESET}')
+	sys.exit(1)
 
 source = env['sdk_src']
 source += glob.glob(env_xllr.Dir('.').abspath+'/*.cpp')
@@ -40,7 +48,13 @@ SCons.Script.Alias(ALIAS_CORE, [xllr_dylib, install_xllr, install_boost_filesyst
 # * --- Unit Tests ---
 # runtime/xllr_capi_test.cpp
 env_xllr_capi_test = env.Clone()
-env_xllr_capi_test.LoadConanPackagesInfo()
+if env_xllr_capi_test.IsWindows():
+	env_xllr_capi_test.LoadConanPackagesInfo('conanfile.txt', 'SConscript_conandeps_windows')
+elif env_xllr_capi_test.IsLinux():
+	env_xllr_capi_test.LoadConanPackagesInfo('conanfile.txt', 'SConscript_conandeps_linux')
+else:
+	print(f'{Fore.RED}Unsupported platform: {platform.system()}{Fore.RESET}')
+	sys.exit(1)
 
 # dependet on XLLR dynamic library
 xllr_capi_test: SCons.Node.NodeList = env_xllr_capi_test.CPPProgram('xllr_capi_test',

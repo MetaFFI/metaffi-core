@@ -21,13 +21,10 @@ public:
 	
 	static void install(const std::string& url_or_path);
 	static void remove(const std::string& name);
-	
-	static void pack(const std::vector<std::string>& files_and_dirs, const std::string& root);
 
 private:
 	static std::string get_install_path();
 	static std::filesystem::path download(const std::string& url);
-	static std::filesystem::path decompress(const std::filesystem::path& compressed_file);
 	
 	static void validate_plugin(const std::filesystem::path& decompressed_plugin_path);
 	static void copy_plugin_package(const std::filesystem::path& decompressed_plugin_path);

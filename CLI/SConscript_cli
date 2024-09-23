@@ -7,6 +7,8 @@ import SCons.Script.SConsOptions
 import compiler_options
 import post_actions
 import platform
+from colorama import Fore
+import sys
 
 from site_scons import ALIAS_CORE
 
@@ -17,7 +19,13 @@ SCons.Script.Import('env')
 
 # * ---- Build metaffi executable ----
 env_cli = env.Clone()
-env_cli.LoadConanPackagesInfo()
+if env_cli.IsWindows():
+	env_cli.LoadConanPackagesInfo('conanfile.txt', 'SConscript_conandeps_windows')
+elif env_cli.IsLinux():
+	env_cli.LoadConanPackagesInfo('conanfile.txt', 'SConscript_conandeps_linux')
+else:
+	print(f'{Fore.RED}Unsupported platform: {platform.system()}{Fore.RESET}')
+	sys.exit(1)
 
 source = env['sdk_src']
 source += glob.glob(env_cli.Dir('.').abspath+'/*.cpp')

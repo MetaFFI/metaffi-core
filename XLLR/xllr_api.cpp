@@ -142,7 +142,7 @@ xcall* load_entity(const char* runtime_plugin_name, const char* module_path, con
 		if(*err)
 		{
 			std::stringstream ss;
-			ss << "Failed to load function with function path " << entity_path;
+			ss << "Failed to load entity in module " << module_path << "using entity path " << entity_path << std::endl << ". error: " << *err;
 			throw std::runtime_error(ss.str());
 		}
 		

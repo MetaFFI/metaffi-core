@@ -14,8 +14,7 @@ cli_executor::cli_executor(int argc, char** argv) :
 		_argv(argv),
 		_metaffi_options("MetaFFI"),
 		_compile_options("compile"),
-		_plugin_options("plugin"),
-		_pack_options("pack")
+		_plugin_options("plugin")
 {
 	_metaffi_options.add_options()
 		("compile,c", "Compile definition file")
@@ -37,14 +36,9 @@ cli_executor::cli_executor(int argc, char** argv) :
 		("remove,r", po::value<std::string>(), "Remove supported plugin")
 		("exist,e", po::value<std::string>(), "Is plugin installed")
 		("confirm", po::value<std::string>(), "Confirms plugin installed. Sets exit error to 2 if not plugin is not installed")
-		("pack", "Package files into a MetaFFI package")
 		("list", "List installed MetaFFI plugins");
 	
-	_pack_options.add_options()
-		("files", po::value<std::vector<std::string>>()->multitoken(), "Files to pack relative to the root directory")
-		("root", po::value<std::string>(), "Root directory of files to pack");
 	
-	_plugin_options.add(_pack_options);
 	_metaffi_options.add(_compile_options);
 	_metaffi_options.add(_plugin_options);
 }
@@ -131,7 +125,7 @@ bool cli_executor::plugin()
 	
 	if(vm.count("install") > 0 && vm.count("remove") > 0)
 	{
-		std::cout << "Cannot choose both install and remove options" << std::endl;
+		std::cerr << "Cannot choose both install and remove options" << std::endl;
 		return false;
 	}
 	
@@ -164,20 +158,6 @@ bool cli_executor::plugin()
 			std::cout << "not installed" << std::endl;
 			return false;
 		}
-	}
-	else if(vm.count("pack"))
-	{
-		po::store(po::command_line_parser(this->_argc, this->_argv).options(_pack_options).allow_unregistered().run(), vm);
-		po::notify(vm);
-		if(vm.count("root") == 0){
-			throw std::runtime_error("Please specify root path of files to pack");
-		}
-		
-		if(vm.count("files") == 0){
-			throw std::runtime_error("Please specify files to pack");
-		}
-		
-		plugin_utils::pack(vm["files"].as<std::vector<std::string>>(), vm["root"].as<std::string>());
 	}
 	else if(vm.count("list"))
 	{

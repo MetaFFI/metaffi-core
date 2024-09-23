@@ -85,4 +85,4 @@ conandata.yml
 
 metaffi.code-workspace
 
-SConscript_conandeps
+SConscript_conandeps*
