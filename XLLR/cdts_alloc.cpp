@@ -40,8 +40,10 @@ extern "C" cdts* alloc_cdts_buffer(metaffi_size params_count, metaffi_size ret_c
 		
 		cdts_cache[cdts_current_index].arr = cdt_cache+cdt_current_index;
 		cdts_cache[cdts_current_index].length = params_count;
+		cdts_cache[cdts_current_index].allocated_on_cache = 1;
 		cdts_cache[cdts_current_index+1].arr = cdt_cache+cdt_current_index+params_count;
 		cdts_cache[cdts_current_index+1].length = ret_count;
+		cdts_cache[cdts_current_index+1].allocated_on_cache = 1;
 		
 		auto res = (cdts*)&cdts_cache[cdts_current_index];
 		

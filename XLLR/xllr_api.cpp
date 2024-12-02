@@ -234,19 +234,27 @@ char32_t* alloc_string32(const char32_t* err_message, uint64_t length)
 	return alloc_string_t(err_message, length, U'\0');
 }
 //--------------------------------------------------------------------
-void free_string(const char* err_to_free)
-{
-	delete[] err_to_free;
-}
-//--------------------------------------------------------------------
-void* metaffi_alloc(uint64_t size)
+void* alloc_memory(uint64_t size)
 {
 	return malloc(size);
 }
-//--------------------------------------------------------------------
-void metaffi_free(void* ptr)
+void free_memory(void* ptr)
 {
 	free(ptr);
+}
+//--------------------------------------------------------------------
+struct cdt* alloc_cdt_array(uint64_t count)
+{
+	return new cdt[count];
+}
+void free_cdt_array(struct cdt* arr)
+{
+	delete[] arr;
+}
+//--------------------------------------------------------------------
+void free_string(const char* err_to_free)
+{
+	delete[] err_to_free;
 }
 //--------------------------------------------------------------------
 void xcall_params_ret(
