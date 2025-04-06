@@ -10,7 +10,7 @@ c_cpp_shared_lib(xllr
   "Boost::filesystem;Boost::thread"
   ".")
 
-set(XLLR xllr PARENT_SCOPE)
+set(xllr xllr PARENT_SCOPE)
 
 # write a post build script that copies to $ENV{METAFFI_HOME}/include the following files:
 # ${sdk_include_dir}/runtime/cdt.h, cdts_traverse_construct.h, metaffi_primitives.h, xcall.h, xllr_capi_loader.c, xllr_capi_loader.h

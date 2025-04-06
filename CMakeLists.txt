@@ -1,5 +1,3 @@
-
-
 # add SDK
 set(IS_RUN_SDK_TEST TRUE)
 add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/plugin-sdk")
@@ -15,7 +13,7 @@ include("${CMAKE_CURRENT_LIST_DIR}/plugin-sdk/run_sdk_tests.cmake")
 
 
 add_custom_target(metaffi-core
-	DEPENDS XLLR metaffi cdts_test xllr_capi_test
+	DEPENDS xllr metaffi cdts_test xllr_capi_test
 )
 
 set(metaffi-core ${metaffi-core} PARENT_SCOPE)
