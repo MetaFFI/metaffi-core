@@ -1,3 +1,0 @@
-[submodule "plugin-sdk"]
-	path = plugin-sdk
-	url = git@github.com:MetaFFI/plugin-sdk.git

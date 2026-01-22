@@ -18,7 +18,7 @@ std::string idl_extractor::extract(const std::string& idl_path, const std::strin
 	{
 		if(std::filesystem::is_directory(fs_idl_path))
 		{
-			throw std::runtime_error("If given IDL is a directory, you must specify IDL plugin using -idl-plugin switch");
+			throw std::runtime_error("If given IDL is a directory, you must specify IDL plugin using --idl-plugin switch");
 		}
 		
 		std::string extension = fs_idl_path.extension().string();

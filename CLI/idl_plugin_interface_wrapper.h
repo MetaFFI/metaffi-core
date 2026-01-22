@@ -20,7 +20,7 @@ protected:
 	idl_plugin_interface_wrapper() = default;
 	
 public:
-	explicit idl_plugin_interface_wrapper(const std::string& idl_extension);
+	explicit idl_plugin_interface_wrapper(const std::string& idl_name);
 
 	void init() override;
 
