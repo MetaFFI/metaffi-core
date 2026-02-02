@@ -25,7 +25,7 @@ compiler::compiler(const std::string& idl_json, const std::string& output_path)
 void compiler::compile_guest(const std::string& guest_options)
 {
 	// load compiler
-	std::shared_ptr<language_plugin_interface_wrapper> loaded_plugin = language_plugin_interface_wrapper::load(this->get_guest_language() );
+	std::shared_ptr<compiler_plugin_interface_wrapper> loaded_plugin = compiler_plugin_interface_wrapper::load(this->get_guest_language() );
 	
 	char* err = nullptr;
 	uint32_t err_len = 0;
@@ -52,7 +52,7 @@ void compiler::compile_host(const std::vector<std::string>& langs, const std::st
 void compiler::compile_host(const std::string& lang, const std::string& host_options)
 {
 	// load compiler
-	std::shared_ptr<language_plugin_interface_wrapper> loaded_plugin = language_plugin_interface_wrapper::load(lang);
+	std::shared_ptr<compiler_plugin_interface_wrapper> loaded_plugin = compiler_plugin_interface_wrapper::load(lang);
 	
 	// load plugin
 	char* err = nullptr;

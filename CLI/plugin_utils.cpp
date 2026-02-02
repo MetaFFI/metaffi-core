@@ -6,6 +6,7 @@
 #include <sstream>
 #include "uri.h"
 #include <utils/scope_guard.hpp>
+#include <utils/env_utils.h>
 #include <filesystem>
 
 using namespace metaffi::utils;
@@ -121,13 +122,13 @@ void plugin_utils::remove(const std::string& name)
 //--------------------------------------------------------------------
 std::string plugin_utils::get_install_path()
 {
-	const char* pmetaffi_home = std::getenv("METAFFI_HOME");
-	if(!pmetaffi_home)
+	std::string metaffi_home = get_env_var("METAFFI_HOME");
+	if(metaffi_home.empty())
 	{
 		throw std::runtime_error("METAFFI_HOME is not set");
 	}
 	
-	return pmetaffi_home;
+	return metaffi_home;
 }
 //--------------------------------------------------------------------
 std::filesystem::path plugin_utils::download(const std::string& url)

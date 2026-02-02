@@ -1,8 +1,30 @@
 #pragma once
-#include <compiler/idl_plugin_interface.h>
+#include <idl_compiler/idl_plugin_interface.h>
+#include <limits>
 #include <memory>
+#include <stdexcept>
 #include <type_traits>
 #include <boost/dll.hpp>
+
+//--------------------------------------------------------------------
+namespace
+{
+	inline uint32_t to_uint32_checked(std::size_t value)
+	{
+		if(value > std::numeric_limits<uint32_t>::max())
+		{
+			throw std::out_of_range("value exceeds uint32_t");
+		}
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable: 4267)
+#endif
+		return static_cast<uint32_t>(value);
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
+	}
+}
 
 //--------------------------------------------------------------------
 class idl_plugin_interface_wrapper : public idl_plugin_interface
@@ -77,16 +99,18 @@ public:
 
 		if(!err.empty())
 		{
+			auto err_len = to_uint32_checked(err.size());
 			*out_err = (char*)calloc(1, err.length()+1);
-			err.copy(*out_err, err.length());
-			*out_err_len = err.length();
+			err.copy(*out_err, err_len);
+			*out_err_len = err_len;
 			*out_idl_def_json_length = 0;
 		}
 		else
 		{
+			auto idl_len = to_uint32_checked(idl_def_json.size());
 			*out_idl_def_json = (char*)calloc(1, idl_def_json.length()+1);
-			idl_def_json.copy(*out_idl_def_json, idl_def_json.length());
-			*out_idl_def_json_length = idl_def_json.length();
+			idl_def_json.copy(*out_idl_def_json, idl_len);
+			*out_idl_def_json_length = idl_len;
 			*out_err_len = 0;
 		}
 	}

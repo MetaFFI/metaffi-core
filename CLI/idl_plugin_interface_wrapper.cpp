@@ -57,8 +57,8 @@ void idl_plugin_interface_wrapper::parse_idl(const std::string& source_code, con
 		char* idl_def_json = nullptr;
 		uint32_t idl_def_json_length = 0;
 		
-		this->parse_idl(source_code.c_str(), source_code.length(),
-                        file_or_dir_path.c_str(), file_or_dir_path.length(),
+		this->parse_idl(source_code.c_str(), to_uint32_checked(source_code.length()),
+                        file_or_dir_path.c_str(), to_uint32_checked(file_or_dir_path.length()),
 		                &idl_def_json, &idl_def_json_length,
 		                &err, &err_len);
 		

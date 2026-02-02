@@ -1,14 +1,14 @@
 #pragma once
-#include <compiler/language_plugin_interface.h>
+#include <compiler/compiler_plugin_interface.h>
 #include <memory>
 #include <type_traits>
 #include <boost/dll.hpp>
 
 //--------------------------------------------------------------------
-class language_plugin_interface_wrapper : public language_plugin_interface
+class compiler_plugin_interface_wrapper : public compiler_plugin_interface
 {
 public:
-	static std::shared_ptr<language_plugin_interface_wrapper> load(const std::string& lang);
+	static std::shared_ptr<compiler_plugin_interface_wrapper> load(const std::string& lang);
 	
 private:
 	std::shared_ptr<boost::dll::detail::import_type<void(void)>::type> pinit;
@@ -16,7 +16,7 @@ private:
 	std::shared_ptr<boost::dll::detail::import_type<void(const char*, uint32_t, const char*, uint32_t, const char*, uint32_t, char**, uint32_t*)>::type> pcompile_from_host;
 
 public:
-	explicit language_plugin_interface_wrapper(const std::string& plugin_filename_without_extension);
+	explicit compiler_plugin_interface_wrapper(const std::string& plugin_filename_without_extension);
 
 	void init() override;
 	
