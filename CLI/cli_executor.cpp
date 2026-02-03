@@ -1,10 +1,12 @@
 #include "cli_executor.h"
+#include <utils/logger.hpp>
 #include <iostream>
 #include <filesystem>
 #include "plugin_utils.h"
 #include "compiler.h"
 #include "idl_plugin_interface_wrapper.h"
 
+static auto LOG = metaffi::get_logger("cli");
 
 namespace po = boost::program_options;
 
@@ -125,7 +127,7 @@ bool cli_executor::plugin()
 	
 	if(vm.count("install") > 0 && vm.count("remove") > 0)
 	{
-		std::cerr << "Cannot choose both install and remove options" << std::endl;
+		METAFFI_ERROR(LOG, "Cannot choose both install and remove options");
 		return false;
 	}
 	

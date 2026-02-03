@@ -8,6 +8,7 @@
 #include <utils/scope_guard.hpp>
 #include <utils/env_utils.h>
 #include <filesystem>
+#include <iostream>
 
 using namespace metaffi::utils;
 

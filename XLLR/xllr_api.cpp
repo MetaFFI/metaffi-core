@@ -1,15 +1,16 @@
 #include "runtime/xllr_api.h"
 #include "runtime_plugin_repository.h"
 #include "utils/foreign_function.h"
+#include <utils/logger.hpp>
 #include <shared_mutex>
 #include <mutex>
-#include <iostream>
 #include <cstring>
 #include <set>
 #include <utils/defines.h>
 
 std::set<std::string> runtime_flags;
 std::shared_mutex runtime_flags_lock;
+static auto LOG = metaffi::get_logger("xllr");
 
 #ifdef _WIN32
 #define handle_err(err, before_handle)	\
@@ -25,8 +26,7 @@ catch(const std::exception& e)\
 	}\
 	else\
 	{\
-		std::cout << "CRITICAL ERROR: ";\
-		std::cout << e.what() << std::endl;\
+		METAFFI_CRITICAL(LOG, "CRITICAL ERROR: {}", e.what());\
 	}\
 }\
 catch(...)\
@@ -43,7 +43,7 @@ catch(...)\
 	}\
 	else\
 	{\
-		std::cout << "CRITICAL ERROR: " << e << std::endl;\
+		METAFFI_CRITICAL(LOG, "CRITICAL ERROR: {}", e);\
 	}\
 }
 #else
@@ -60,8 +60,7 @@ catch(const std::exception& e)\
 	}\
 	else\
 	{\
-		std::cout << "CRITICAL ERROR: ";\
-		std::cout << e.what() << std::endl;\
+		METAFFI_CRITICAL(LOG, "CRITICAL ERROR: {}", e.what());\
 	}\
 }\
 catch(...)\
@@ -78,7 +77,7 @@ catch(...)\
 	}\
 	else\
 	{\
-		std::cout << "CRITICAL ERROR: " << e << std::endl;\
+		METAFFI_CRITICAL(LOG, "CRITICAL ERROR: {}", e);\
 	}\
 }
 #endif
@@ -92,7 +91,7 @@ void load_runtime_plugin(const char* runtime_plugin_name, char** err)
     {
 		if(err == nullptr)
 		{
-			std::cerr << "err is null" << std::endl;
+			METAFFI_CRITICAL(LOG, "err is null");
 			std::abort();
 		}
 		

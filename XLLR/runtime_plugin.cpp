@@ -82,8 +82,8 @@ xcall* runtime_plugin::load_entity(const std::string& module_path, const std::st
 
     xcall* xcall_and_context = this->_loaded_plugin->load_entity(module_path.c_str(),
 																	entity_path.c_str(),
-												                    !params_types.empty() ? (metaffi_type_info*)&params_types[0] : nullptr, params_types.size(),
-												                    !retval_types.empty() ? (metaffi_type_info*)&retval_types[0] : nullptr, retval_types.size(),
+												                    !params_types.empty() ? (metaffi_type_info*)&params_types[0] : nullptr, static_cast<uint8_t>(params_types.size()),
+												                    !retval_types.empty() ? (metaffi_type_info*)&retval_types[0] : nullptr, static_cast<uint8_t>(retval_types.size()),
 																	out_err);
 
 	if(*out_err != nullptr)
@@ -102,8 +102,8 @@ xcall* runtime_plugin::make_callable(void* make_callable_context, const std::vec
 	boost::unique_lock<boost::shared_mutex> exclusive_lock(this->_mutex);
 
 	xcall* xcall_and_context = this->_loaded_plugin->make_callable(make_callable_context,
-	                                                                !params_types.empty() ? (metaffi_type_info*)&params_types[0] : nullptr, params_types.size(),
-	                                                                !retval_types.empty() ? (metaffi_type_info*)&retval_types[0] : nullptr, retval_types.size(),
+	                                                                !params_types.empty() ? (metaffi_type_info*)&params_types[0] : nullptr, static_cast<uint8_t>(params_types.size()),
+	                                                                !retval_types.empty() ? (metaffi_type_info*)&retval_types[0] : nullptr, static_cast<uint8_t>(retval_types.size()),
 																	out_err);
 
 	if(*out_err != nullptr)

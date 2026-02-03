@@ -1,5 +1,7 @@
 #include "runtime_plugin_repository.h"
-#include <iostream>
+#include <utils/logger.hpp>
+
+static auto LOG = metaffi::get_logger("xllr");
 
 //--------------------------------------------------------------------
 runtime_plugin_repository::~runtime_plugin_repository()
@@ -17,11 +19,11 @@ runtime_plugin_repository::~runtime_plugin_repository()
 	}
 	catch(const std::exception& e)
 	{
-		std::cout << "Failed to unload plugins. Error: " << e.what() << std::endl;
+		METAFFI_ERROR_EX(LOG, "Failed to unload plugins", e);
 	}
     catch(...)
 	{
-		std::cout << "Failed to unload plugins. Unknown error." << std::endl;
+		METAFFI_ERROR(LOG, "Failed to unload plugins. Unknown error.");
 	}
 	
 }

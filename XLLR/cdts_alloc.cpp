@@ -1,11 +1,13 @@
 #include <cstring>
 #include "runtime/cdt.h"
+#include <utils/logger.hpp>
 #include <cstdlib>
 
 thread_local cdt cdt_cache[cdt_cache_size];
 thread_local int cdt_current_index = 0;
 thread_local cdts cdts_cache[cdts_cache_size];
 thread_local int cdts_current_index = 0;
+static auto LOG = metaffi::get_logger("xllr");
 
 struct initialize_cdts_cache
 {
@@ -34,7 +36,7 @@ extern "C" cdts* alloc_cdts_buffer(metaffi_size params_count, metaffi_size ret_c
 		if(cdts_current_index < 0 || cdt_current_index < 0)
 		{
 			// SIGABRT
-			fprintf(stderr, "FATAL ERROR: alloc_cdts_buffer: negative index\n");
+			METAFFI_CRITICAL(LOG, "alloc_cdts_buffer: negative index");
 			std::abort();
 		}
 		
@@ -48,7 +50,7 @@ extern "C" cdts* alloc_cdts_buffer(metaffi_size params_count, metaffi_size ret_c
 		auto res = (cdts*)&cdts_cache[cdts_current_index];
 		
 		cdts_current_index += 2;
-		cdt_current_index += (params_count + ret_count);
+		cdt_current_index += static_cast<int>(params_count + ret_count);
 		
 		return res;
 	}
@@ -75,26 +77,22 @@ extern "C" void free_cdts_buffer(struct cdts* pcdts)
 	
 	if(pcdts->allocated_on_cache == 0)
 	{
-		//printf("---- freeing from heap: %d , %d\n", cdts_current_index, cdt_current_index);
-		
 		pcdts[0].free();
 		pcdts[1].free();
 		delete[] pcdts;
 	}
 	else
 	{
-		int cdt_to_free = pcdts[0].length + pcdts[1].length;
+		int cdt_to_free = static_cast<int>(pcdts[0].length + pcdts[1].length);
 		pcdts[0].free();
 		pcdts[1].free();
 		cdts_current_index -= 2;
 		cdt_current_index -= cdt_to_free;
-		
-		//printf("---- freeing from cache: %d , %d (-%d)\n", cdts_current_index, cdt_current_index, cdt_to_free);
-		
+
 		if(cdts_current_index < 0 || cdt_current_index < 0)
 		{
 			// SIGABRT
-			fprintf(stderr, "FATAL ERROR: free_cdts_buffer: negative index\n");
+			METAFFI_CRITICAL(LOG, "free_cdts_buffer: negative index");
 			std::abort();
 		}
 	}
