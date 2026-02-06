@@ -31,9 +31,9 @@ void compiler::compile_guest(const std::string& guest_options)
 	uint32_t err_len = 0;
 	
 	// call compile_to_guest with IDL path and output path
-	loaded_plugin->compile_to_guest(_idl_json.c_str(), _idl_json.size(),
-	                                _output_path.c_str(), _output_path.size(),
-	                                guest_options.c_str(), guest_options.size(),
+	loaded_plugin->compile_to_guest(_idl_json.c_str(), static_cast<uint32_t>(_idl_json.size()),
+	                                _output_path.c_str(), static_cast<uint32_t>(_output_path.size()),
+	                                guest_options.c_str(), static_cast<uint32_t>(guest_options.size()),
 	                                &err, &err_len);
 	
 	if(err)
@@ -59,9 +59,9 @@ void compiler::compile_host(const std::string& lang, const std::string& host_opt
 	uint32_t err_len = 0;
 	
 	// call compile_to_guest with IDL path and output path
-	loaded_plugin->compile_from_host(_idl_json.c_str(), _idl_json.size(),
-	                                 _output_path.c_str(), _output_path.size(),
-	                                 host_options.c_str(), host_options.length(),
+	loaded_plugin->compile_from_host(_idl_json.c_str(), static_cast<uint32_t>(_idl_json.size()),
+	                                 _output_path.c_str(), static_cast<uint32_t>(_output_path.size()),
+	                                 host_options.c_str(), static_cast<uint32_t>(host_options.length()),
 	                                 &err, &err_len);
 	
 	if (err_len > 0)
