@@ -18,13 +18,16 @@ std::string idl_extractor::extract(const std::string& idl_path, const std::strin
 	{
 		if(std::filesystem::is_directory(fs_idl_path))
 		{
-			throw std::runtime_error("If given IDL is a directory, you must specify IDL plugin using --idl-plugin switch");
+			throw std::runtime_error("If given IDL is a directory, you must specify IDL plugin using --idl-plugin <name> or -g <guest-lang> (e.g. -g go)");
 		}
 		
 		std::string extension = fs_idl_path.extension().string();
 		
 		std::transform(extension.begin(), extension.end(), extension.begin(), [](unsigned char c){ return std::tolower(c); });
-		extension.erase(0, 1); // remove the "." at the beginning of the extension
+		if (!extension.empty())
+			extension.erase(0, 1); // remove the "." at the beginning of the extension
+		if (extension.empty())
+			throw std::runtime_error("IDL path has no file extension; use --idl-plugin <name> or -g <guest-lang> to specify the plugin");
 		
 		pidl_plugin = extension == "json" ?
 				std::make_shared<json_idl_plugin>() :

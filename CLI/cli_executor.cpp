@@ -1,7 +1,9 @@
 #include "cli_executor.h"
 #include <utils/logger.hpp>
 #include <iostream>
+#include <fstream>
 #include <filesystem>
+#include <regex>
 #include "plugin_utils.h"
 #include "compiler.h"
 #include "idl_plugin_interface_wrapper.h"
@@ -27,7 +29,7 @@ cli_executor::cli_executor(int argc, char** argv) :
 		("idl", po::value<std::string>() , "Functions definitions (IDL, source code or supported IDL plugin target)")
 		("idl-plugin", po::value<std::string>()->default_value(std::string()), "IDL plugin to parse target")
 		("print-idl", "Prints MetaFFI IDL")
-		("guest-lang,g", "Language the functions are implemented as stated in the IDL (i.e. guest language)")
+		("guest-lang,g", po::value<std::string>(), "Guest language (e.g. go, python3). Compiles IDL to guest code.")
 		("host-langs,h", po::value<std::vector<std::string>>()->multitoken() , "List of languages the functions are called from (i.e. host languages)")
 		("output,o", po::value<std::string>()->default_value(std::filesystem::current_path().generic_string()) , "Directory to generate the files (Default: current directory)")
 		("host-options", po::value<std::string>()->default_value(std::string()) , "Options to the host language plugin (format: key1=val1,key2=val2...)")
@@ -96,17 +98,36 @@ bool cli_executor::compile()
 		return false;
 	}
 	
+	// When IDL is a directory, we need an IDL plugin. Use guest-lang as idl-plugin if -g was passed and --idl-plugin was not.
+	std::string idl_plugin = vm["idl-plugin"].as<std::string>();
+	if (idl_plugin.empty() && vm.count("guest-lang"))
+		idl_plugin = vm["guest-lang"].as<std::string>();
+
 	// extract JSON IDL
-	std::string extracted_idl = idl_extractor::extract(vm["idl"].as<std::string>(), vm["idl-plugin"].as<std::string>());
+	std::string extracted_idl = idl_extractor::extract(vm["idl"].as<std::string>(), idl_plugin);
 	if(vm.count("print-idl"))
 	{
 		std::cout << extracted_idl << std::endl;
 	}
+
+	// write IDL to [name].metaffi.idl.json in output directory
+	std::string output_path = vm["output"].as<std::string>();
+	std::string idl_name = "idl";
+	std::regex idl_source_re(R"re("idl_source"\s*:\s*"([^"]+)")re");
+	std::smatch m;
+	if (std::regex_search(extracted_idl, m, idl_source_re) && m.size() >= 2)
+		idl_name = m[1].str();
+	std::filesystem::path idl_json_path = std::filesystem::path(output_path) / (idl_name + ".metaffi.idl.json");
+	std::ofstream idl_file(idl_json_path);
+	if (idl_file)
+	{
+		idl_file << extracted_idl;
+		idl_file.close();
+	}
+
+	compiler cmp(extracted_idl, output_path);
 	
-	
-	compiler cmp(extracted_idl, vm["output"].as<std::string>());
-	
-	if(vm.count("guest-lang")) // compile guest code
+	if(vm.count("guest-lang")) // compile guest code (-g <lang> required)
 	{
 		cmp.compile_guest(vm["guest-options"].as<std::string>());
 	}

@@ -23,8 +23,9 @@ list(APPEND FILES_TO_COPY "${sdk_include_dir}/runtime/xcall.h")
 list(APPEND FILES_TO_COPY "${sdk_include_dir}/runtime/xllr_capi_loader.c")
 list(APPEND FILES_TO_COPY "${sdk_include_dir}/runtime/xllr_capi_loader.h")
 
-# make sure target dir exists. don't fail if its already there
+# Make sure target dir exists; all production headers go under $METAFFI_HOME/include
 file(MAKE_DIRECTORY $ENV{METAFFI_HOME}/include)
+file(MAKE_DIRECTORY $ENV{METAFFI_HOME}/include/utils)
 
 foreach(file ${FILES_TO_COPY})
  get_filename_component(FILE_NAME ${file} NAME)
@@ -32,3 +33,9 @@ foreach(file ${FILES_TO_COPY})
    COMMAND ${CMAKE_COMMAND} -E copy ${file} $ENV{METAFFI_HOME}/include/${FILE_NAME}
  )
 endforeach()
+
+# Copy utils headers to include/utils/ so <utils/logger_c.h> and <utils/safe_func.h> work with -I$METAFFI_HOME/include
+add_custom_command(TARGET xllr POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy ${sdk_include_dir}/utils/logger_c.h $ENV{METAFFI_HOME}/include/utils/
+  COMMAND ${CMAKE_COMMAND} -E copy ${sdk_include_dir}/utils/safe_func.h $ENV{METAFFI_HOME}/include/utils/
+)

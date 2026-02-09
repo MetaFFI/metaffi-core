@@ -36,21 +36,7 @@ void handle_exception(const std::string& custom_msg)
 //--------------------------------------------------------------------
 void handle_exception(const std::string& custom_msg)
 {
-	try
-	{
-		if(!custom_msg.empty()){
-			std::cout << custom_msg << std::endl;
-		}
-		
-		throw;
-	}
-	catch (std::exception& err)
-	{
-		std::cout << err.what() << std::endl;
-	}
-	catch (...)
-	{
-		std::cout << "Unknown error" << std::endl;
-	}
+	if (!custom_msg.empty())
+		std::cout << custom_msg << std::endl;
 }
 //--------------------------------------------------------------------
