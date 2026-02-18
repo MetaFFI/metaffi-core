@@ -211,7 +211,7 @@ char_t* alloc_string_t(const char_t* err_message, uint64_t length, char_t null_t
 		return nullptr;
 	}
 	
-	char_t* copy = new char_t[length + 1];
+	char_t* copy = static_cast<char_t*>(malloc((length + 1) * sizeof(char_t)));
 	std::memcpy(copy, err_message, length*sizeof(char_t));
 	copy[length] = null_terminator; // Null-terminate the string
 	return copy;
@@ -253,7 +253,7 @@ void free_cdt_array(struct cdt* arr)
 //--------------------------------------------------------------------
 void free_string(const char* err_to_free)
 {
-	delete[] err_to_free;
+	free(const_cast<char*>(err_to_free));
 }
 //--------------------------------------------------------------------
 void xcall_params_ret(

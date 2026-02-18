@@ -77,8 +77,14 @@ extern "C" void free_cdts_buffer(struct cdts* pcdts)
 	
 	if(pcdts->allocated_on_cache == 0)
 	{
+		// pcdts[0].arr and pcdts[1].arr point into the same contiguous
+		// allocation (pcdts[1].arr = pcdts[0].arr + params_count).
+		// cdts::free() calls delete[] on non-cache arrays, so freeing
+		// pcdts[0] already destroys ALL cdt elements and releases the
+		// memory.  Null pcdts[1].arr to prevent a double-free.
 		pcdts[0].free();
-		pcdts[1].free();
+		pcdts[1].arr = nullptr;
+		pcdts[1].free();  // no-op: arr is null
 		delete[] pcdts;
 	}
 	else
