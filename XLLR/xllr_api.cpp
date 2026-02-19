@@ -271,26 +271,26 @@ void xcall_params_ret(
 //--------------------------------------------------------------------
 void xcall_no_params_ret(
 		xcall* pplugin_xcall_and_context,
-		cdts return_values[1],
+		cdts params_ret[2],
 		char** out_err
 )
 {
 	try
 	{
-		((pforeign_function_entrypoint_signature_no_params_ret)pplugin_xcall_and_context->pxcall_and_context[0])(pplugin_xcall_and_context->pxcall_and_context[1],return_values,out_err);
+		((pforeign_function_entrypoint_signature_no_params_ret)pplugin_xcall_and_context->pxcall_and_context[0])(pplugin_xcall_and_context->pxcall_and_context[1], params_ret, out_err);
 	}
 	handle_err((char**)out_err,);
 }
 //--------------------------------------------------------------------
 void xcall_params_no_ret(
 		xcall* pplugin_xcall_and_context,
-		cdts parameters[1],
+		cdts params_ret[2],
 		char** out_err
 )
 {
 	try
 	{
-		((pforeign_function_entrypoint_signature_params_no_ret)pplugin_xcall_and_context->pxcall_and_context[0])(pplugin_xcall_and_context->pxcall_and_context[1],parameters,out_err);
+		((pforeign_function_entrypoint_signature_params_no_ret)pplugin_xcall_and_context->pxcall_and_context[0])(pplugin_xcall_and_context->pxcall_and_context[1], params_ret, out_err);
 	}
 	handle_err((char**)out_err,);
 }
