@@ -9,8 +9,161 @@
 #include <utils/env_utils.h>
 #include <filesystem>
 #include <iostream>
+#include <utility>
+#include <fstream>
 
 using namespace metaffi::utils;
+
+namespace
+{
+struct command_result
+{
+	std::string command;
+	int exit_code;
+};
+
+struct uninstall_candidate
+{
+	std::filesystem::path artifact;
+	std::string command;
+	bool is_legacy_python;
+};
+
+std::string quote_arg(const std::string& value)
+{
+	std::string escaped = value;
+	boost::replace_all(escaped, "\"", "\\\"");
+	return "\"" + escaped + "\"";
+}
+
+std::string path_arg(const std::filesystem::path& p)
+{
+	return quote_arg(p.generic_string());
+}
+
+std::string to_lower_copy(std::string value)
+{
+	std::transform(value.begin(), value.end(), value.begin(), [](unsigned char c){ return static_cast<char>(std::tolower(c)); });
+	return value;
+}
+
+bool has_extension(const std::filesystem::path& p, const std::string& extension_lower)
+{
+	return to_lower_copy(p.extension().generic_string()) == extension_lower;
+}
+
+bool python_installer_supports_contract(const std::filesystem::path& installer_artifact)
+{
+	if(!has_extension(installer_artifact, ".py"))
+	{
+		return false;
+	}
+
+	std::ifstream in(installer_artifact, std::ios::in | std::ios::binary);
+	if(!in.good())
+	{
+		return false;
+	}
+
+	std::stringstream ss;
+	ss << in.rdbuf();
+	const std::string content = ss.str();
+
+	return content.find("--check-prerequisites") != std::string::npos &&
+	       content.find("--install") != std::string::npos;
+}
+
+int run_command(const std::string& command)
+{
+	std::cout << command << std::endl;
+	return system(command.c_str());
+}
+
+std::string format_attempts(const std::vector<command_result>& failures)
+{
+	std::stringstream ss;
+	for(const auto& failed : failures)
+	{
+		ss << "\n  command: " << failed.command << "\n  exit_code: " << failed.exit_code << "\n";
+	}
+	return ss.str();
+}
+
+std::vector<std::string> build_install_commands(const std::filesystem::path& installer_artifact)
+{
+	std::vector<std::string> commands;
+	const std::string artifact = path_arg(installer_artifact);
+
+#ifdef _WIN32
+	if(has_extension(installer_artifact, ".py"))
+	{
+		commands.emplace_back("python " + artifact + " --install");
+		commands.emplace_back("python " + artifact + " install");
+	}
+	else if(has_extension(installer_artifact, ".ps1"))
+	{
+		commands.emplace_back("powershell -ExecutionPolicy ByPass -File " + artifact + " --install");
+		commands.emplace_back("powershell -ExecutionPolicy ByPass -File " + artifact + " install");
+	}
+	else
+	{
+		commands.emplace_back(artifact + " --install");
+		commands.emplace_back(artifact + " install");
+	}
+#else
+	if(has_extension(installer_artifact, ".py"))
+	{
+		commands.emplace_back("python3 " + artifact + " --install");
+		commands.emplace_back("python3 " + artifact + " install");
+	}
+	else if(has_extension(installer_artifact, ".sh"))
+	{
+		commands.emplace_back("bash " + artifact + " --install");
+		commands.emplace_back("bash " + artifact + " install");
+	}
+	else
+	{
+		commands.emplace_back(artifact + " --install");
+		commands.emplace_back(artifact + " install");
+	}
+#endif
+
+	return commands;
+}
+
+std::vector<uninstall_candidate> build_uninstall_candidates(const std::filesystem::path& plugin_dir)
+{
+	std::vector<uninstall_candidate> candidates;
+
+#ifdef _WIN32
+	std::filesystem::path uninstall_exe = plugin_dir / "uninstall_plugin.exe";
+	candidates.push_back({uninstall_exe, path_arg(uninstall_exe), false});
+
+	std::filesystem::path uninstall_script = plugin_dir / "uninstall.bat";
+	candidates.push_back({uninstall_script, path_arg(uninstall_script), false});
+
+	std::filesystem::path uninstall_plugin_py = plugin_dir / "uninstall_plugin.py";
+	candidates.push_back({uninstall_plugin_py, "python " + path_arg(uninstall_plugin_py), true});
+
+	std::filesystem::path uninstall_py = plugin_dir / "uninstall.py";
+	candidates.push_back({uninstall_py, "python " + path_arg(uninstall_py), true});
+#else
+	std::filesystem::path uninstall_exe = plugin_dir / "uninstall_plugin";
+	candidates.push_back({uninstall_exe, path_arg(uninstall_exe), false});
+
+	std::filesystem::path uninstall_script = plugin_dir / "uninstall.sh";
+	candidates.push_back({uninstall_script, "bash " + path_arg(uninstall_script), false});
+
+	std::filesystem::path uninstall_plugin_py = plugin_dir / "uninstall_plugin.py";
+	candidates.push_back({uninstall_plugin_py, "python3 " + path_arg(uninstall_plugin_py), true});
+
+	std::filesystem::path uninstall_py = plugin_dir / "uninstall.py";
+	candidates.push_back({uninstall_py, "python3 " + path_arg(uninstall_py), true});
+#endif
+
+	return candidates;
+}
+}
 
 //--------------------------------------------------------------------
 bool plugin_utils::is_installed(const std::string& plugin_name)
@@ -43,49 +196,66 @@ std::vector<std::string> plugin_utils::list()
 //--------------------------------------------------------------------
 void plugin_utils::install(const std::string& url_or_path)
 {
-	// download (if url)
-	std::string lowered_url_or_path = url_or_path;
-	std::transform(lowered_url_or_path.begin(), lowered_url_or_path.end(), lowered_url_or_path.begin(), [](unsigned char c){ return std::tolower(c); });
-	
-	std::filesystem::path plugin_installer_python_script;
+	std::string lowered_url_or_path = to_lower_copy(url_or_path);
+	std::filesystem::path installer_artifact;
 	bool is_delete_file = false;
 	scope_guard sg([&]()
 	{
-		if(is_delete_file && std::filesystem::exists(plugin_installer_python_script)){
-			std::filesystem::remove(plugin_installer_python_script);
+		if(is_delete_file && std::filesystem::exists(installer_artifact)){
+			std::filesystem::remove(installer_artifact);
 		}
 	});
 	
 	if(lowered_url_or_path.rfind("http", 0) == 0) // if starts with "http" - download
 	{
 		is_delete_file = true;
-		plugin_installer_python_script = download(url_or_path);
+		installer_artifact = download(url_or_path);
 	}
 	else
 	{
-		plugin_installer_python_script = url_or_path;
-		if(!std::filesystem::exists(plugin_installer_python_script)){
+		installer_artifact = url_or_path;
+		if(!std::filesystem::exists(installer_artifact)){
 			throw std::runtime_error("Plugin path doesn't exist");
 		}
 	}
-	
-	// run installer using python
-	std::stringstream ss_install_cmds;
-#ifdef _WIN32
-	ss_install_cmds << "python " << plugin_installer_python_script.generic_string() << " install";
-#else
-	ss_install_cmds << "python3 " << plugin_installer_python_script.generic_string() << " install";
-#endif
+
+	std::vector<std::string> install_commands = build_install_commands(installer_artifact);
+	std::vector<command_result> failures;
 
 	std::cout << "Installing plugin" << std::endl;
-	int exit_code = system(ss_install_cmds.str().c_str());
 
-	if(exit_code != 0) // failure
+	// Fail-fast prerequisite gate for contract-aware Python installers.
+	if(python_installer_supports_contract(installer_artifact))
 	{
-		throw std::runtime_error("Failed to install plugin");
+#ifdef _WIN32
+		const std::string check_command = "python " + path_arg(installer_artifact) + " --check-prerequisites";
+#else
+		const std::string check_command = "python3 " + path_arg(installer_artifact) + " --check-prerequisites";
+#endif
+		int check_exit_code = run_command(check_command);
+		if(check_exit_code != 0)
+		{
+			std::stringstream err;
+			err << "Plugin prerequisites check failed. command: " << check_command << ", exit_code: " << check_exit_code;
+			throw std::runtime_error(err.str());
+		}
 	}
-	
-	std::cout << "Installation completed" << std::endl;
+
+	for(const auto& command : install_commands)
+	{
+		int exit_code = run_command(command);
+		if(exit_code == 0)
+		{
+			std::cout << "Installation completed" << std::endl;
+			return;
+		}
+
+		failures.push_back({command, exit_code});
+	}
+
+	std::stringstream err;
+	err << "Failed to install plugin. Attempted commands:" << format_attempts(failures);
+	throw std::runtime_error(err.str());
 }
 //--------------------------------------------------------------------
 void plugin_utils::remove(const std::string& name)
@@ -93,32 +263,49 @@ void plugin_utils::remove(const std::string& name)
 	if(!is_installed(name)){
 		throw std::runtime_error("Plugin not installed");
 	}
-	
-	// get uninstaller python script in the plugin directory
-	std::stringstream ss_plugin_path;
-	ss_plugin_path << get_install_path() << "/" << name << "/uninstall.py";
-	std::filesystem::path uninstaller_python_script = ss_plugin_path.str();
-	if(!std::filesystem::exists(uninstaller_python_script)){
-		throw std::runtime_error("Uninstaller script not found");
+
+	std::filesystem::path plugin_dir = std::filesystem::path(get_install_path()) / name;
+	if(!std::filesystem::exists(plugin_dir) || !std::filesystem::is_directory(plugin_dir))
+	{
+		throw std::runtime_error("Plugin directory not found");
 	}
 
-	// run uninstaller using python
-	std::stringstream ss_uninstall_cmds;
-#ifdef _WIN32
-	ss_uninstall_cmds << "python " << uninstaller_python_script.generic_string();
-#else
-	ss_uninstall_cmds << "python3 " << uninstaller_python_script.generic_string();
-#endif
+	std::vector<uninstall_candidate> candidates = build_uninstall_candidates(plugin_dir);
+	std::vector<command_result> failures;
+	bool found_candidate = false;
 
 	std::cout << "Uninstalling plugin" << std::endl;
-	int exit_code = system(ss_uninstall_cmds.str().c_str());
-
-	if(exit_code != 0) // failure
+	for(const auto& candidate : candidates)
 	{
-		throw std::runtime_error("Failed to uninstall plugin");
+		if(!std::filesystem::exists(candidate.artifact))
+		{
+			continue;
+		}
+
+		found_candidate = true;
+		if(candidate.is_legacy_python)
+		{
+			std::cout << "WARNING: Falling back to legacy Python plugin uninstaller: " << candidate.artifact.generic_string() << std::endl;
+		}
+
+		int exit_code = run_command(candidate.command);
+		if(exit_code == 0)
+		{
+			std::cout << "Uninstallation completed" << std::endl;
+			return;
+		}
+
+		failures.push_back({candidate.command, exit_code});
 	}
-	
-	std::cout << "Uninstallation completed" << std::endl;
+
+	if(!found_candidate)
+	{
+		throw std::runtime_error("Uninstaller not found. Expected uninstall_plugin(.exe), uninstall.(bat|sh), uninstall_plugin.py, or uninstall.py");
+	}
+
+	std::stringstream err;
+	err << "Failed to uninstall plugin. Attempted commands:" << format_attempts(failures);
+	throw std::runtime_error(err.str());
 }
 //--------------------------------------------------------------------
 std::string plugin_utils::get_install_path()

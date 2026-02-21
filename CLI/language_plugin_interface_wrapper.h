@@ -2,7 +2,7 @@
 #include <compiler/compiler_plugin_interface.h>
 #include <memory>
 #include <type_traits>
-#include <boost/dll.hpp>
+#include <utils/boost_dll_compat.hpp>
 
 //--------------------------------------------------------------------
 class compiler_plugin_interface_wrapper : public compiler_plugin_interface
@@ -11,9 +11,9 @@ public:
 	static std::shared_ptr<compiler_plugin_interface_wrapper> load(const std::string& lang);
 	
 private:
-	std::shared_ptr<boost::dll::detail::import_type<void(void)>::type> pinit;
-	std::shared_ptr<boost::dll::detail::import_type<void(const char*, uint32_t, const char*, uint32_t, const char*, uint32_t, char**, uint32_t*)>::type> pcompile_to_guest;
-	std::shared_ptr<boost::dll::detail::import_type<void(const char*, uint32_t, const char*, uint32_t, const char*, uint32_t, char**, uint32_t*)>::type> pcompile_from_host;
+	std::shared_ptr<metaffi::utils::boost_dll_import_t<void(void)>> pinit;
+	std::shared_ptr<metaffi::utils::boost_dll_import_t<void(const char*, uint32_t, const char*, uint32_t, const char*, uint32_t, char**, uint32_t*)>> pcompile_to_guest;
+	std::shared_ptr<metaffi::utils::boost_dll_import_t<void(const char*, uint32_t, const char*, uint32_t, const char*, uint32_t, char**, uint32_t*)>> pcompile_from_host;
 
 public:
 	explicit compiler_plugin_interface_wrapper(const std::string& plugin_filename_without_extension);

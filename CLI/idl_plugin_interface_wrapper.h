@@ -4,7 +4,7 @@
 #include <memory>
 #include <stdexcept>
 #include <type_traits>
-#include <boost/dll.hpp>
+#include <utils/boost_dll_compat.hpp>
 
 //--------------------------------------------------------------------
 namespace
@@ -35,8 +35,8 @@ public:
 	
 private:
 	std::shared_ptr<boost::dll::shared_library> mod;
-	std::shared_ptr<boost::dll::detail::import_type<void(const char*, uint32_t, const char*, uint32_t, char**, uint32_t*, char**, uint32_t*)>::type> pparse_idl;
-	std::shared_ptr<boost::dll::detail::import_type<void(void)>::type> pinit_plugin;
+	std::shared_ptr<metaffi::utils::boost_dll_import_t<void(const char*, uint32_t, const char*, uint32_t, char**, uint32_t*, char**, uint32_t*)>> pparse_idl;
+	std::shared_ptr<metaffi::utils::boost_dll_import_t<void(void)>> pinit_plugin;
 	
 protected:
 	idl_plugin_interface_wrapper() = default;

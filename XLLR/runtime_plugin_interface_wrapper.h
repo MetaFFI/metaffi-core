@@ -2,19 +2,19 @@
 #include "runtime/runtime_plugin_interface.h"
 #include <memory>
 #include <type_traits>
-#include <boost/dll.hpp>
+#include <utils/boost_dll_compat.hpp>
 
 //--------------------------------------------------------------------
 class runtime_plugin_interface_wrapper : public runtime_plugin_interface
 {
 private:
 	std::shared_ptr<boost::dll::shared_library> plugin_dll;
-	std::shared_ptr<boost::dll::detail::import_type<void(char**)>::type> pload_runtime;
-	std::shared_ptr<boost::dll::detail::import_type<void(char**)>::type> pfree_runtime;
+	std::shared_ptr<metaffi::utils::boost_dll_import_t<void(char**)>> pload_runtime;
+	std::shared_ptr<metaffi::utils::boost_dll_import_t<void(char**)>> pfree_runtime;
 
-	std::shared_ptr<boost::dll::detail::import_type<xcall*(const char*, const char*, struct metaffi_type_info*, int8_t, struct metaffi_type_info*, int8_t, char**)>::type> pload_entity;
-	std::shared_ptr<boost::dll::detail::import_type<xcall*(void*, struct metaffi_type_info*, int8_t, struct metaffi_type_info*, int8_t, char**)>::type> pmake_callable;
-	std::shared_ptr<boost::dll::detail::import_type<void(xcall*, char**)>::type> pfree_xcall;
+	std::shared_ptr<metaffi::utils::boost_dll_import_t<xcall*(const char*, const char*, struct metaffi_type_info*, int8_t, struct metaffi_type_info*, int8_t, char**)>> pload_entity;
+	std::shared_ptr<metaffi::utils::boost_dll_import_t<xcall*(void*, struct metaffi_type_info*, int8_t, struct metaffi_type_info*, int8_t, char**)>> pmake_callable;
+	std::shared_ptr<metaffi::utils::boost_dll_import_t<void(xcall*, char**)>> pfree_xcall;
 	
 public:
 	explicit runtime_plugin_interface_wrapper(const std::string& plugin_filename_without_extension);
