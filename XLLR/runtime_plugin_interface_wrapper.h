@@ -19,6 +19,7 @@ private:
 public:
 	explicit runtime_plugin_interface_wrapper(const std::string& plugin_filename_without_extension);
 	explicit runtime_plugin_interface_wrapper(const char* plugin_filename_without_extension);
+	~runtime_plugin_interface_wrapper();
 
 	/**
 	 * Load runtime runtime of foreign runtime

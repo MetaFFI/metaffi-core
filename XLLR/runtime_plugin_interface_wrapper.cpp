@@ -2,9 +2,24 @@
 #include <utils/scope_guard.hpp>
 #include <utils/function_loader.hpp>
 #include <utils/plugin_loader.hpp>
+#include <vector>
 
 using namespace metaffi::utils;
 
+//--------------------------------------------------------------------
+runtime_plugin_interface_wrapper::~runtime_plugin_interface_wrapper()
+{
+	// Intentionally leak the plugin DLL to prevent dlclose().
+	// Language plugins (Go, JVM, Python) all crash when dlclose'd:
+	// Go can't be safely unloaded, JVM hangs on DestroyJavaVM,
+	// Python corrupts glibc's heap via Py_Finalize.
+	// The OS reclaims all memory cleanly at process exit.
+	static std::vector<std::shared_ptr<boost::dll::shared_library>> s_leaked_dlls;
+	if(plugin_dll)
+	{
+		s_leaked_dlls.push_back(std::move(plugin_dll));
+	}
+}
 //--------------------------------------------------------------------
 runtime_plugin_interface_wrapper::runtime_plugin_interface_wrapper(const std::string& plugin_filename_without_extension)
     : runtime_plugin_interface_wrapper(plugin_filename_without_extension.c_str()){}
