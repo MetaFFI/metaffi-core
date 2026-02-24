@@ -8,7 +8,8 @@ runtime_plugin_repository::~runtime_plugin_repository()
 {
 	try
 	{
-		std::vector<std::string> keys(this->_plugins.size());
+		std::vector<std::string> keys;
+		keys.reserve(this->_plugins.size());
 		for(auto& cur_mod : this->_plugins){
 			keys.push_back(cur_mod.first);
 		}
@@ -89,6 +90,12 @@ void runtime_plugin_repository::unload(const char* plugin)
 	
 	char* out_err = nullptr;
 	it->second->free_runtime(&out_err);
+
+	// Erase from map before checking error so the shared_ptr ref count drops to zero
+	// and the destructor runs in controlled fashion (not later during map destruction).
+	boost::upgrade_to_unique_lock<boost::shared_mutex> exclusive_lock(read_lock);
+	this->_plugins.erase(it);
+
 	if(out_err != nullptr)
 	{
 		throw std::runtime_error(out_err);
