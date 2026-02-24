@@ -9,15 +9,15 @@ using namespace metaffi::utils;
 //--------------------------------------------------------------------
 runtime_plugin_interface_wrapper::~runtime_plugin_interface_wrapper()
 {
-	// Intentionally leak the plugin DLL to prevent dlclose().
-	// Language plugins (Go, JVM, Python) all crash when dlclose'd:
-	// Go can't be safely unloaded, JVM hangs on DestroyJavaVM,
-	// Python corrupts glibc's heap via Py_Finalize.
-	// The OS reclaims all memory cleanly at process exit.
-	static std::vector<std::shared_ptr<boost::dll::shared_library>> s_leaked_dlls;
+	// Heap-allocated, NEVER freed — so dlclose is never called.
+	// A static vector's destructor runs at process exit and would dlclose
+	// the plugins, crashing Go/JVM/Python. Using new[] avoids that.
+	static auto* s_leaked_dlls = new std::vector<std::shared_ptr<boost::dll::shared_library>>();
 	if(plugin_dll)
 	{
-		s_leaked_dlls.push_back(std::move(plugin_dll));
+		fprintf(stderr, "+++ runtime_plugin_interface_wrapper: leaking plugin DLL to prevent dlclose\n");
+		fflush(stderr);
+		s_leaked_dlls->push_back(std::move(plugin_dll));
 	}
 }
 //--------------------------------------------------------------------

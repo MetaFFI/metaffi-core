@@ -6,6 +6,9 @@ static auto LOG = metaffi::get_logger("xllr");
 //--------------------------------------------------------------------
 runtime_plugin_repository::~runtime_plugin_repository()
 {
+	fprintf(stderr, "+++ ~runtime_plugin_repository: entering destructor, %zu plugins\n", this->_plugins.size());
+	fflush(stderr);
+
 	try
 	{
 		std::vector<std::string> keys;
@@ -26,7 +29,9 @@ runtime_plugin_repository::~runtime_plugin_repository()
 	{
 		METAFFI_ERROR(LOG, "Failed to unload plugins. Unknown error.");
 	}
-	
+
+	fprintf(stderr, "+++ ~runtime_plugin_repository: destructor done\n");
+	fflush(stderr);
 }
 //--------------------------------------------------------------------
 std::shared_ptr<runtime_plugin> runtime_plugin_repository::get(const std::string& plugin) const
@@ -79,15 +84,18 @@ void runtime_plugin_repository::unload(const std::string& plugin)
 //--------------------------------------------------------------------
 void runtime_plugin_repository::unload(const char* plugin)
 {
+	fprintf(stderr, "+++ runtime_plugin_repository::unload('%s')\n", plugin);
+	fflush(stderr);
+
 	// readers lock
 	boost::upgrade_lock<boost::shared_mutex> read_lock(this->_mutex);
-	
+
 	auto it = this->_plugins.find(plugin);
 	if(it == this->_plugins.end()) // if found
 	{
 		return;
 	}
-	
+
 	char* out_err = nullptr;
 	it->second->free_runtime(&out_err);
 
