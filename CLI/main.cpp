@@ -17,8 +17,8 @@ int main(int argc, char** argv)
 
 		if(!cexec.parse())
 		{
-			exit_code = 2;
-			fprintf(stderr, "+++ metaffi_main: cli_executor parse returned false, exiting with 2\n"); fflush(stderr);
+			exit_code = cexec.help_requested() ? 0 : 2;
+			fprintf(stderr, "+++ metaffi_main: cli_executor parse returned false, exiting with %d\n", exit_code); fflush(stderr);
 			spdlog::shutdown();
 			return exit_code;
 		}

@@ -6,6 +6,7 @@ class cli_executor
 private:
 	int _argc;
 	char** _argv;
+	bool _help_requested = false;
 
 	boost::program_options::options_description _metaffi_options;
 	boost::program_options::options_description _compile_options;
@@ -21,6 +22,7 @@ public:
 	cli_executor(const cli_executor&&) = delete;
 
 	bool parse(void);
+	bool help_requested() const { return _help_requested; }
 
 private:
 	bool compile(void);

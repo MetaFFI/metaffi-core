@@ -58,6 +58,7 @@ bool cli_executor::parse()
 		vm.count("help") ||
 		(vm.count("compile") && vm.count("install"))) // make sure only one option is selected
 	{
+		_help_requested = true;
 		_metaffi_options.print(std::cout);
 		return false;
 	}
@@ -72,6 +73,7 @@ bool cli_executor::parse()
 	}
 	else
 	{
+		_help_requested = true;
 		_metaffi_options.print(std::cout);
 		return false;
 	}
