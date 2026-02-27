@@ -23,9 +23,11 @@ list(APPEND FILES_TO_COPY "${sdk_include_dir}/runtime/xcall.h")
 list(APPEND FILES_TO_COPY "${sdk_include_dir}/runtime/xllr_capi_loader.c")
 list(APPEND FILES_TO_COPY "${sdk_include_dir}/runtime/xllr_capi_loader.h")
 
-# Make sure target dir exists; all production headers go under $METAFFI_HOME/include
-file(MAKE_DIRECTORY $ENV{METAFFI_HOME}/include)
-file(MAKE_DIRECTORY $ENV{METAFFI_HOME}/include/utils)
+# Create target dirs at build time so a clean output dir doesn't break the copy
+add_custom_command(TARGET xllr POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E make_directory $ENV{METAFFI_HOME}/include
+  COMMAND ${CMAKE_COMMAND} -E make_directory $ENV{METAFFI_HOME}/include/utils
+)
 
 foreach(file ${FILES_TO_COPY})
  get_filename_component(FILE_NAME ${file} NAME)
