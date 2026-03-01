@@ -205,7 +205,7 @@ void plugin_utils::install(const std::string& url_or_path)
 			std::filesystem::remove(installer_artifact);
 		}
 	});
-	
+
 	if(lowered_url_or_path.rfind("http", 0) == 0) // if starts with "http" - download
 	{
 		is_delete_file = true;
@@ -219,6 +219,14 @@ void plugin_utils::install(const std::string& url_or_path)
 		}
 	}
 
+	// New zip-based install flow
+	if(has_extension(installer_artifact, ".zip"))
+	{
+		install_from_zip(installer_artifact);
+		return;
+	}
+
+	// Legacy install flow
 	std::vector<std::string> install_commands = build_install_commands(installer_artifact);
 	std::vector<command_result> failures;
 
@@ -270,11 +278,40 @@ void plugin_utils::remove(const std::string& name)
 		throw std::runtime_error("Plugin directory not found");
 	}
 
+	std::cout << "Uninstalling plugin: " << name << std::endl;
+
+	// New flow: check for plugin_hooks.py first
+	std::filesystem::path hooks_py = plugin_dir / "plugin_hooks.py";
+	if(std::filesystem::exists(hooks_py))
+	{
+#ifdef _WIN32
+		std::string pre_uninstall_cmd = "python " + path_arg(hooks_py) + " --pre-uninstall";
+#else
+		std::string pre_uninstall_cmd = "python3 " + path_arg(hooks_py) + " --pre-uninstall";
+#endif
+		int exit_code = run_command(pre_uninstall_cmd);
+		if(exit_code != 0)
+		{
+			std::cout << "WARNING: pre-uninstall hook returned exit code " << exit_code << std::endl;
+		}
+
+		// Remove the plugin directory
+		std::error_code ec;
+		std::filesystem::remove_all(plugin_dir, ec);
+		if(ec)
+		{
+			throw std::runtime_error("Failed to remove plugin directory: " + ec.message());
+		}
+
+		std::cout << "Uninstallation completed" << std::endl;
+		return;
+	}
+
+	// Legacy uninstall flow — fallback for plugins without plugin_hooks.py
 	std::vector<uninstall_candidate> candidates = build_uninstall_candidates(plugin_dir);
 	std::vector<command_result> failures;
 	bool found_candidate = false;
 
-	std::cout << "Uninstalling plugin" << std::endl;
 	for(const auto& candidate : candidates)
 	{
 		if(!std::filesystem::exists(candidate.artifact))
@@ -300,7 +337,7 @@ void plugin_utils::remove(const std::string& name)
 
 	if(!found_candidate)
 	{
-		throw std::runtime_error("Uninstaller not found. Expected uninstall_plugin(.exe), uninstall.(bat|sh), uninstall_plugin.py, or uninstall.py");
+		throw std::runtime_error("Uninstaller not found. Expected plugin_hooks.py, uninstall_plugin(.exe), uninstall.(bat|sh), uninstall_plugin.py, or uninstall.py");
 	}
 
 	std::stringstream err;
@@ -323,9 +360,9 @@ std::filesystem::path plugin_utils::download(const std::string& url)
 {
 	uri link(url);
 	std::filesystem::path compressed_plugin_path = link.get_path().substr( link.get_path().rfind('/')+1 );
-	
+
 	std::stringstream ss_download_cmds;
-	
+
 #ifdef _WIN32
 	ss_download_cmds << R"(powershell -ExecutionPolicy ByPass -command "wget )" << url << R"( -OutFile ')" << compressed_plugin_path.generic_string() << "'";
 #else
@@ -337,7 +374,144 @@ std::filesystem::path plugin_utils::download(const std::string& url)
 	{
 		throw std::runtime_error("Failed to download plugin package");
 	}
-	
+
 	return compressed_plugin_path;
+}
+//--------------------------------------------------------------------
+void plugin_utils::install_from_zip(const std::filesystem::path& zip_path)
+{
+	std::cout << "Installing plugin from zip: " << zip_path.generic_string() << std::endl;
+
+	// Extract zip to a temp directory
+	std::filesystem::path temp_dir = extract_zip_to_temp(zip_path);
+	scope_guard cleanup_temp([&]()
+	{
+		std::error_code ec;
+		std::filesystem::remove_all(temp_dir, ec);
+	});
+
+	// Read plugin name from manifest
+	std::filesystem::path manifest_path = temp_dir / "plugin_manifest.json";
+	if(!std::filesystem::exists(manifest_path))
+	{
+		throw std::runtime_error("plugin_manifest.json not found in zip");
+	}
+
+	std::string plugin_name = read_plugin_name_from_manifest(manifest_path);
+	if(plugin_name.empty())
+	{
+		throw std::runtime_error("Failed to read plugin name from plugin_manifest.json");
+	}
+
+	std::cout << "Plugin name: " << plugin_name << std::endl;
+
+	// Run prerequisite check if plugin_hooks.py exists
+	std::filesystem::path hooks_py = temp_dir / "plugin_hooks.py";
+	if(std::filesystem::exists(hooks_py))
+	{
+#ifdef _WIN32
+		std::string check_cmd = "python " + path_arg(hooks_py) + " --check-prerequisites";
+#else
+		std::string check_cmd = "python3 " + path_arg(hooks_py) + " --check-prerequisites";
+#endif
+		int check_exit = run_command(check_cmd);
+		if(check_exit != 0)
+		{
+			throw std::runtime_error("Plugin prerequisites check failed (exit code: " + std::to_string(check_exit) + ")");
+		}
+	}
+
+	// Create the plugin install directory
+	std::filesystem::path install_dir = std::filesystem::path(get_install_path()) / plugin_name;
+	std::filesystem::create_directories(install_dir);
+
+	// Copy all extracted files to the install directory, preserving relative paths
+	for(const auto& entry : std::filesystem::recursive_directory_iterator(temp_dir))
+	{
+		if(!entry.is_regular_file())
+		{
+			continue;
+		}
+
+		std::filesystem::path rel = std::filesystem::relative(entry.path(), temp_dir);
+		std::filesystem::path dest = install_dir / rel;
+
+		// Ensure parent directory exists
+		std::filesystem::create_directories(dest.parent_path());
+
+		std::filesystem::copy_file(entry.path(), dest, std::filesystem::copy_options::overwrite_existing);
+	}
+
+	// Run setup-environment hook from the installed location
+	std::filesystem::path installed_hooks = install_dir / "plugin_hooks.py";
+	if(std::filesystem::exists(installed_hooks))
+	{
+#ifdef _WIN32
+		std::string setup_cmd = "python " + path_arg(installed_hooks) + " --setup-environment";
+#else
+		std::string setup_cmd = "python3 " + path_arg(installed_hooks) + " --setup-environment";
+#endif
+		int setup_exit = run_command(setup_cmd);
+		if(setup_exit != 0)
+		{
+			std::cout << "WARNING: setup-environment hook returned exit code " << setup_exit << std::endl;
+		}
+	}
+
+	std::cout << "Installation completed: " << plugin_name << std::endl;
+}
+//--------------------------------------------------------------------
+std::filesystem::path plugin_utils::extract_zip_to_temp(const std::filesystem::path& zip_path)
+{
+	// Create a temp directory for extraction
+	std::filesystem::path temp_dir = std::filesystem::temp_directory_path() / ("metaffi_plugin_" + zip_path.stem().string());
+
+	// Clean up any previous extraction
+	if(std::filesystem::exists(temp_dir))
+	{
+		std::filesystem::remove_all(temp_dir);
+	}
+
+	std::filesystem::create_directories(temp_dir);
+
+	// Extract using platform tools
+#ifdef _WIN32
+	std::string extract_cmd = "powershell -ExecutionPolicy ByPass -command \"Expand-Archive -Path "
+	                          + path_arg(zip_path) + " -DestinationPath "
+	                          + path_arg(temp_dir) + " -Force\"";
+#else
+	std::string extract_cmd = "unzip -o " + path_arg(zip_path) + " -d " + path_arg(temp_dir);
+#endif
+
+	int exit_code = run_command(extract_cmd);
+	if(exit_code != 0)
+	{
+		throw std::runtime_error("Failed to extract zip file (exit code: " + std::to_string(exit_code) + ")");
+	}
+
+	return temp_dir;
+}
+//--------------------------------------------------------------------
+std::string plugin_utils::read_plugin_name_from_manifest(const std::filesystem::path& manifest_path)
+{
+	std::ifstream in(manifest_path);
+	if(!in.good())
+	{
+		throw std::runtime_error("Cannot open manifest file: " + manifest_path.generic_string());
+	}
+
+	std::stringstream ss;
+	ss << in.rdbuf();
+	std::string content = ss.str();
+
+	// Extract "name" field from JSON using regex
+	std::regex name_regex(R"re("name"\s*:\s*"([^"]+)")re");
+	std::smatch match;
+	if(std::regex_search(content, match, name_regex) && match.size() > 1)
+	{
+		return match[1].str();
+	}
+
+	return "";
 }
 //--------------------------------------------------------------------

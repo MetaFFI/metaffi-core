@@ -25,8 +25,13 @@ public:
 private:
 	static std::string get_install_path();
 	static std::filesystem::path download(const std::string& url);
-	
+
 	static void validate_plugin(const std::filesystem::path& decompressed_plugin_path);
 	static void copy_plugin_package(const std::filesystem::path& decompressed_plugin_path);
 	static bool extract_plugin_name_and_type(const std::filesystem::path& path, std::string& out_name, plugin_type& out_type);
+
+	// New zip-based plugin installer flow
+	static void install_from_zip(const std::filesystem::path& zip_path);
+	static std::filesystem::path extract_zip_to_temp(const std::filesystem::path& zip_path);
+	static std::string read_plugin_name_from_manifest(const std::filesystem::path& manifest_path);
 };
